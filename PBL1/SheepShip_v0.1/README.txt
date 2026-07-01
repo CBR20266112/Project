@@ -1,0 +1,1 @@
+Place the approved sheep image at assets/sheep/idle.png
