@@ -2,76 +2,145 @@
 <html lang="ko">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sleepy Sheep</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/shearing.css">
+<title>Sleepy Sheep</title>
+
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/style.css">
+
 </head>
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <header>
+<header>
 
-            <h1>🐑 Sleepy Sheep</h1>
+<h1>🐑 Sleepy Sheep</h1>
 
-            <div class="status">
+<div class="status">
 
-                <div class="card">
-                    <span>경험치</span>
-                    <h2 id="xpText">0</h2>
-                </div>
+<div class="card">
 
-                <div class="card">
-                    <span>성장 단계</span>
-                    <h2 id="growthText">STEP 1</h2>
-                </div>
+<span>경험치</span>
 
-                <div class="card">
-                    <span>양털</span>
-                    <h2 id="woolText">0g</h2>
-                </div>
+<h2 id="xpText">0</h2>
 
-            </div>
+</div>
 
-        </header>
+<div class="card">
 
-        <main>
+<span>성장 단계</span>
 
-            <div id="sheepArea">
+<h2 id="growthText">
 
-                <img
-                    id="growthImage"
-                    src="assets/sheep/growth/growth_step_01_raw.png">
+STEP 1
 
-            </div>
+</h2>
 
-            <button
-                id="shearingBtn"
-                disabled>
+</div>
 
-                ✂ 양털 깎기
+<div class="card">
 
-            </button>
+<span>양털</span>
 
-        </main>
+<h2 id="woolText">
 
-    </div>
+0g
 
-    <div id="shearingGame" class="hidden">
+</h2>
 
-        <canvas id="gameCanvas"></canvas>
+</div>
 
-    </div>
+</div>
 
-    <script src="js/storage.js"></script>
-    <script src="js/growth.js"></script>
-    <script src="js/shearing.js"></script>
-    <script src="js/game.js"></script>
+</header>
+
+<main>
+
+<div id="sheepArea">
+
+<img
+
+id="growthImage"
+
+src="assets/sheep/growth/growth_step_01_raw.png"
+
+alt="Sleepy Sheep"
+
+>
+
+</div>
+
+<div class="actionButtons">
+
+<button id="petBtn">
+
+🤍 쓰다듬기
+
+</button>
+
+<button id="feedBtn">
+
+🥕 먹이주기
+
+</button>
+
+<button id="sleepBtn">
+
+😴 잠자기
+
+</button>
+
+</div>
+
+<button
+
+id="shearingBtn"
+
+disabled>
+
+✂ 양털 깎기
+
+</button>
+
+</main>
+
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/sheep.js"></script>
+
+<script>
+
+document
+.getElementById("sleepBtn")
+.addEventListener("click",()=>{
+
+addSleepXP();
+
+});
+
+document
+.getElementById("petBtn")
+.addEventListener("click",()=>{
+
+alert("메에~ 🐑");
+
+});
+
+document
+.getElementById("feedBtn")
+.addEventListener("click",()=>{
+
+alert("냠냠! 🥕");
+
+});
+
+</script>
 
 </body>
 
