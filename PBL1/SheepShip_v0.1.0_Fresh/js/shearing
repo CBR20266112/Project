@@ -1,0 +1,149 @@
+const beforeSheep=document.getElementById("beforeSheep");
+const afterSheep=document.getElementById("afterSheep");
+const canvas=document.getElementById("eraseCanvas");
+const ctx=canvas.getContext("2d");
+
+const clipper=document.getElementById("clipper");
+
+const progressFill=document.getElementById("progressFill");
+const progressText=document.getElementById("progressText");
+const finishButton=document.getElementById("finishButton");
+
+let drawing=false;
+let erasedPixels=0;
+let totalPixels=0;
+let completed=false;
+
+function resizeCanvas(){
+
+    canvas.width=beforeSheep.clientWidth;
+    canvas.height=beforeSheep.clientHeight;
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    ctx.drawImage(
+        beforeSheep,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    totalPixels=canvas.width*canvas.height;
+
+}
+
+beforeSheep.onload=()=>{
+
+    resizeCanvas();
+
+};
+
+window.addEventListener("resize",resizeCanvas);
+
+function pointerPosition(e){
+
+    const rect=canvas.getBoundingClientRect();
+
+    const x=(e.clientX||e.touches?.[0].clientX)-rect.left;
+    const y=(e.clientY||e.touches?.[0].clientY)-rect.top;
+
+    return {x,y};
+
+}
+
+function erase(x,y){
+
+    ctx.globalCompositeOperation="destination-out";
+
+    ctx.beginPath();
+    ctx.arc(x,y,42,0,Math.PI*2);
+    ctx.fill();
+
+    updateProgress();
+
+}
+
+function updateProgress(){
+
+    const img=ctx.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    ).data;
+
+    let visible=0;
+
+    for(let i=3;i<img.length;i+=4){
+
+        if(img[i]>10){
+
+            visible++;
+
+        }
+
+    }
+
+    erasedPixels=totalPixels-visible;
+
+    const percent=Math.floor(
+        erasedPixels/totalPixels*100
+    );
+
+    progressFill.style.width=percent+"%";
+    progressText.textContent=percent+"%";
+
+    if(percent>=95&&!completed){
+
+        completed=true;
+
+        finishButton.disabled=false;
+
+        localStorage.setItem("sheepXP","0");
+        localStorage.setItem("sheepSheared","true");
+
+        alert("양털깎기 완료!");
+
+    }
+
+}
+
+canvas.addEventListener("pointerdown",e=>{
+
+    drawing=true;
+
+    const p=pointerPosition(e);
+
+    erase(p.x,p.y);
+
+});
+
+canvas.addEventListener("pointermove",e=>{
+
+    const rect=canvas.getBoundingClientRect();
+
+    clipper.style.left=e.clientX+"px";
+    clipper.style.top=e.clientY+"px";
+
+    if(!drawing) return;
+
+    const p=pointerPosition(e);
+
+    erase(p.x,p.y);
+
+});
+
+window.addEventListener("pointerup",()=>{
+
+    drawing=false;
+
+});
+
+finishButton.addEventListener("click",()=>{
+
+    if(!completed) return;
+
+    location.href="sheep.html";
+
+});

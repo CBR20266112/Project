@@ -2,321 +2,76 @@
 <html lang="ko">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleepy Sheep</title>
 
-<title>Sleepy Sheep</title>
-
-<link rel="stylesheet" href="css/variables.css">
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/components.css">
-<link rel="stylesheet" href="css/animations.css">
-<link rel="stylesheet" href="css/responsive.css">
-
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/shearing.css">
 </head>
 
 <body>
 
-<div id="app">
+    <div class="container">
 
-<div class="background">
+        <header>
 
-<div class="stars"></div>
+            <h1>🐑 Sleepy Sheep</h1>
 
-<div class="moon"></div>
+            <div class="status">
 
-</div>
+                <div class="card">
+                    <span>경험치</span>
+                    <h2 id="xpText">0</h2>
+                </div>
 
-<main class="phone">
+                <div class="card">
+                    <span>성장 단계</span>
+                    <h2 id="growthText">STEP 1</h2>
+                </div>
 
-<header class="header">
+                <div class="card">
+                    <span>양털</span>
+                    <h2 id="woolText">0g</h2>
+                </div>
 
-<div>
+            </div>
 
-<h1>🌙 Sleepy Sheep</h1>
+        </header>
 
-<p>
-드리미와 함께 건강한 수면 습관을 만들어 보세요.
-</p>
+        <main>
 
-</div>
+            <div id="sheepArea">
 
-</header>
+                <img
+                    id="growthImage"
+                    src="assets/sheep/growth/growth_step_01_raw.png">
 
-<section class="hero-card glass">
+            </div>
 
-<div class="sheep-box">
+            <button
+                id="shearingBtn"
+                disabled>
 
-<img
-id="sheep"
-src="assets/sheep/idle.png"
-alt="드리미">
+                ✂ 양털 깎기
 
-</div>
+            </button>
 
-<h2 id="sheep-name">
+        </main>
 
-드리미
+    </div>
 
-</h2>
+    <div id="shearingGame" class="hidden">
 
-<p id="speechText">
+        <canvas id="gameCanvas"></canvas>
 
-오늘도 좋은 꿈 꾸러 갈까요?
+    </div>
 
-</p>
-
-<div id="speech" class="speech hidden">
-
-메에~
-
-</div>
-
-</section>
-
-<section class="status-card glass">
-
-<div class="status-item">
-
-<label>❤️ 행복도</label>
-
-<div class="progress">
-
-<div
-id="happy-bar"
-class="fill"
-style="width:82%;">
-
-</div>
-
-</div>
-
-</div>
-
-<div class="status-item">
-
-<label>🍖 배부름</label>
-
-<div class="progress">
-
-<div
-id="hunger-bar"
-class="fill"
-style="width:65%;">
-
-</div>
-
-</div>
-
-</div>
-
-<div class="status-item">
-
-<label>🧶 양털 성장</label>
-
-<div class="progress">
-
-<div
-id="wool-bar"
-class="fill"
-style="width:48%;">
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<section class="sleep-card glass">
-
-<h3>
-
-😴 오늘의 수면
-
-</h3>
-
-<h2>
-
-7시간 32분
-
-</h2>
-
-<p>
-
-어제보다 42분 더 오래 잤어요.
-
-</p>
-
-</section>
-
-<section class="sleep-card glass">
-
-<h3>
-
-🌙 오늘의 수면 점수
-
-</h3>
-
-<div class="score-card">
-
-<div class="score-number">
-
-92점
-
-</div>
-
-<div class="score-stars">
-
-⭐⭐⭐⭐☆
-
-</div>
-
-<p>
-
-훌륭해요!
-드리미도 기분이 좋아 보입니다.
-
-</p>
-
-</div>
-
-</section>
-<section class="sleep-card glass">
-
-    <h3>
-
-        🐑 드리미가 기다리고 있어요!
-
-    </h3>
-
-    <p>
-
-        오늘은 기분이 좋아 보여요.<br>
-        드리미를 만나러 가볼까요?
-
-    </p>
-
-    <button
-        class="action-button"
-        onclick="location.href='pages/sheep.html'">
-
-        드리미 만나기
-
-    </button>
-
-</section>
-
-<section class="sleep-card glass">
-
-    <h3>
-
-        🎵 오늘의 추천 ASMR
-
-    </h3>
-
-    <h2>
-
-        🌧 빗소리
-
-    </h2>
-
-    <p>
-
-        잔잔한 빗소리와 함께 편안한 잠을 준비해 보세요.
-
-    </p>
-
-    <button
-        class="action-button"
-        onclick="location.href='pages/asmr.html'">
-
-        ASMR 듣기
-
-    </button>
-
-</section>
-
-<section class="sleep-card glass">
-
-    <h3>
-
-        📊 이번 주 수면 통계
-
-    </h3>
-
-    <p>
-
-        평균 수면 시간
-
-    </p>
-
-    <h2>
-
-        7시간 11분
-
-    </h2>
-
-    <p>
-
-        지난주보다 28분 증가했습니다.
-
-    </p>
-
-</section>
-
-<nav class="bottom-nav">
-
-    <button
-        onclick="location.href='index.html'"
-        title="홈">
-
-        🏠
-
-    </button>
-
-    <button
-        onclick="location.href='pages/sheep.html'"
-        title="드리미">
-
-        🐑
-
-    </button>
-
-    <button
-        onclick="location.href='pages/sleep.html'"
-        title="수면">
-
-        😴
-
-    </button>
-
-    <button
-        onclick="location.href='pages/asmr.html'"
-        title="ASMR">
-
-        🎵
-
-    </button>
-
-    <button
-        onclick="location.href='pages/settings.html'"
-        title="설정">
-
-        ⚙️
-
-    </button>
-
-</nav>
-
-</main>
-
-</div>
-
-<script type="module" src="js/main.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/growth.js"></script>
+    <script src="js/shearing.js"></script>
+    <script src="js/game.js"></script>
 
 </body>
 
