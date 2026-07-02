@@ -1,93 +1,69 @@
 /* ========================================
-   Components
+   SheepShip Components
 ======================================== */
 
-/* =========================
-   Header
-========================= */
+/* ---------- Header ---------- */
 
 .header{
-
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
     margin-bottom:24px;
+}
 
+.header h1{
+    font-size:2rem;
+    margin-bottom:6px;
 }
 
 .header p{
-
-    margin-top:6px;
-
-    font-size:.9rem;
-
+    opacity:.85;
+    font-size:.95rem;
 }
 
-/* ========================= */
+/* ---------- Point ---------- */
 
 .point-box{
-
     display:flex;
-
     align-items:center;
-
     gap:8px;
 
-    padding:10px 16px;
+    padding:10px 18px;
+
+    border-radius:999px;
 
     background:var(--glass);
 
     border:1px solid var(--glass-border);
 
     backdrop-filter:blur(var(--blur));
-
-    border-radius:999px;
 
     box-shadow:var(--shadow-small);
 
     font-weight:700;
-
 }
 
-/* =========================
-   Hero Card
-========================= */
+/* ---------- Hero ---------- */
 
 .hero-card{
 
-    background:var(--glass);
-
-    backdrop-filter:blur(var(--blur));
-
-    border:1px solid var(--glass-border);
-
-    border-radius:var(--radius-large);
-
-    padding:30px;
-
     text-align:center;
 
-    margin-bottom:22px;
+    padding:32px 24px;
 
-    box-shadow:var(--shadow-medium);
+    margin-bottom:22px;
 
 }
 
 .sheep-box{
 
     width:180px;
-
     height:180px;
 
     margin:auto;
 
     display:flex;
-
     justify-content:center;
-
     align-items:center;
 
 }
@@ -95,42 +71,60 @@
 .sheep-box img{
 
     width:100%;
-
-    transition:.3s;
-
-}
-
-.sheep-box img:hover{
-
-    transform:scale(1.05);
+    user-select:none;
 
 }
 
-/* =========================
-   Status Card
-========================= */
+.hero-card h2{
+
+    margin-top:12px;
+    margin-bottom:8px;
+
+}
+
+.hero-card p{
+
+    margin-bottom:18px;
+
+}
+
+/* ---------- Speech ---------- */
+
+.speech{
+
+    display:inline-block;
+
+    background:white;
+
+    color:#444;
+
+    padding:10px 18px;
+
+    border-radius:18px;
+
+    font-weight:600;
+
+}
+
+.hidden{
+
+    display:none;
+
+}
+
+/* ---------- Status ---------- */
 
 .status-card{
-
-    background:var(--glass);
-
-    backdrop-filter:blur(var(--blur));
-
-    border:1px solid var(--glass-border);
-
-    border-radius:var(--radius-large);
 
     padding:24px;
 
     margin-bottom:22px;
 
-    box-shadow:var(--shadow-medium);
-
 }
 
 .status-item{
 
-    margin-bottom:18px;
+    margin-bottom:20px;
 
 }
 
@@ -144,67 +138,48 @@
 
     display:block;
 
-    margin-bottom:8px;
-
-    font-size:.95rem;
+    margin-bottom:10px;
 
     font-weight:600;
 
 }
 
-/* ========================= */
+/* ---------- Progress ---------- */
 
 .progress{
 
     width:100%;
-
-    height:var(--progress-height);
-
-    background:rgba(255,255,255,.15);
+    height:12px;
 
     border-radius:999px;
 
     overflow:hidden;
 
+    background:rgba(255,255,255,.12);
+
 }
 
 .fill{
-
-    width:70%;
 
     height:100%;
 
     border-radius:999px;
 
-    background:
-
-        linear-gradient(
-            90deg,
-            var(--primary),
-            var(--secondary)
-        );
+    background:linear-gradient(
+        90deg,
+        var(--primary),
+        var(--secondary)
+    );
 
 }
 
-/* =========================
-   Sleep Card
-========================= */
+/* ---------- Card ---------- */
 
 .sleep-card{
 
-    background:var(--glass);
+    padding:24px;
 
-    backdrop-filter:blur(var(--blur));
-
-    border:1px solid var(--glass-border);
-
-    border-radius:var(--radius-large);
-
-    padding:22px;
-
-    margin-bottom:24px;
-
-    box-shadow:var(--shadow-medium);
+    margin-bottom:20px;
 
 }
 
@@ -214,74 +189,47 @@
 
 }
 
-/* =========================
-   Bottom Navigation
-========================= */
+.sleep-card h2{
 
-.bottom-nav{
-
-    position:sticky;
-
-    bottom:20px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    gap:10px;
-
-    padding:12px;
-
-    background:var(--glass);
-
-    backdrop-filter:blur(var(--blur));
-
-    border:1px solid var(--glass-border);
-
-    border-radius:24px;
-
-    box-shadow:var(--shadow-large);
+    margin:12px 0;
 
 }
 
-/* ========================= */
+/* ---------- Score ---------- */
 
-.bottom-nav button{
+.score-card{
 
-    flex:1;
-
-    height:56px;
-
-    border-radius:18px;
-
-    color:white;
-
-    font-size:1.4rem;
-
-    transition:.25s;
+    text-align:center;
 
 }
 
-.bottom-nav button:hover{
+.score-number{
 
-    background:rgba(255,255,255,.15);
+    font-size:3.2rem;
 
-    transform:translateY(-2px);
+    font-weight:700;
+
+    color:var(--primary);
+
+}
+
+.score-stars{
+
+    margin:12px 0;
+
+    font-size:1.5rem;
 
 }
 
-.bottom-nav button:active{
+/* ---------- Button ---------- */
 
-    transform:scale(.95);
-
-}
 .action-button{
 
     width:100%;
 
-    margin-top:12px;
+    margin-top:16px;
 
-    padding:16px;
+    padding:15px;
 
     border:none;
 
@@ -297,7 +245,9 @@
 
     font-size:1rem;
 
-    font-weight:600;
+    font-weight:700;
+
+    cursor:pointer;
 
     transition:.25s;
 
@@ -316,165 +266,140 @@
     transform:scale(.97);
 
 }
-/* =========================
-   ASMR
-========================= */
+
+/* ---------- ASMR ---------- */
 
 .asmr-grid{
 
-display:grid;
+    display:grid;
 
-grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(2,1fr);
 
-gap:16px;
-
-margin-top:10px;
+    gap:16px;
 
 }
 
 .asmr-card{
 
-padding:20px;
+    padding:20px;
 
-background:rgba(255,255,255,.08);
+    text-align:center;
 
-border:1px solid var(--glass-border);
+    border-radius:22px;
 
-border-radius:20px;
+    background:rgba(255,255,255,.08);
 
-text-align:center;
+    border:1px solid rgba(255,255,255,.12);
 
-cursor:pointer;
+    transition:.25s;
 
-transition:.25s;
+    cursor:pointer;
 
 }
 
 .asmr-card:hover{
 
-transform:translateY(-4px);
+    transform:translateY(-4px);
 
-background:rgba(255,255,255,.15);
-
-}
-
-.asmr-card{
-
-font-size:2rem;
+    background:rgba(255,255,255,.15);
 
 }
 
 .asmr-card h3{
 
-margin-top:12px;
-
-margin-bottom:6px;
-
-font-size:1rem;
+    margin-top:12px;
+    margin-bottom:6px;
 
 }
 
 .asmr-card p{
 
-font-size:.85rem;
+    font-size:.85rem;
 
-opacity:.8;
+    opacity:.75;
 
 }
-/* =========================
-   Settings
-========================= */
+
+/* ---------- Setting ---------- */
 
 .setting-item{
 
-display:flex;
+    display:flex;
 
-justify-content:space-between;
+    justify-content:space-between;
 
-align-items:center;
+    align-items:center;
 
-padding:16px 0;
+    padding:18px 0;
 
-border-bottom:1px solid rgba(255,255,255,.08);
+    border-bottom:1px solid rgba(255,255,255,.08);
 
 }
 
 .setting-item:last-child{
 
-border:none;
+    border:none;
 
 }
 
-.switch{
+/* ---------- Navigation ---------- */
 
-position:relative;
+.bottom-nav{
 
-display:inline-block;
+    position:sticky;
 
-width:52px;
+    bottom:20px;
 
-height:28px;
+    display:flex;
 
-}
+    gap:8px;
 
-.switch input{
+    margin-top:30px;
 
-display:none;
+    padding:10px;
 
-}
+    border-radius:24px;
 
-.slider{
+    background:var(--glass);
 
-position:absolute;
+    border:1px solid var(--glass-border);
 
-cursor:pointer;
+    backdrop-filter:blur(var(--blur));
 
-top:0;
-
-left:0;
-
-right:0;
-
-bottom:0;
-
-background:#888;
-
-border-radius:999px;
-
-transition:.3s;
+    box-shadow:var(--shadow-large);
 
 }
 
-.slider::before{
+.bottom-nav button{
 
-content:"";
+    flex:1;
 
-position:absolute;
+    height:56px;
 
-width:22px;
+    border:none;
 
-height:22px;
+    border-radius:18px;
 
-left:3px;
+    background:transparent;
 
-top:3px;
+    color:white;
 
-background:white;
+    font-size:1.3rem;
 
-border-radius:50%;
+    transition:.25s;
 
-transition:.3s;
-
-}
-
-.switch input:checked + .slider{
-
-background:var(--primary);
+    cursor:pointer;
 
 }
 
-.switch input:checked + .slider::before{
+.bottom-nav button:hover{
 
-transform:translateX(24px);
+    background:rgba(255,255,255,.12);
+
+}
+
+.bottom-nav button:active{
+
+    transform:scale(.95);
 
 }
