@@ -1,0 +1,110 @@
+/* ========================================
+   SheepShip Design System
+   Version : v0.1.1
+======================================== */
+
+:root{
+
+    /* ---------- Colors ---------- */
+
+    --bg-top:#252b63;
+    --bg-bottom:#0d122b;
+
+    --primary:#B89BFF;
+    --primary-light:#D5C6FF;
+
+    --secondary:#90D7FF;
+
+    --success:#7EE4AE;
+
+    --warning:#FFD46E;
+
+    --danger:#FF9C9C;
+
+    --white:#FFFFFF;
+
+    --text:#FFFFFF;
+
+    --text-light:#E6E6F2;
+
+    --text-dark:#8083A1;
+
+
+
+    /* ---------- Glass ---------- */
+
+    --glass:rgba(255,255,255,.15);
+
+    --glass-border:rgba(255,255,255,.18);
+
+    --glass-hover:rgba(255,255,255,.20);
+
+
+
+    /* ---------- Shadow ---------- */
+
+    --shadow-small:
+
+        0 4px 12px rgba(0,0,0,.15);
+
+    --shadow-medium:
+
+        0 8px 20px rgba(0,0,0,.20);
+
+    --shadow-large:
+
+        0 12px 40px rgba(0,0,0,.28);
+
+
+
+    /* ---------- Radius ---------- */
+
+    --radius-small:12px;
+
+    --radius-medium:20px;
+
+    --radius-large:28px;
+
+    --radius-round:999px;
+
+
+
+    /* ---------- Width ---------- */
+
+    --phone-width:430px;
+
+
+
+    /* ---------- Header ---------- */
+
+    --header-height:72px;
+
+
+
+    /* ---------- Navigation ---------- */
+
+    --nav-height:78px;
+
+
+
+    /* ---------- Transition ---------- */
+
+    --fast:.2s;
+
+    --normal:.35s;
+
+    --slow:.6s;
+
+
+
+    /* ---------- Blur ---------- */
+
+    --blur:18px;
+
+
+
+    /* ---------- Progress ---------- */
+
+    --progress-height:12px;
+
+}

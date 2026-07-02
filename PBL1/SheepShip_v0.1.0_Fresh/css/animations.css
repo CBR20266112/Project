@@ -1,0 +1,314 @@
+/* ========================================
+   Components
+======================================== */
+
+/* =========================
+   Header
+========================= */
+
+.header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:24px;
+
+}
+
+.header p{
+
+    margin-top:6px;
+
+    font-size:.9rem;
+
+}
+
+/* ========================= */
+
+.point-box{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:10px 16px;
+
+    background:var(--glass);
+
+    border:1px solid var(--glass-border);
+
+    backdrop-filter:blur(var(--blur));
+
+    border-radius:999px;
+
+    box-shadow:var(--shadow-small);
+
+    font-weight:700;
+
+}
+
+/* =========================
+   Hero Card
+========================= */
+
+.hero-card{
+
+    background:var(--glass);
+
+    backdrop-filter:blur(var(--blur));
+
+    border:1px solid var(--glass-border);
+
+    border-radius:var(--radius-large);
+
+    padding:30px;
+
+    text-align:center;
+
+    margin-bottom:22px;
+
+    box-shadow:var(--shadow-medium);
+
+}
+
+.sheep-box{
+
+    width:180px;
+
+    height:180px;
+
+    margin:auto;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.sheep-box img{
+
+    width:100%;
+
+    transition:.3s;
+
+}
+
+.sheep-box img:hover{
+
+    transform:scale(1.05);
+
+}
+
+/* =========================
+   Status Card
+========================= */
+
+.status-card{
+
+    background:var(--glass);
+
+    backdrop-filter:blur(var(--blur));
+
+    border:1px solid var(--glass-border);
+
+    border-radius:var(--radius-large);
+
+    padding:24px;
+
+    margin-bottom:22px;
+
+    box-shadow:var(--shadow-medium);
+
+}
+
+.status-item{
+
+    margin-bottom:18px;
+
+}
+
+.status-item:last-child{
+
+    margin-bottom:0;
+
+}
+
+.status-item label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-size:.95rem;
+
+    font-weight:600;
+
+}
+
+/* ========================= */
+
+.progress{
+
+    width:100%;
+
+    height:var(--progress-height);
+
+    background:rgba(255,255,255,.15);
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+}
+
+.fill{
+
+    width:70%;
+
+    height:100%;
+
+    border-radius:999px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+}
+
+/* =========================
+   Sleep Card
+========================= */
+
+.sleep-card{
+
+    background:var(--glass);
+
+    backdrop-filter:blur(var(--blur));
+
+    border:1px solid var(--glass-border);
+
+    border-radius:var(--radius-large);
+
+    padding:22px;
+
+    margin-bottom:24px;
+
+    box-shadow:var(--shadow-medium);
+
+}
+
+.sleep-card h3{
+
+    margin-bottom:12px;
+
+}
+
+/* =========================
+   Bottom Navigation
+========================= */
+
+.bottom-nav{
+
+    position:sticky;
+
+    bottom:20px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    padding:12px;
+
+    background:var(--glass);
+
+    backdrop-filter:blur(var(--blur));
+
+    border:1px solid var(--glass-border);
+
+    border-radius:24px;
+
+    box-shadow:var(--shadow-large);
+
+}
+
+/* ========================= */
+
+.bottom-nav button{
+
+    flex:1;
+
+    height:56px;
+
+    border-radius:18px;
+
+    color:white;
+
+    font-size:1.4rem;
+
+    transition:.25s;
+
+}
+
+.bottom-nav button:hover{
+
+    background:rgba(255,255,255,.15);
+
+    transform:translateY(-2px);
+
+}
+
+.bottom-nav button:active{
+
+    transform:scale(.95);
+
+}
+/* =========================
+   Pet Animation
+========================= */
+
+.pet{
+
+    animation:
+
+        petBounce .3s;
+
+}
+
+@keyframes petBounce{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:
+
+            scale(1.12)
+
+            rotate(-5deg);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>드리미 | Sleepy Sheep</title>
+
+<link rel="stylesheet" href="../css/variables.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/animations.css">
+<link rel="stylesheet" href="../css/responsive.css">
+
+</head>
+
+<body>
+
+<div id="app">
+
+<main class="phone">
+
+<header class="header">
+
+<h1>🐑 드리미</h1>
+
+<p>
+꿈나라에서 온 작은 양
+</p>
+
+</header>
+
+<section class="hero-card glass">
+
+<div class="sheep-box">
+
+<img
+id="sheep"
+src="../assets/sheep/growth/growth_step_01_raw.png"
+alt="드리미">
+
+</div>
+
+<h2>드리미</h2>
+
+<p id="message">
+오늘도 같이 푹 쉬어요!
+</p>
+
+</section>
+
+<section class="status-card glass">
+
+<div class="status-item">
+
+<label>❤️ 행복도</label>
+
+<div class="progress">
+
+<div
+class="fill"
+id="happy"
+style="width:82%;">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="status-item">
+
+<label>🍖 배부름</label>
+
+<div class="progress">
+
+<div
+class="fill"
+id="food"
+style="width:70%;">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="status-item">
+
+<label>🧶 양털 성장</label>
+
+<div class="progress">
+
+<div
+class="fill"
+id="wool"
+style="width:0%;">
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="sleep-card glass">
+
+<h3>
+
+드리미와 놀아볼까요?
+
+</h3>
+
+<div
+style="
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-top:20px;">
+
+<button
+class="action-button"
+onclick="petSheep()">
+
+🖐 쓰다듬기
+
+</button>
+
+<button
+class="action-button"
+onclick="feedSheep()">
+
+🥕 먹이주기
+
+</button>
+
+<button
+class="action-button"
+onclick="sleepSheep()">
+
+😴 재우기
+
+</button>
+
+<button
+class="action-button"
+onclick="shearSheep()">
+
+✂ 양털깎기
+
+</button>
+
+</div>
+
+</section>
+
+<section class="sleep-card glass">
+
+<h3>현재 상태</h3>
+
+<p id="statusText">
+기분이 아주 좋아 보여요.
+</p>
+
+</section>
+
+<nav class="bottom-nav">
+
+<button onclick="location.href='../index.html'">
+
+🏠
+
+</button>
+
+<button>
+
+🐑
+
+</button>
+
+<button onclick="location.href='sleep.html'">
+
+😴
+
+</button>
+
+<button onclick="location.href='asmr.html'">
+
+🎵
+
+</button>
+
+<button onclick="location.href='settings.html'">
+
+⚙️
+
+</button>
+
+</nav>
+
+</main>
+
+</div>
+
+<script src="../js/sheep.js"></script>
+
+</body>
+
+</html>
