@@ -72,31 +72,55 @@ const App = {
 
     bindSheep(){
 
-        const sheep=document.getElementById(
+    const sheep=document.getElementById("sheep");
 
-            "sheep"
+    if(!sheep) return;
 
-        );
+    let cooldown=false;
 
-        if(!sheep) return;
+    sheep.addEventListener("click",()=>{
 
-        sheep.addEventListener(
+        if(cooldown) return;
 
-            "click",
+        cooldown=true;
 
-            ()=>{
+        changeHappiness(1);
 
-                console.log(
+        refreshUI();
 
-                    "Sheep Click"
+        sheep.classList.add("pet");
 
-                );
+        const message=
 
-            }
+            petMessages[
 
-        );
+                Math.floor(
 
-    }
+                    Math.random()*
+
+                    petMessages.length
+
+                )
+
+            ];
+
+        console.log(message);
+
+        setTimeout(()=>{
+
+            sheep.classList.remove("pet");
+
+        },300);
+
+        setTimeout(()=>{
+
+            cooldown=false;
+
+        },500);
+
+    });
+
+}
 
 };
 

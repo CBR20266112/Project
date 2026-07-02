@@ -275,3 +275,40 @@
     transform:scale(.95);
 
 }
+/* =========================
+   Pet Animation
+========================= */
+
+.pet{
+
+    animation:
+
+        petBounce .3s;
+
+}
+
+@keyframes petBounce{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:
+
+            scale(1.12)
+
+            rotate(-5deg);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}
