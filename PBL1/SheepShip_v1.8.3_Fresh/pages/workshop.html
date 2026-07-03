@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>?묓꽭 怨듬갑 | SleepySheep</title>
+  <title>양털 공방 | SleepySheep</title>
   
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -14,103 +14,103 @@
 </head>
 <body>
 
-  <!-- 諛ㅽ븯??諛곌꼍 -->
+  <!-- 밤하늘 배경 -->
   <div class="background">
     <canvas id="star-canvas"></canvas>
     <div class="moon"></div>
   </div>
 
   <main class="phone">
-    <!-- ?ㅻ뜑 -->
+    <!-- 헤더 -->
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="?ㅻ줈媛湲?>??/button>
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
         <div>
-          <h1>?룵 ?묓꽭 怨듬갑</h1>
-          <p class="subtitle">紐⑥? ?묓꽭濡?袁몃?湲??붿냼瑜??띾뱷?댁슂</p>
+          <h1>🧶 양털 공방</h1>
+          <p class="subtitle">모은 양털로 방 꾸미기 요소를 획득해요</p>
         </div>
       </div>
       <div class="header-right">
         <div class="chip-box" id="wool-display">
-          <span class="icon">?㎍</span>
+          <span class="icon">🧶</span>
           <span id="wool-count">0</span>
         </div>
       </div>
     </header>
 
-    <!-- ?ㅽ겕濡??곸뿭 -->
+    <!-- 스크롤 영역 -->
     <div class="content">
 
-      <!-- ??諛??꾨━酉??곸뿭 -->
+      <!-- 방 미리보기 영역 -->
       <section class="section-header" style="margin-bottom: var(--space-2);">
-        <span class="section-title">?룪 ?섏쓽 ?꾨뒔??諛??꾨━酉?/span>
+        <span class="section-title">🏡 나의 아늑한 방 프리뷰</span>
       </section>
       <section id="room-preview-container" style="margin-bottom: var(--space-3);">
-        <!-- room.js瑜??듯빐 諛?袁몃?湲??붿냼媛 ?뚮뜑留곷맖 -->
+        <!-- room.js를 통해 방 꾸미기 요소가 렌더링됨 -->
       </section>
 
-      <!-- ?곸젏 ?꾩씠??由ъ뒪???곸뿭 -->
+      <!-- 상점 아이템 리스트 영역 -->
       <section class="glass card" style="padding: var(--space-4);">
         <div class="section-header">
-          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">?썚截??곸젏 移댄뀒怨좊━</h3>
+          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">🛒 상점 카테고리</h3>
         </div>
 
-        <!-- 移댄뀒怨좊━ ??(媛濡??ㅽ겕濡?媛?ν븯?꾨줉 CSS 泥섎━) -->
+        <!-- 카테고리 탭 (가로 스크롤 가능하도록 CSS 처리) -->
         <div class="tab-bar" id="category-tabs" style="overflow-x: auto; white-space: nowrap; gap: 4px; padding: 4px; display: flex; scrollbar-width: none;">
-          <!-- js?먯꽌 ?숈쟻?쇰줈 濡쒕뱶 -->
+          <!-- js에서 동적으로 로드 -->
         </div>
 
         <div class="divider" style="margin: var(--space-3) 0;"></div>
 
-        <!-- ?꾩씠??洹몃━??由ъ뒪??-->
+        <!-- 아이템 그리드 리스트 -->
         <div class="grid-3" id="shop-items-grid" style="min-height: 220px;">
-          <!-- js?먯꽌 ?숈쟻?쇰줈 濡쒕뱶 -->
+          <!-- js에서 동적으로 로드 -->
         </div>
       </section>
 
     </div>
 
-    <!-- ?섎떒 ?ㅻ퉬寃뚯씠??-->
+    <!-- 하단 네비게이션 -->
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
-        <span class="nav-icon">?룧</span>
-        <span class="nav-label">??/span>
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
-        <span class="nav-icon">?뱤</span>
-        <span class="nav-label">?섎㈃</span>
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sheep.html">
-        <span class="nav-icon">?릲</span>
-        <span class="nav-label">????/span>
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item active" data-href="workshop.html">
-        <span class="nav-icon">?㎍</span>
-        <span class="nav-label">怨듬갑</span>
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="friends.html">
-        <span class="nav-icon">?뫁</span>
-        <span class="nav-label">移쒓뎄</span>
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
   </main>
 
-  <!-- 援щℓ ?섏궗 ?뺤씤??紐⑤떖 -->
+  <!-- 구매 의사 확인 모달 -->
   <div class="overlay" id="shop-overlay"></div>
   <div class="modal" id="purchase-modal">
     <div class="modal-handle"></div>
-    <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-3);" id="purchase-title">?꾩씠??援щℓ</h3>
+    <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-3);" id="purchase-title">아이템 구매</h3>
     <p class="text-center text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--space-5);" id="purchase-desc">
-      ???꾩씠?쒖쓣 援щℓ?섏떆寃좎뒿?덇퉴?
+      이 아이템을 구매하시겠습니까?
     </p>
     <div class="flex flex-col gap-3">
-      <button class="btn btn-primary" id="btn-purchase-confirm">援щℓ ?꾨즺</button>
-      <button class="btn btn-secondary" id="btn-close-purchase-modal">痍⑥냼</button>
+      <button class="btn btn-primary" id="btn-purchase-confirm">구매 완료</button>
+      <button class="btn btn-secondary" id="btn-close-purchase-modal">취소</button>
     </div>
   </div>
 
@@ -149,11 +149,13 @@
         const sheep = getSheep();
         woolCount.textContent = sheep.wool;
 
-        // 諛??뚮뜑留?        renderRoom(roomPreviewContainer);
+        // 방 렌더링
+        renderRoom(roomPreviewContainer);
 
-        // 移댄뀒怨좊━ ??洹몃━湲?        categoryTabs.innerHTML = buildCategoryTabsHTML(currentCategory);
+        // 카테고리 탭 그리기
+        categoryTabs.innerHTML = buildCategoryTabsHTML(currentCategory);
         
-        // 移댄뀒怨좊━ ?대깽???몃뱾???щ컮?몃뵫
+        // 카테고리 탭 클릭 이벤트 핸들러 바인딩
         document.querySelectorAll('#category-tabs .tab-item').forEach(btn => {
           btn.addEventListener('click', () => {
             currentCategory = btn.dataset.category;
@@ -161,14 +163,15 @@
           });
         });
 
-        // ?곸젏 ?꾩씠??洹몃━??洹몃━湲?        const items = getItems();
+        // 상점 아이템 그리드 그리기
+        const items = getItems();
         const catalogList = getItemsByCategory(currentCategory);
         
         if (catalogList.length === 0) {
           shopItemsGrid.innerHTML = `
             <div class="empty-state w-full" style="grid-column: span 3;">
-              <span class="empty-icon">?썚截?/span>
-              <p>?대떦 移댄뀒怨좊━???꾩씠?쒖씠 ?놁뼱??</p>
+              <span class="empty-icon">🛍️</span>
+              <p>해당 카테고리의 아이템이 없습니다.</p>
             </div>`;
           return;
         }
@@ -177,7 +180,8 @@
           buildShopItemHTML(item, items.owned, items.equipped)
         ).join('');
 
-        // ?꾩씠???대┃ ?대깽??諛붿씤??        document.querySelectorAll('#shop-items-grid .shop-item').forEach(card => {
+        // 아이템 클릭 이벤트 바인딩
+        document.querySelectorAll('#shop-items-grid .shop-item').forEach(card => {
           card.addEventListener('click', () => {
             const itemId = card.dataset.itemId;
             handleItemClick(itemId);
@@ -193,7 +197,7 @@
         const isOwned = items.owned.includes(itemId) || item.price === 0;
 
         if (isOwned) {
-          // ?대? ?뚯쑀以묒씤 ?꾩씠?쒖씠硫??μ갑 ?좉?
+          // 이미 소유중인 아이템이면 장착 토글
           const res = toggleEquip(itemId);
           if (res.success) {
             showToast(res.msg, 'success');
@@ -202,30 +206,30 @@
             showToast(res.msg, 'error');
           }
         } else {
-          // 誘몄냼?좊㈃ 援щℓ ?앹뾽
+          // 미소유면 구매 팝업
           const sheep = getSheep();
           if (sheep.wool < item.price) {
-            showToast(`?묓꽭??遺議깊빀?덈떎! ?㎍ ${item.price}媛쒓? ?꾩슂?⑸땲??`, 'error');
+            showToast(`양털이 부족합니다! 🧶 ${item.price}개가 필요해요.`, 'error');
             return;
           }
 
           pendingPurchaseItemId = itemId;
-          purchaseTitle.innerHTML = `?묓꽭 源롪린 ?꾩씠??援щℓ ?썟`;
-          purchaseDesc.innerHTML = `<span style="font-size:1.8rem; display:block; margin-bottom:8px;">${item.icon}</span><strong>${item.name}</strong>??瑜? <strong>?㎍ ${item.price}</strong> ?묓꽭濡?援щℓ?섏떆寃좎뒿?덇퉴?`;
+          purchaseTitle.innerHTML = `방 꾸미기 아이템 구매 🛒`;
+          purchaseDesc.innerHTML = `<span style="font-size:1.8rem; display:block; margin-bottom:8px;">${item.icon}</span><strong>${item.name}</strong>을(를) <strong>🧶 ${item.price}</strong> 양털로 구매하시겠습니까?`;
           
           shopOverlay.classList.add('active');
           purchaseModal.classList.add('active');
         }
       }
 
-      // 援щℓ ?뺤젙
+      // 구매 확정
       btnPurchaseConfirm.addEventListener('click', () => {
         if (!pendingPurchaseItemId) return;
 
         const res = purchaseItem(pendingPurchaseItemId);
         if (res.success) {
           showToast(res.msg, 'success');
-          // ?μ갑源뚯? ?먮룞 吏꾪뻾
+          // 장착까지 자동 진행
           toggleEquip(pendingPurchaseItemId);
           pendingPurchaseItemId = null;
           
@@ -237,7 +241,7 @@
         }
       });
 
-      // 痍⑥냼/?앹뾽 ?リ린
+      // 취소/팝업 닫기
       document.getElementById('btn-close-purchase-modal').addEventListener('click', () => {
         purchaseModal.classList.remove('active');
         shopOverlay.classList.remove('active');
@@ -255,4 +259,3 @@
   </script>
 </body>
 </html>
-

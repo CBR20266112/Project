@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>移쒓뎄 諛?諛⑸Ц | SleepySheep</title>
+  <title>친구 방문 | SleepySheep</title>
   
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -14,92 +14,92 @@
 </head>
 <body>
 
-  <!-- 諛ㅽ븯??諛곌꼍 -->
+  <!-- 밤하늘 배경 -->
   <div class="background">
     <canvas id="star-canvas"></canvas>
     <div class="moon"></div>
   </div>
 
   <main class="phone">
-    <!-- ?ㅻ뜑 -->
+    <!-- 헤더 -->
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="?ㅻ줈媛湲?>??/button>
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
         <div>
-          <h1>?뫁 移쒓뎄 紐⑸줉</h1>
-          <p class="subtitle">?섎㈃ 硫붿씠?몃뱾怨?諛⑹쓣 ?먮갑?댁슂</p>
+          <h1>👥 친구 목록</h1>
+          <p class="subtitle">수면 메이트들의 방을 방문해요</p>
         </div>
       </div>
       <div class="header-right">
         <div class="chip-box" id="wool-display">
-          <span class="icon">?㎍</span>
+          <span class="icon">🧶</span>
           <span id="wool-count">0</span>
         </div>
       </div>
     </header>
 
-    <!-- ?ㅽ겕濡??곸뿭 -->
+    <!-- 스크롤 영역 -->
     <div class="content">
 
-      <!-- 移쒓뎄 諛⑸Ц 諛??곸꽭 ?뺣낫 酉?(?④? 泥섎━?섏뿀?ㅺ? 移쒓뎄 ?대┃ ???ㅽ뵂) -->
+      <!-- 친구 방문 및 세부 정보 섹션 (처음엔 숨겨진 상태, 친구 클릭 시 오픈) -->
       <section id="friend-room-visit" class="hidden" style="margin-bottom: var(--space-4);">
         <div class="section-header">
-          <span class="section-title">?뙔 移쒓뎄??諛??먮갑 以?/span>
-          <span class="section-more" id="btn-close-visit">?뚯븘媛湲???/span>
+          <span class="section-title">🏡 친구의 방에 방문 중</span>
+          <span class="section-more" id="btn-close-visit">돌아가기 →</span>
         </div>
         
         <div id="friend-room-container">
-          <!-- friends.js?먯꽌 ?숈쟻?쇰줈 ?앹꽦?댁꽌 二쇱엯 -->
+          <!-- friends.js에서 동적으로 생성해서 주입 -->
         </div>
       </section>
 
-      <!-- 移쒓뎄 由ъ뒪??移대뱶 -->
+      <!-- 친구 리스트 카드 -->
       <section class="glass card" style="padding: var(--space-4);" id="friend-list-section">
         <div class="section-header" style="margin-bottom: var(--space-3);">
-          <span class="section-title">??移쒓뎄 紐⑸줉</span>
+          <span class="section-title">👥 친구 목록</span>
         </div>
         
         <div class="flex flex-col gap-3" id="friends-list-container">
-          <!-- js?먯꽌 ?숈쟻?쇰줈 濡쒕뱶 -->
+          <!-- js에서 동적으로 로드 -->
         </div>
       </section>
 
-      <!-- 移쒓뎄 異붽? (?붾? ?? -->
+      <!-- 친구 추가 (하단 섹션) -->
       <section class="glass card" style="padding: var(--space-4);">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">??移쒓뎄 異붽??섍린</h3>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">👤 친구 추가하기</h3>
         <div class="flex gap-2">
-          <input type="text" id="input-friend-code" class="glass" style="flex:1; border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-2) var(--space-3); color:#fff; font-size:var(--font-size-sm);" placeholder="移쒓뎄 ?섎㈃ 肄붾뱶瑜??낅젰?섏꽭??>
-          <button class="btn btn-primary" id="btn-add-friend" style="padding:var(--space-2) var(--space-4);">寃??/button>
+          <input type="text" id="input-friend-code" class="glass" style="flex:1; border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-2) var(--space-3); color:#fff; font-size:var(--font-size-sm);" placeholder="친구 이름 코드를 입력하세요">
+          <button class="btn btn-primary" id="btn-add-friend" style="padding:var(--space-2) var(--space-4);">검색</button>
         </div>
       </section>
 
     </div>
 
-    <!-- ?섎떒 ?ㅻ퉬寃뚯씠??-->
+    <!-- 하단 네비게이션 -->
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
-        <span class="nav-icon">?룧</span>
-        <span class="nav-label">??/span>
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
-        <span class="nav-icon">?뱤</span>
-        <span class="nav-label">?섎㈃</span>
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sheep.html">
-        <span class="nav-icon">?릲</span>
-        <span class="nav-label">????/span>
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="workshop.html">
-        <span class="nav-icon">?㎍</span>
-        <span class="nav-label">怨듬갑</span>
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item active" data-href="friends.html">
-        <span class="nav-icon">?뫁</span>
-        <span class="nav-label">移쒓뎄</span>
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -125,21 +125,21 @@
         const sheep = getSheep();
         woolCount.textContent = sheep.wool;
 
-        // 移쒓뎄 由ъ뒪??濡쒕뱶
+        // 친구 리스트 로드
         const friends = getFriends();
         
         if (friends.length === 0) {
           friendsListContainer.innerHTML = `
             <div class="empty-state">
-              <span class="empty-icon">?뫁</span>
-              <p>異붽???移쒓뎄媛 ?놁뒿?덈떎.</p>
+              <span class="empty-icon">👥</span>
+              <p>추가된 친구가 없습니다.</p>
             </div>`;
           return;
         }
 
         friendsListContainer.innerHTML = friends.map(f => buildFriendCardHTML(f)).join('');
 
-        // 移대뱶 ?대┃ 由ъ뒪???곌껐
+        // 카드 클릭 리스너 연결
         document.querySelectorAll('.friend-card').forEach(card => {
           card.addEventListener('click', () => {
             const friendId = card.dataset.friendId;
@@ -152,35 +152,36 @@
         const friend = getFriendById(friendId);
         if (!friend) return;
 
-        // 移쒓뎄 諛??뚮뜑留?        friendRoomContainer.innerHTML = buildFriendRoomHTML(friend);
+        // 친구 방 렌더링
+        friendRoomContainer.innerHTML = buildFriendRoomHTML(friend);
         
-        // ?좊땲硫붿씠???④낵? ?④퍡 ?쒖떆
+        // 애니메이션 효과와 함께 표시
         friendRoomVisit.classList.remove('hidden');
         friendRoomVisit.style.animation = 'slideDown 0.35s ease forwards';
         
-        // ?먮갑 ?꾩튂濡??ㅽ겕濡??대룞
+        // 방문 위치로 스크롤 이동
         document.querySelector('.content').scrollTo({
           top: 0,
           behavior: 'smooth'
         });
 
-        showToast(`${friend.name}?섏쓽 諛⑹뿉 ??ъ솕?듬땲?? ?룪`, 'success');
+        showToast(`${friend.name}의 방에 놀러왔습니다! 🏡`, 'success');
       }
 
-      // ?먮갑 醫낅즺
+      // 방문 종료
       btnCloseVisit.addEventListener('click', () => {
         friendRoomVisit.classList.add('hidden');
       });
 
-      // 移쒓뎄 異붽?
+      // 친구 추가
       btnAddFriend.addEventListener('click', () => {
         const code = inputFriendCode.value.trim();
         if (!code) {
-          showToast('肄붾뱶瑜??뺥솗???낅젰?섏꽭??', 'error');
+          showToast('코드를 정확히 입력하세요!', 'error');
           return;
         }
         
-        showToast('?꾨줈?좏???踰꾩쟾?먯꽌??移쒓뎄 肄붾뱶媛 ?곕え?⑹쑝濡?怨좎젙?⑸땲?? (異붽? 遺덇?)', 'error');
+        showToast('프로토타입 버전에서는 친구 코드가 더미로 고정됩니다. (추가 불가)', 'error');
         inputFriendCode.value = '';
       });
 
@@ -189,4 +190,3 @@
   </script>
 </body>
 </html>
-
