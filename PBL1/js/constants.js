@@ -190,6 +190,22 @@ export const SHOP_CATEGORIES = [
 // ─── 더미 친구 데이터 ───
 export const DUMMY_FRIENDS = [
   {
+    id: 'friend_ridajol',
+    name: '리다졸',
+    level: 8,
+    step: 6,
+    isSleeping: true,
+    streak: 15,
+    lastSeen: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    room: {
+      background: 'bg_night_default',
+      carpet: null,
+      ribbon: null,
+      light: null,
+      cushion: null,
+    },
+  },
+  {
     id: 'friend_001',
     name: '나졸려',
     level: 7,

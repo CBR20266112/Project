@@ -65,9 +65,27 @@ export function buildFriendCardHTML(friend) {
  * @returns {string}
  */
 export function buildFriendRoomHTML(friend) {
-  const roomBg = getRoomBgStyle(friend.room?.background);
   const title  = friend.isSleeping ? `🌙 ${friend.name} 님의 침실` : `🏡 ${friend.name} 님의 방`;
 
+  if (friend.id === 'friend_ridajol') {
+    return `
+<div class="friend-room-container glass" style="border-radius: var(--radius-xl); padding: 0; overflow: hidden; position: relative;">
+  <!-- 방 제목 -->
+  <div style="padding: 16px 20px 8px; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 10; position: relative;">
+    <div style="font-size: 1rem; font-weight: 800; color: #fff;">${title}</div>
+    <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 2px;">
+      Lv.${friend.level} · 🔥 ${friend.streak}일 연속
+    </div>
+  </div>
+
+  <!-- 업로드된 이미지 출력 -->
+  <div style="position: relative; width: 100%; display: flex; justify-content: center; align-items: center; background: #000;">
+    <img src="../assets/friends/ridajol_room.jpg" alt="리다졸 님의 침실" style="width: 100%; max-height: 480px; object-fit: contain; display: block;">
+  </div>
+</div>`;
+  }
+
+  const roomBg = getRoomBgStyle(friend.room?.background);
   const itemsHTML = buildRoomItems(friend.room);
 
   return `
