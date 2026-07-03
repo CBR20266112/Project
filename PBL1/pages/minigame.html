@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>양털깎기 미니게임 | SleepySheep</title>
+  
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/minigame.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+  <!-- 밤하늘 배경 -->
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone minigame-page">
+    
+    <!-- HUD -->
+    <header class="minigame-hud">
+      <div class="hud-timer" id="hud-timer-container">
+        <span>⏱️</span>
+        <span id="timer-val">30</span>
+      </div>
+      <h2 style="font-size: var(--font-size-md); font-weight: 800; color: #fff;">✂️ 양털깎기</h2>
+      <div class="hud-progress-text">
+        <span>제거율</span>
+        <span id="removal-percent-txt">0%</span>
+      </div>
+    </header>
+
+    <!-- 캔버스 영역 -->
+    <div class="canvas-wrapper">
+      <div class="canvas-frame" id="canvas-frame">
+        <!-- Canvas Stack -->
+        <canvas id="canvas-body"></canvas>
+        <canvas id="canvas-wool"></canvas>
+        <canvas id="canvas-cursor"></canvas>
+      </div>
+    </div>
+
+    <!-- 하단 진행 표시 및 완료 버튼 -->
+    <footer class="minigame-controls">
+      <div class="removal-bar-section">
+        <span class="removal-bar-label">전체 제거율</span>
+        <div class="removal-bar">
+          <div class="removal-fill" id="removal-fill" style="width: 0%"></div>
+        </div>
+      </div>
+      
+      <div class="text-center text-muted" style="font-size: var(--font-size-xs); margin-bottom: var(--space-2);">
+        바리깡을 밀듯이 문질러서 양털을 깎으세요! (95% 이상 깎으면 수확 가능)
+      </div>
+
+      <button class="btn btn-primary w-full" id="btn-submit-shear" disabled>
+        🧶 양털 수확하기
+      </button>
+    </footer>
+
+    <!-- 결과 오버레이 (성공 / 실패) -->
+    <div class="result-overlay hidden" id="result-overlay">
+      <div class="result-card glass-bright">
+        <div class="result-icon" id="result-icon">✨</div>
+        <h1 class="result-title" id="result-title">수확 성공!</h1>
+        <div class="result-reward" id="result-reward">
+          <span>🧶</span>
+          <span id="reward-val">+0</span>
+        </div>
+        <p class="result-desc" id="result-desc">
+          완벽하게 깎았어요! 수확한 양털은 공방에서 가구나 아이템을 구매하는 데 사용할 수 있습니다.
+        </p>
+        <button class="btn btn-primary" id="btn-back-home" style="padding: var(--space-3) var(--space-8); margin-top: var(--space-3);">
+          🏠 홈으로 가기
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { initCommon } from '../js/app.js';
+    import { initMinigame, startMinigame, finishMinigame, getRemovalPercent } from '../js/minigame.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+
+      const canvasBody = document.getElementById('canvas-body');
+      const canvasWool = document.getElementById('canvas-wool');
+      const canvasCursor = document.getElementById('canvas-cursor');
+      
+      const timerVal = document.getElementById('timer-val');
+      const removalPercentTxt = document.getElementById('removal-percent-txt');
+      const removalFill = document.getElementById('removal-fill');
+      const btnSubmitShear = document.getElementById('btn-submit-shear');
+      const resultOverlay = document.getElementById('result-overlay');
+      const hudTimerContainer = document.getElementById('hud-timer-container');
+
+      const resultIcon = document.getElementById('result-icon');
+      const resultTitle = document.getElementById('result-title');
+      const resultReward = document.getElementById('result-reward');
+      const resultDesc = document.getElementById('result-desc');
+      const rewardVal = document.getElementById('reward-val');
+
+      // 미니게임 상태 콜백 등록
+      initMinigame({
+        canvasBody,
+        canvasWool,
+        canvasCursor,
+        onUpdate: (percent, sec) => {
+          // 타이머 갱신
+          timerVal.textContent = sec;
+          if (sec <= 5) {
+            hudTimerContainer.classList.add('warning');
+          }
+
+          // 제거율 갱신
+          removalPercentTxt.textContent = `${percent}%`;
+          removalFill.style.width = `${percent}%`;
+
+          if (percent >= 95) {
+            removalFill.classList.add('success');
+            btnSubmitShear.removeAttribute('disabled');
+            btnSubmitShear.classList.add('btn-shear'); // 빛나는 glow 적용
+          } else {
+            removalFill.classList.remove('success');
+            btnSubmitShear.setAttribute('disabled', 'true');
+            btnSubmitShear.classList.remove('btn-shear');
+          }
+        },
+        onFinish: (percent, reward) => {
+          // 게임 완료 오버레이 표시
+          resultOverlay.classList.remove('hidden');
+          rewardVal.textContent = `+${reward}`;
+
+          if (percent >= 95) {
+            resultIcon.textContent = percent === 100 ? '🌟' : '✨';
+            resultTitle.textContent = percent === 100 ? '완벽한 솜씨! 100%' : '수확 성공! 🎉';
+            resultDesc.innerHTML = `제거율 <strong>${percent}%</strong><br>양이 매우 시원해합니다! 양털 깎기가 완료되어 XP가 리셋됩니다.`;
+          } else {
+            resultIcon.textContent = '😅';
+            resultTitle.textContent = '시간 초과!';
+            resultDesc.innerHTML = `제거율 <strong>${percent}%</strong><br>아쉽게도 95% 이상 깎지 못해 이번엔 양털을 수확하지 못했습니다.`;
+          }
+        }
+      });
+
+      // 미니게임 시작
+      startMinigame();
+
+      // 수확 완료 버튼
+      btnSubmitShear.addEventListener('click', () => {
+        finishMinigame();
+      });
+
+      // 홈으로 가기 버튼
+      document.getElementById('btn-back-home').addEventListener('click', () => {
+        location.href = '../index.html';
+      });
+    });
+  </script>
+</body>
+</html>

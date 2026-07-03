@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 양 | SleepySheep</title>
+  
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+  <!-- 밤하늘 배경 -->
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone">
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="header-left">
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">‹</button>
+        <div>
+          <h1>🐑 내 양 정보</h1>
+          <p class="subtitle">나의 수면 단짝 양 캐릭터</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="chip-box" id="wool-display">
+          <span class="icon">🧶</span>
+          <span id="wool-count">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 스크롤 영역 -->
+    <div class="content">
+
+      <!-- 양 정보 카드 -->
+      <section class="hero-card glass">
+        <!-- 레벨 정보 -->
+        <div style="margin-bottom: var(--space-2);">
+          <span class="level-badge" id="level-badge">Lv.1 새끼양</span>
+        </div>
+
+        <h2 id="sheep-name" class="font-black" style="font-size: var(--font-size-xl); margin-bottom: var(--space-4);">드리미</h2>
+
+        <!-- 양 캐릭터 그래픽 컨테이너 -->
+        <div class="sheep-container" id="sheep-container" style="margin-bottom: var(--space-3);">
+          <!-- SVG가 여기에 렌더링됨 -->
+        </div>
+
+        <!-- 말풍선 -->
+        <div class="speech-bubble" id="speech-bubble">
+          "메에~ 오늘도 와줘서 고마워."
+        </div>
+      </section>
+
+      <!-- 양의 상태 카드 (행복도, 배고픔, 양털 자란 정도) -->
+      <section class="glass card" style="padding: var(--space-5);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-4); color: var(--text-secondary);">📊 현재 상태</h3>
+        
+        <div class="status-grid">
+          <!-- 행복도 -->
+          <div class="status-item">
+            <span class="stat-icon">❤️</span>
+            <span class="stat-label">행복도</span>
+            <div class="progress-bar">
+              <div class="progress-fill fill-happiness" id="fill-happiness" style="width: 80%"></div>
+            </div>
+            <span class="stat-value" id="val-happiness">80%</span>
+          </div>
+
+          <!-- 배고픔 -->
+          <div class="status-item">
+            <span class="stat-icon">🍖</span>
+            <span class="stat-label">배고픔</span>
+            <div class="progress-bar">
+              <div class="progress-fill fill-hunger" id="fill-hunger" style="width: 80%"></div>
+            </div>
+            <span class="stat-value" id="val-hunger">80%</span>
+          </div>
+
+          <!-- 양털 성장 -->
+          <div class="status-item">
+            <span class="stat-icon">🧶</span>
+            <span class="stat-label">양털</span>
+            <div class="progress-bar">
+              <div class="progress-fill fill-wool" id="fill-wool" style="width: 0%"></div>
+            </div>
+            <span class="stat-value" id="val-wool">0/3</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 상호작용 액션 버튼 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">🖐️ 상호작용</h3>
+        <div class="action-row">
+          <button class="btn btn-action" id="btn-pet">
+            <span class="btn-icon">🖐️</span>
+            <span>쓰다듬기</span>
+          </button>
+          <button class="btn btn-action" id="btn-feed">
+            <span class="btn-icon">🥕</span>
+            <span>먹이주기</span>
+          </button>
+          <button class="btn btn-action btn-shear" id="btn-shear-game" disabled>
+            <span class="btn-icon">✂️</span>
+            <span>양털깎기</span>
+          </button>
+          <button class="btn btn-action" onclick="location.href='workshop.html'">
+            <span class="btn-icon">🛋️</span>
+            <span>방 꾸미기</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 양 이름 지어주기 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">📝 양 이름 지어주기</h3>
+        <div class="flex gap-2">
+          <input type="text" id="input-sheep-name" class="glass" style="flex:1; border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-2) var(--space-3); color:#fff; font-size:var(--font-size-sm);" placeholder="예) 복슬이">
+          <button class="btn btn-primary" id="btn-rename-sheep" style="padding:var(--space-2) var(--space-4);">변경</button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <div class="nav-item" data-href="../index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sleep.html">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item active" data-href="sheep.html">
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="workshop.html">
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="friends.html">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
+        <span class="nav-dot"></span>
+      </div>
+    </nav>
+  </main>
+
+  <script type="module">
+    import { initCommon, spawnHearts, showToast } from '../js/app.js';
+    import { readSheep, renderSheepTo, updateStatBar, petSheep, feedSheep, playSheepAnim } from '../js/sheep.js';
+    import { saveSheep } from '../js/storage.js';
+    import { SHEEP_POSE, DAILY_QUOTES } from '../js/constants.js';
+    import { initSound, resumeAudio, playSoundPet, playSoundFeed } from '../js/sound.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+      initSound();
+
+      const sheepContainer = document.getElementById('sheep-container');
+      const levelBadge = document.getElementById('level-badge');
+      const sheepName = document.getElementById('sheep-name');
+      const speechBubble = document.getElementById('speech-bubble');
+      const woolCount = document.getElementById('wool-count');
+
+      const fillHappiness = document.getElementById('fill-happiness');
+      const fillHunger = document.getElementById('fill-hunger');
+      const fillWool = document.getElementById('fill-wool');
+      
+      const valHappiness = document.getElementById('val-happiness');
+      const valHunger = document.getElementById('val-hunger');
+      const valWool = document.getElementById('val-wool');
+
+      const btnPet = document.getElementById('btn-pet');
+      const btnFeed = document.getElementById('btn-feed');
+      const btnShearGame = document.getElementById('btn-shear-game');
+      const inputSheepName = document.getElementById('input-sheep-name');
+      const btnRenameSheep = document.getElementById('btn-rename-sheep');
+
+      function refreshPage() {
+        const sheep = readSheep();
+
+        // 텍스트 & 배지
+        sheepName.textContent = sheep.name;
+        inputSheepName.value = sheep.name;
+        woolCount.textContent = sheep.wool;
+        
+        const stepName = ['새끼양', '솜털양', '통통양', '포실양', '뭉실양', '구름양', '복슬양', '솜구름', '털뭉치', '성체양'][Math.min(sheep.step - 1, 9)];
+        levelBadge.textContent = `Lv.${sheep.level} ${stepName}`;
+
+        // 상태 바
+        updateStatBar(fillHappiness, sheep.happiness);
+        updateStatBar(fillHunger, sheep.hunger);
+        updateStatBar(fillWool, (sheep.woolGrowth / 3) * 100);
+
+        valHappiness.textContent = `${sheep.happiness}%`;
+        valHunger.textContent = `${sheep.hunger}%`;
+        valWool.textContent = `${sheep.woolGrowth}/3`;
+
+        // 양털깎기 버튼 상태
+        if (sheep.woolGrowth >= 3 || sheep.canShear) {
+          btnShearGame.removeAttribute('disabled');
+        } else {
+          btnShearGame.setAttribute('disabled', 'true');
+        }
+
+        renderSheepTo(sheepContainer, sheep.step, SHEEP_POSE.IDLE);
+      }
+
+      // 쓰다듬기
+      btnPet.addEventListener('click', () => {
+        resumeAudio();
+        const res = petSheep();
+        if (res.success) {
+          playSoundPet();
+          showToast(res.msg, 'success');
+          spawnHearts(sheepContainer);
+          playSheepAnim(sheepContainer, 'sheep-pet-anim', 600);
+          speechBubble.textContent = `"기분 최고야! 메에~ 🥰"`;
+          refreshPage();
+        } else {
+          showToast(res.msg, 'error');
+        }
+      });
+
+      // 먹이주기
+      btnFeed.addEventListener('click', () => {
+        resumeAudio();
+        const res = feedSheep();
+        if (res.success) {
+          playSoundFeed();
+          showToast(res.msg, 'success');
+          playSheepAnim(sheepContainer, 'sheep-eat-anim', 800);
+          speechBubble.textContent = `"맛있는 밥 고마워, 양! 🥕"`;
+          refreshPage();
+        } else {
+          showToast(res.msg, 'error');
+        }
+      });
+
+      // 양털깎기
+      btnShearGame.addEventListener('click', () => {
+        location.href = 'minigame.html';
+      });
+
+      // 이름 변경
+      btnRenameSheep.addEventListener('click', () => {
+        const newName = inputSheepName.value.trim();
+        if (!newName) {
+          showToast('양의 이름을 지어주세요!', 'error');
+          return;
+        }
+        const sheep = readSheep();
+        sheep.name = newName;
+        saveSheep(sheep);
+        showToast(`양이 새로운 이름 "${newName}"에 만족해합니다! 메에~ ✨`, 'success');
+        refreshPage();
+      });
+
+      refreshPage();
+    });
+  </script>
+</body>
+</html>

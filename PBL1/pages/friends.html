@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>친구 방문 | SleepySheep</title>
+  
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+  <!-- 밤하늘 배경 -->
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone">
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="header-left">
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
+        <div>
+          <h1>👥 친구 목록</h1>
+          <p class="subtitle">수면 메이트들의 방을 방문해요</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="chip-box" id="wool-display">
+          <span class="icon">🧶</span>
+          <span id="wool-count">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 스크롤 영역 -->
+    <div class="content">
+
+      <!-- 친구 방문 및 세부 정보 섹션 (처음엔 숨겨진 상태, 친구 클릭 시 오픈) -->
+      <section id="friend-room-visit" class="hidden" style="margin-bottom: var(--space-4);">
+        <div class="section-header">
+          <span class="section-title">🏡 친구의 방에 방문 중</span>
+          <span class="section-more" id="btn-close-visit">돌아가기 →</span>
+        </div>
+        
+        <div id="friend-room-container">
+          <!-- friends.js에서 동적으로 생성해서 주입 -->
+        </div>
+      </section>
+
+      <!-- 친구 리스트 카드 -->
+      <section class="glass card" style="padding: var(--space-4);" id="friend-list-section">
+        <div class="section-header" style="margin-bottom: var(--space-3);">
+          <span class="section-title">👥 친구 목록</span>
+        </div>
+        
+        <div class="flex flex-col gap-3" id="friends-list-container">
+          <!-- js에서 동적으로 로드 -->
+        </div>
+      </section>
+
+      <!-- 친구 추가 (하단 섹션) -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">👤 친구 추가하기</h3>
+        <div class="flex gap-2">
+          <input type="text" id="input-friend-code" class="glass" style="flex:1; border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-2) var(--space-3); color:#fff; font-size:var(--font-size-sm);" placeholder="친구 이름 코드를 입력하세요">
+          <button class="btn btn-primary" id="btn-add-friend" style="padding:var(--space-2) var(--space-4);">검색</button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <div class="nav-item" data-href="../index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sleep.html">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sheep.html">
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="workshop.html">
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item active" data-href="friends.html">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
+        <span class="nav-dot"></span>
+      </div>
+    </nav>
+  </main>
+
+  <script type="module">
+    import { initCommon, showToast } from '../js/app.js';
+    import { getSheep } from '../js/storage.js';
+    import { getFriends, getFriendById, buildFriendCardHTML, buildFriendRoomHTML } from '../js/friends.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+
+      const woolCount = document.getElementById('wool-count');
+      const friendsListContainer = document.getElementById('friends-list-container');
+      const friendRoomVisit = document.getElementById('friend-room-visit');
+      const friendRoomContainer = document.getElementById('friend-room-container');
+      const btnCloseVisit = document.getElementById('btn-close-visit');
+      const inputFriendCode = document.getElementById('input-friend-code');
+      const btnAddFriend = document.getElementById('btn-add-friend');
+
+      function refreshUI() {
+        const sheep = getSheep();
+        woolCount.textContent = sheep.wool;
+
+        // 친구 리스트 로드
+        const friends = getFriends();
+        
+        if (friends.length === 0) {
+          friendsListContainer.innerHTML = `
+            <div class="empty-state">
+              <span class="empty-icon">👥</span>
+              <p>추가된 친구가 없습니다.</p>
+            </div>`;
+          return;
+        }
+
+        friendsListContainer.innerHTML = friends.map(f => buildFriendCardHTML(f)).join('');
+
+        // 카드 클릭 리스너 연결
+        document.querySelectorAll('.friend-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const friendId = card.dataset.friendId;
+            visitFriendRoom(friendId);
+          });
+        });
+      }
+
+      function visitFriendRoom(friendId) {
+        const friend = getFriendById(friendId);
+        if (!friend) return;
+
+        // 친구 방 렌더링
+        friendRoomContainer.innerHTML = buildFriendRoomHTML(friend);
+        
+        // 애니메이션 효과와 함께 표시
+        friendRoomVisit.classList.remove('hidden');
+        friendRoomVisit.style.animation = 'slideDown 0.35s ease forwards';
+        
+        // 방문 위치로 스크롤 이동
+        document.querySelector('.content').scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+
+        showToast(`${friend.name}의 방에 놀러왔습니다! 🏡`, 'success');
+      }
+
+      // 방문 종료
+      btnCloseVisit.addEventListener('click', () => {
+        friendRoomVisit.classList.add('hidden');
+      });
+
+      // 친구 추가
+      btnAddFriend.addEventListener('click', () => {
+        const code = inputFriendCode.value.trim();
+        if (!code) {
+          showToast('코드를 정확히 입력하세요!', 'error');
+          return;
+        }
+        
+        showToast('프로토타입 버전에서는 친구 코드가 더미로 고정됩니다. (추가 불가)', 'error');
+        inputFriendCode.value = '';
+      });
+
+      refreshUI();
+    });
+  </script>
+</body>
+</html>
