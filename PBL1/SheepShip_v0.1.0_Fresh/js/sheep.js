@@ -89,18 +89,23 @@ export function petSheep() {
     return { success: false, msg: `${remain}초 후에 다시 쓰다듬을 수 있어요!` };
   }
 
-  sheep.happiness   = Math.min(sheep.happiness + 10, 100);
-  sheep.lastPetAt   = now;
-  saveSheep(sheep);
+  // 경험치 추가
+  const xpRes = addXP(5);
+  const currentSheep = xpRes.sheep;
 
-  const msgs = ['메에~ 좋아!', '좋아! 더 해줘~', '행복해요 🥰', '메메메~ ♥'];
-  return { success: true, msg: msgs[Math.floor(Math.random() * msgs.length)], happiness: sheep.happiness };
+  currentSheep.happiness = Math.min(currentSheep.happiness + 10, 100);
+  currentSheep.lastPetAt = now;
+  saveSheep(currentSheep);
+
+  const msgs = ['메에~ 좋아! (+5 XP) 🥰', '좋아! 더 해줘~ (+5 XP) 💕', '행복해요 ♥ (+5 XP)', '메메메~ (+5 XP) 🎵'];
+  return { 
+    success: true, 
+    msg: msgs[Math.floor(Math.random() * msgs.length)], 
+    happiness: currentSheep.happiness,
+    leveledUp: xpRes.leveledUp
+  };
 }
 
-/**
- * 먹이 주기
- * @returns {{ hunger: number, msg: string }}
- */
 export function feedSheep() {
   const sheep = getSheep();
 
@@ -111,13 +116,23 @@ export function feedSheep() {
     return { success: false, msg: `${remain}초 후에 먹이를 줄 수 있어요!` };
   }
 
-  sheep.hunger    = Math.min(sheep.hunger + 15, 100);
-  sheep.lastFedAt = now;
-  saveSheep(sheep);
+  // 경험치 추가
+  const xpRes = addXP(8);
+  const currentSheep = xpRes.sheep;
 
-  const msgs = ['냠냠~ 맛있어!', '당근 최고야!', '배 불러! 고마워 🥕', '메에~ 맛있다!'];
-  return { success: true, msg: msgs[Math.floor(Math.random() * msgs.length)], hunger: sheep.hunger };
+  currentSheep.hunger    = Math.min(currentSheep.hunger + 15, 100);
+  currentSheep.lastFedAt = now;
+  saveSheep(currentSheep);
+
+  const msgs = ['냠냠~ 맛있어! (+8 XP) 🥕', '당근 최고야! (+8 XP) 😋', '배 불러! 고마워 (+8 XP) 💕', '메에~ 맛있다! (+8 XP) 🌟'];
+  return { 
+    success: true, 
+    msg: msgs[Math.floor(Math.random() * msgs.length)], 
+    hunger: currentSheep.hunger,
+    leveledUp: xpRes.leveledUp
+  };
 }
+
 
 /**
  * 시간에 따라 행복도/배고픔 자연 감소 (앱 열 때마다 호출)
