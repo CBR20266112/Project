@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>?섎㈃ 湲곕줉 | SleepySheep</title>
+  <title>수면 기록 | SleepySheep</title>
   
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -14,123 +14,123 @@
 </head>
 <body>
 
-  <!-- 諛ㅽ븯??諛곌꼍 -->
+  <!-- 밤하늘 배경 -->
   <div class="background">
     <canvas id="star-canvas"></canvas>
     <div class="moon"></div>
   </div>
 
   <main class="phone">
-    <!-- ?ㅻ뜑 -->
+    <!-- 헤더 -->
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="?ㅻ줈媛湲?>??/button>
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">‹</button>
         <div>
-          <h1>?샂 ?섎㈃ 湲곕줉</h1>
-          <p class="subtitle">泥닿퀎?곸쑝濡?湲곕줉?섎뒗 ?섎㈃ ?듦?</p>
+          <h1>나의 수면 기록</h1>
+          <p class="subtitle">체계적으로 기록하는 수면 통계</p>
         </div>
       </div>
       <div class="header-right">
         <div class="chip-box" id="wool-display">
-          <span class="icon">?㎍</span>
+          <span class="icon">🧶</span>
           <span id="wool-count">0</span>
         </div>
       </div>
     </header>
 
-    <!-- ?ㅽ겕濡??곸뿭 -->
+    <!-- 스크롤 영역 -->
     <div class="content">
 
-      <!-- ?ㅻ뒛 ?섎㈃ 湲곕줉 ?붿빟 移대뱶 -->
+      <!-- 오늘 수면 기록 요약 카드 -->
       <section class="hero-card glass" id="today-record-card">
-        <h2>?ㅻ뒛???섎㈃</h2>
-        <h1 style="font-size: var(--font-size-3xl); margin: var(--space-2) 0;" id="today-sleep-duration">湲곕줉 ?놁쓬</h1>
-        <p id="today-sleep-comment">?섎㈃???쒖옉?섍굅???꾨옒?먯꽌 ?섎룞?쇰줈 ?낅젰?대낫?몄슂! ?뮘</p>
+        <h2>오늘의 수면</h2>
+        <h1 style="font-size: var(--font-size-3xl); margin: var(--space-2) 0;" id="today-sleep-duration">기록 없음</h1>
+        <p id="today-sleep-comment">수면을 시작하거나 아래에서 수동으로 입력해보세요! 💤</p>
       </section>
 
-      <!-- ?ㅻ뒛 ?섎㈃ ?쒓컙 ?곸꽭 ?뺣낫 -->
+      <!-- 오늘 수면 시간 상세 정보 -->
       <section class="glass card" id="today-detail-card" style="padding: var(--space-4);">
         <div class="status-grid">
           <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--glass-border); padding-bottom: var(--space-2);">
-            <span class="text-muted font-bold text-small">?뙔 痍⑥묠 ?쒓컙</span>
+            <span class="text-muted font-bold text-small">💤 취침 시간</span>
             <span class="font-bold" id="today-bedtime">-</span>
           </div>
           <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--glass-border); padding-bottom: var(--space-2); padding-top: var(--space-2);">
-            <span class="text-muted font-bold text-small">?截?湲곗긽 ?쒓컙</span>
+            <span class="text-muted font-bold text-small">☀️ 기상 시간</span>
             <span class="font-bold" id="today-waketime">-</span>
           </div>
           <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--glass-border); padding-bottom: var(--space-2); padding-top: var(--space-2);">
-            <span class="text-muted font-bold text-small">?삃 ?쇱뼱?ъ쓣 ??湲곕텇</span>
+            <span class="text-muted font-bold text-small">🥰 기상 시 기분</span>
             <span class="font-bold" id="today-mood">-</span>
           </div>
           <div class="flex justify-between items-center" style="padding-top: var(--space-2);">
-            <span class="text-muted font-bold text-small">?뱷 ?ㅻ뒛??硫붾え</span>
+            <span class="text-muted font-bold text-small">📝 오늘의 메모</span>
             <span class="text-right" id="today-note" style="max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">-</span>
           </div>
         </div>
       </section>
 
-      <!-- ?섎룞 ?섎㈃ 湲곕줉 異붽? 移대뱶 -->
+      <!-- 수동 수면 기록 추가 카드 -->
       <section class="glass card">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">?륅툘 吏곸젒 ?섎㈃ 湲곕줉?섍린</h3>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">✍️ 직접 수면 기록하기</h3>
         
         <div class="time-input-group" style="margin-bottom: var(--space-3);">
           <div class="time-input-card">
-            <span class="time-input-label">?뙔 痍⑥묠 ?쒓컙</span>
+            <span class="time-input-label">💤 취침 시간</span>
             <input type="time" id="input-bedtime" class="time-input" value="23:00">
           </div>
           <div class="time-input-card">
-            <span class="time-input-label">?截?湲곗긽 ?쒓컙</span>
+            <span class="time-input-label">☀️ 기상 시간</span>
             <input type="time" id="input-waketime" class="time-input" value="07:00">
           </div>
         </div>
 
         <div style="margin-bottom: var(--space-4);">
-          <span class="time-input-label" style="display:block; margin-bottom: 8px;">?삃 ?ㅻ뒛 湲곕텇??</span>
+          <span class="time-input-label" style="display:block; margin-bottom: 8px;">🥰 오늘 기분은?</span>
           <div class="mood-row">
-            <button class="mood-btn" data-mood="1">?삟</button>
-            <button class="mood-btn" data-mood="2">?Ⅱ</button>
-            <button class="mood-btn selected" data-mood="3">?삉</button>
-            <button class="mood-btn" data-mood="4">?삃</button>
-            <button class="mood-btn" data-mood="5">?Ⅰ</button>
+            <button class="mood-btn" data-mood="1">😢</button>
+            <button class="mood-btn" data-mood="2">🥱</button>
+            <button class="mood-btn selected" data-mood="3">😐</button>
+            <button class="mood-btn" data-mood="4">😊</button>
+            <button class="mood-btn" data-mood="5">🥰</button>
           </div>
         </div>
 
         <div style="margin-bottom: var(--space-4);">
-          <span class="time-input-label" style="display:block; margin-bottom: 8px;">?뱷 硫붾え</span>
-          <input type="text" id="input-note" class="glass" style="width:100%; border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-3); color:#fff; font-size:var(--font-size-sm);" placeholder="?ㅻ뒛 ?좎옄由ъ뿉 ???媛꾨떒???곸뼱蹂댁꽭??>
+          <span class="time-input-label" style="display:block; margin-bottom: 8px;">📝 메모</span>
+          <input type="text" id="input-note" class="glass" style="width:100%; border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-3); color:#fff; font-size:var(--font-size-sm);" placeholder="오늘 잠자리에 대해 간단히 적어보세요.">
         </div>
 
-        <button class="btn btn-primary w-full" id="btn-save-manual-sleep">?섎㈃ 湲곕줉 ???/button>
+        <button class="btn btn-primary w-full" id="btn-save-manual-sleep">수면 기록 저장</button>
       </section>
 
-      <!-- ?섎㈃ 洹몃옒??諛??듦퀎 -->
+      <!-- 수면 그래프 및 통계 -->
       <section class="glass card">
         <div class="section-header">
-          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">?뱤 ?섎㈃ 遺꾩꽍 洹몃옒??/h3>
+          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">📊 수면 분석 그래프</h3>
         </div>
         
-        <!-- ??諛?-->
+        <!-- 탭 바 -->
         <div class="tab-bar" style="margin-bottom: var(--space-4);">
-          <div class="tab-item active" id="tab-weekly">二쇨컙</div>
-          <div class="tab-item" id="tab-monthly">?붽컙</div>
+          <div class="tab-item active" id="tab-weekly">주간</div>
+          <div class="tab-item" id="tab-monthly">월간</div>
         </div>
 
-        <!-- 二쇨컙 / ?붽컙 ?듦퀎 ?붿빟 ?띿뒪??-->
+        <!-- 주간 / 월간 통계 요약 텍스트 -->
         <div class="stat-row" style="margin-bottom: var(--space-4);">
           <div class="stat-chip">
-            <span class="chip-icon">?븩</span>
-            <span class="chip-value" id="stat-weekly-avg">0?쒓컙 0遺?/span>
-            <span class="chip-label">?됯퇏 ?섎㈃ ?쒓컙</span>
+            <span class="chip-icon">🕒</span>
+            <span class="chip-value" id="stat-weekly-avg">0시간 0분</span>
+            <span class="chip-label">평균 수면 시간</span>
           </div>
           <div class="stat-chip">
-            <span class="chip-icon">?렞</span>
-            <span class="chip-value" id="stat-goal-attain">0 / 7??/span>
-            <span class="chip-label">紐⑺몴 ?ъ꽦 ?잛닔</span>
+            <span class="chip-icon">🎯</span>
+            <span class="chip-value" id="stat-goal-attain">0 / 7회</span>
+            <span class="chip-label">목표 달성 횟수</span>
           </div>
         </div>
 
-        <!-- 洹몃옒??罹붾쾭??-->
+        <!-- 그래프 캔버스 -->
         <div class="chart-area">
           <canvas id="sleep-chart"></canvas>
         </div>
@@ -138,31 +138,31 @@
 
     </div>
 
-    <!-- ?섎떒 ?ㅻ퉬寃뚯씠??-->
+    <!-- 하단 네비게이션 -->
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
-        <span class="nav-icon">?룧</span>
-        <span class="nav-label">??/span>
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item active" data-href="sleep.html">
-        <span class="nav-icon">?뱤</span>
-        <span class="nav-label">?섎㈃</span>
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sheep.html">
-        <span class="nav-icon">?릲</span>
-        <span class="nav-label">????/span>
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="workshop.html">
-        <span class="nav-icon">?㎍</span>
-        <span class="nav-label">怨듬갑</span>
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="friends.html">
-        <span class="nav-icon">?뫁</span>
-        <span class="nav-label">移쒓뎄</span>
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -210,29 +210,30 @@
         const sheep = getSheep();
         woolCount.textContent = sheep.wool;
 
-        // ?ㅻ뒛 ?섎㈃ ?뺣낫 ?뚮뜑留?        const today = getTodaySleep();
+        // 오늘 수면 정보 렌더링
+        const today = getTodaySleep();
         if (today) {
           todaySleepDuration.textContent = formatDuration(today.duration);
           todaySleepComment.textContent = today.duration >= 480 
-            ? '?ㅻ뒛 紐⑺몴 ?섎㈃?쒓컙???ъ꽦?덉뼱?? ?뙚 ?묓꽭??臾대윮臾대윮 ?먮엫嫄곗삁??' 
-            : '議곌툑 紐⑥옄? ?섎㈃?댁뿀?ㅼ슂. ?ㅻ뒛 諛ㅼ? ??源딆? ?좎쓣 二쇰Т?몄슂! ?뙔';
+            ? '오늘 목표 수면시간을 달성했어요! 양털이 무럭무럭 자랄거예요! 🐑' 
+            : '조금 모자란 수면이었어요. 오늘 밤은 더 깊은 잠을 주무세요! 💤';
 
           todayBedtime.textContent = today.bedtime;
           todayWaketime.textContent = today.wakeTime;
           
-          const moodEmojis = ['?삟 議곌툑 ?섎벀', '?Ⅱ 議몃┝', '?삉 蹂댄넻', '?삃 醫뗭쓬', '?Ⅰ ?꾩＜ ?곸풄??];
-          todayMood.textContent = moodEmojis[today.mood - 1] || '?삉 蹂댄넻';
-          todayNote.textContent = today.note || '硫붾え ?놁쓬';
+          const moodEmojis = ['😢 조금 힘듦', '🥱 졸림', '😐 보통', '😊 좋음', '🥰 아주 상쾌함'];
+          todayMood.textContent = moodEmojis[today.mood - 1] || '😐 보통';
+          todayNote.textContent = today.note || '메모 없음';
         } else {
-          todaySleepDuration.textContent = '湲곕줉 ?놁쓬';
-          todaySleepComment.textContent = '?꾩쭅 ?섎㈃ 湲곕줉???깅줉?섏? ?딆븯?댁슂.';
+          todaySleepDuration.textContent = '기록 없음';
+          todaySleepComment.textContent = '아직 수면 기록이 등록되지 않았어요.';
           todayBedtime.textContent = '-';
           todayWaketime.textContent = '-';
           todayMood.textContent = '-';
           todayNote.textContent = '-';
         }
 
-        // ?듦퀎 & 洹몃옒??媛깆떊
+        // 통계 & 그래프 갱신
         refreshStatsAndChart();
       }
 
@@ -243,16 +244,16 @@
         if (currentTab === 'weekly') {
           const weeklyRecords = getRecentRecords(7);
           const successCount = weeklyRecords.filter(r => r.duration >= 480).length;
-          statGoalAttain.textContent = `${successCount} / 7??;
+          statGoalAttain.textContent = `${successCount} / 7회`;
           drawSleepChart(sleepChartCanvas, 'weekly');
         } else {
           const successData = getMonthlySuccess();
-          statGoalAttain.textContent = `${successData.success} / ${successData.total}??;
+          statGoalAttain.textContent = `${successData.success} / ${successData.total}회`;
           drawSleepChart(sleepChartCanvas, 'monthly');
         }
       }
 
-      // 湲곕텇 ?⑥텛 ?대┃
+      // 기분 단추 클릭
       document.querySelectorAll('.mood-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
@@ -261,13 +262,14 @@
         });
       });
 
-      // ?섎룞 湲곕줉 ???      btnSaveManualSleep.addEventListener('click', () => {
+      // 수동 기록 저장
+      btnSaveManualSleep.addEventListener('click', () => {
         const bedtime = inputBedtime.value;
         const waketime = inputWaketime.value;
         const note = inputNote.value.trim();
 
         if (!bedtime || !waketime) {
-          showToast('痍⑥묠 ?쒓컙怨?湲곗긽 ?쒓컙??諛붾Ⅴ寃??ㅼ젙??二쇱꽭??', 'error');
+          showToast('취침 시간과 기상 시간을 바르게 설정해 주세요.', 'error');
           return;
         }
 
@@ -278,12 +280,12 @@
           note
         });
 
-        showToast(`?ㅻ뒛 ?섎㈃ 湲곕줉 ????꾨즺! +${res.xpGained} XP ?띾뱷! ?㎍`, 'success');
+        showToast(`오늘 수면 기록 저장 완료! +${res.xpGained} XP 획득! 🧶`, 'success');
         inputNote.value = '';
         refreshPage();
       });
 
-      // ???좉?
+      // 탭 토글
       tabWeekly.addEventListener('click', () => {
         if (currentTab === 'weekly') return;
         currentTab = 'weekly';
