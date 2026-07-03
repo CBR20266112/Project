@@ -1,0 +1,492 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASMR | SleepySheep</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <style>
+    /* ASMR 페이지 전용 */
+    .asmr-header-desc {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* 현재 재생 표시 바 */
+    .now-playing-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: linear-gradient(135deg, rgba(79,70,229,0.2), rgba(167,139,250,0.1));
+      border: 1px solid rgba(167,139,250,0.4);
+      border-radius: var(--radius-md);
+      backdrop-filter: var(--glass-blur-sm);
+      min-height: 56px;
+      transition: all 0.3s ease;
+    }
+
+    .now-playing-bar.idle {
+      opacity: 0.5;
+    }
+
+    .playing-icon {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .playing-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .playing-name {
+      font-size: var(--font-size-sm);
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .playing-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 14px;
+      margin-top: 4px;
+    }
+
+    .playing-bar-wave {
+      width: 3px;
+      background: var(--color-purple);
+      border-radius: 2px;
+      animation: soundWave 0.8s ease-in-out infinite alternate;
+    }
+
+    .playing-bar-wave:nth-child(1) { animation-delay: 0s; }
+    .playing-bar-wave:nth-child(2) { animation-delay: 0.1s; }
+    .playing-bar-wave:nth-child(3) { animation-delay: 0.2s; }
+    .playing-bar-wave:nth-child(4) { animation-delay: 0.15s; }
+    .playing-bar-wave:nth-child(5) { animation-delay: 0.05s; }
+
+    @keyframes soundWave {
+      from { height: 3px; opacity: 0.4; }
+      to   { height: 14px; opacity: 1; }
+    }
+
+    .playing-bar-wave.paused {
+      animation: none;
+      height: 4px;
+      opacity: 0.3;
+    }
+
+    .btn-stop-asmr {
+      background: rgba(252, 165, 165, 0.15);
+      border: 1px solid rgba(252, 165, 165, 0.3);
+      color: #fca5a5;
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-stop-asmr:hover {
+      background: rgba(252, 165, 165, 0.25);
+    }
+
+    /* 볼륨 슬라이더 */
+    .volume-section {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .volume-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+    }
+
+    .volume-label {
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      color: var(--text-muted);
+      width: 32px;
+      flex-shrink: 0;
+    }
+
+    input[type="range"].asmr-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: var(--radius-full);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"].asmr-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--color-purple);
+      box-shadow: 0 0 8px rgba(167,139,250,0.5);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"].asmr-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .volume-val {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      width: 32px;
+      text-align: right;
+    }
+
+    /* ASMR 카드 그리드 */
+    .asmr-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    .asmr-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-3);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .asmr-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(167,139,250,0.4);
+      box-shadow: var(--shadow-glow-purple);
+    }
+
+    .asmr-card.playing {
+      border-color: var(--color-purple);
+      background: rgba(167,139,250,0.12);
+      box-shadow: var(--shadow-glow-purple);
+    }
+
+    .asmr-card.playing::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(167,139,250,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.5; }
+      50%       { opacity: 1; }
+    }
+
+    .asmr-emoji {
+      font-size: 2rem;
+      line-height: 1;
+      transition: transform 0.3s ease;
+    }
+
+    .asmr-card:hover .asmr-emoji,
+    .asmr-card.playing .asmr-emoji {
+      transform: scale(1.15);
+    }
+
+    .asmr-name {
+      font-size: var(--font-size-xs);
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .asmr-desc {
+      font-size: var(--font-size-2xs);
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .asmr-badge {
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      font-size: 0.55rem;
+      font-weight: 800;
+      background: var(--color-purple);
+      color: white;
+      padding: 2px 5px;
+      border-radius: var(--radius-full);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .asmr-card.playing .asmr-badge {
+      opacity: 1;
+    }
+
+    /* SFX 토글 섹션 */
+    .sfx-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+    }
+
+    .sfx-row-info { display: flex; flex-direction: column; gap: 1px; }
+    .sfx-row-title { font-size: var(--font-size-sm); font-weight: 700; color: var(--text-primary); }
+    .sfx-row-desc  { font-size: var(--font-size-xs); color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone">
+    <header class="header">
+      <div class="header-left">
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">‹</button>
+        <div>
+          <h1>🎵 ASMR</h1>
+          <p class="subtitle">힐링 사운드 플레이어</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="chip-box" id="wool-display">
+          <span class="icon">🧶</span>
+          <span id="wool-count">0</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- 현재 재생 표시 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <div class="now-playing-bar idle" id="now-playing-bar">
+          <div class="playing-icon" id="playing-icon">🔇</div>
+          <div class="playing-info">
+            <div class="playing-name" id="playing-name">재생 중인 사운드 없음</div>
+            <div class="playing-bars" id="playing-bars">
+              <div class="playing-bar-wave paused"></div>
+              <div class="playing-bar-wave paused"></div>
+              <div class="playing-bar-wave paused"></div>
+              <div class="playing-bar-wave paused"></div>
+              <div class="playing-bar-wave paused"></div>
+            </div>
+          </div>
+          <button class="btn-stop-asmr" id="btn-stop-asmr" style="display:none;">⏹ 정지</button>
+        </div>
+      </section>
+
+      <!-- 볼륨 조절 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">🔊 볼륨 조절</h3>
+        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <div class="volume-section">
+            <span class="volume-icon">🎵</span>
+            <span class="volume-label">ASMR</span>
+            <input type="range" class="asmr-slider" id="slider-asmr-vol" min="0" max="1" step="0.05" value="0.6">
+            <span class="volume-val" id="asmr-vol-val">60%</span>
+          </div>
+          <div class="volume-section">
+            <span class="volume-icon">✨</span>
+            <span class="volume-label">효과음</span>
+            <input type="range" class="asmr-slider" id="slider-sfx-vol" min="0" max="1" step="0.05" value="0.9">
+            <span class="volume-val" id="sfx-vol-val">90%</span>
+          </div>
+        </div>
+
+        <div class="divider" style="margin: var(--space-3) 0;"></div>
+
+        <div class="flex flex-col">
+          <div class="sfx-row">
+            <div class="sfx-row-info">
+              <span class="sfx-row-title">🖐️ 상호작용 효과음</span>
+              <span class="sfx-row-desc">쓰다듬기·먹이주기·버튼 소리</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="switch-sfx" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ASMR 카드 목록 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">🌙 자연의 소리 (하나 선택)</h3>
+        <div class="asmr-grid" id="asmr-grid">
+          <!-- JS로 렌더링 -->
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item" data-href="../index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sleep.html">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sheep.html">
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="workshop.html">
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="friends.html">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
+        <span class="nav-dot"></span>
+      </div>
+    </nav>
+  </main>
+
+  <script type="module">
+    import { initCommon } from '../js/app.js';
+    import { getSheep } from '../js/storage.js';
+    import {
+      initSound, resumeAudio,
+      getAsmrList, playAsmr, stopAsmr, getCurrentAsmrId,
+      getSfxVolume, getAsmrVolume, setSfxVolume, setAsmrVolume,
+      isSfxEnabled, setSfxEnabled
+    } from '../js/sound.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+      initSound();
+
+      // 양털 카운트
+      document.getElementById('wool-count').textContent = getSheep().wool;
+
+      const asmrGrid      = document.getElementById('asmr-grid');
+      const nowPlayingBar = document.getElementById('now-playing-bar');
+      const playingIcon   = document.getElementById('playing-icon');
+      const playingName   = document.getElementById('playing-name');
+      const playingBars   = document.querySelectorAll('.playing-bar-wave');
+      const btnStop       = document.getElementById('btn-stop-asmr');
+      const sliderAsmr    = document.getElementById('slider-asmr-vol');
+      const sliderSfx     = document.getElementById('slider-sfx-vol');
+      const asmrVolVal    = document.getElementById('asmr-vol-val');
+      const sfxVolVal     = document.getElementById('sfx-vol-val');
+      const switchSfx     = document.getElementById('switch-sfx');
+
+      // 초기 볼륨 동기화
+      sliderAsmr.value = getAsmrVolume();
+      sliderSfx.value  = getSfxVolume();
+      asmrVolVal.textContent = Math.round(getAsmrVolume() * 100) + '%';
+      sfxVolVal.textContent  = Math.round(getSfxVolume()  * 100) + '%';
+      switchSfx.checked = isSfxEnabled();
+
+      // ASMR 카드 렌더링
+      const list = getAsmrList();
+      list.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'asmr-card';
+        card.dataset.id = item.id;
+        card.innerHTML = `
+          <div class="asmr-emoji">${item.emoji}</div>
+          <div class="asmr-name">${item.name}</div>
+          <div class="asmr-desc">${item.desc}</div>
+          <div class="asmr-badge">▶ 재생 중</div>
+        `;
+        card.addEventListener('click', () => {
+          resumeAudio();
+          const currentId = getCurrentAsmrId();
+          if (currentId === item.id) {
+            stopAsmr();
+            updateNowPlaying(null);
+          } else {
+            playAsmr(item.id);
+            updateNowPlaying(item);
+          }
+          updateCards();
+        });
+        asmrGrid.appendChild(card);
+      });
+
+      function updateCards() {
+        const cur = getCurrentAsmrId();
+        document.querySelectorAll('.asmr-card').forEach(c => {
+          c.classList.toggle('playing', c.dataset.id === cur);
+        });
+      }
+
+      function updateNowPlaying(item) {
+        if (item) {
+          nowPlayingBar.classList.remove('idle');
+          playingIcon.textContent = item.emoji;
+          playingName.textContent = item.name;
+          playingBars.forEach(b => b.classList.remove('paused'));
+          btnStop.style.display = '';
+        } else {
+          nowPlayingBar.classList.add('idle');
+          playingIcon.textContent = '🔇';
+          playingName.textContent = '재생 중인 사운드 없음';
+          playingBars.forEach(b => b.classList.add('paused'));
+          btnStop.style.display = 'none';
+        }
+      }
+
+      btnStop.addEventListener('click', () => {
+        resumeAudio();
+        stopAsmr();
+        updateNowPlaying(null);
+        updateCards();
+      });
+
+      sliderAsmr.addEventListener('input', () => {
+        resumeAudio();
+        const v = parseFloat(sliderAsmr.value);
+        setAsmrVolume(v);
+        asmrVolVal.textContent = Math.round(v * 100) + '%';
+      });
+
+      sliderSfx.addEventListener('input', () => {
+        resumeAudio();
+        const v = parseFloat(sliderSfx.value);
+        setSfxVolume(v);
+        sfxVolVal.textContent = Math.round(v * 100) + '%';
+      });
+
+      switchSfx.addEventListener('change', () => {
+        setSfxEnabled(switchSfx.checked);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+/* =============================================
+   responsive.css — 반응형 미디어 쿼리
+   ============================================= */
+
+/* ─── 모바일 초소형 (320px 이하) ─── */
+@media (max-width: 320px) {
+  :root {
+    --font-size-base: 0.9rem;
+    --content-padding: var(--space-3);
+    --nav-height: 64px;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .menu-item {
+    padding: var(--space-3) var(--space-1);
+  }
+
+  .menu-item .menu-icon {
+    font-size: 1.5rem;
+  }
+
+  .menu-item .menu-label {
+    font-size: 0.6rem;
+  }
+
+  .sheep-container .sheep-svg {
+    width: 140px;
+    height: 140px;
+  }
+
+  .action-row {
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    min-width: 60px;
+    padding: var(--space-2) var(--space-1);
+  }
+}
+
+/* ─── 모바일 표준 (390~430px) ─── */
+@media (min-width: 321px) and (max-width: 430px) {
+  .sheep-container .sheep-svg {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+/* ─── 태블릿 이상 (768px+) — 데스크탑 미리보기 ─── */
+@media (min-width: 768px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8) 0;
+  }
+
+  .background {
+    position: fixed;
+  }
+
+  .phone {
+    border-radius: var(--radius-2xl);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 24px 80px rgba(0, 0, 0, 0.6),
+      0 0 120px rgba(167, 139, 250, 0.15);
+    overflow: hidden;
+    height: 844px;
+    min-height: unset;
+  }
+
+  .bottom-nav {
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+  }
+
+  .header {
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  }
+
+  /* 배경 장식 추가 */
+  .background::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 50%, rgba(167, 139, 250, 0.06) 0%, transparent 40%);
+    pointer-events: none;
+  }
+}
+
+/* ─── 가로 모드 (landscape) ─── */
+@media (max-height: 600px) and (orientation: landscape) {
+  :root {
+    --header-height: 52px;
+    --nav-height: 56px;
+  }
+
+  .sheep-container .sheep-svg {
+    width: 100px;
+    height: 100px;
+  }
+
+  .hero-card {
+    padding: var(--space-3) var(--space-5);
+  }
+
+  .speech-bubble {
+    display: none;
+  }
+}
+
+/* ─── 접근성: 모션 줄이기 ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .sheep-idle {
+    animation: none;
+  }
+
+  .z-particle {
+    display: none;
+  }
+}
+
+/* ─── 고해상도 디스플레이 ─── */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .moon {
+    box-shadow:
+      0 0 24px rgba(255, 230, 128, 0.7),
+      0 0 72px rgba(255, 230, 128, 0.35);
+  }
+}
+
+/* ─── 다크 모드 (시스템) ─── */
+@media (prefers-color-scheme: dark) {
+  /* 이미 다크 테마 기본이므로 추가 조정 없음 */
+}

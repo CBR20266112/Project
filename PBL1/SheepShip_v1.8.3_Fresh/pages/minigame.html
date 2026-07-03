@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>?묓꽭源롪린 誘몃땲寃뚯엫 | SleepySheep</title>
+  
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/minigame.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+  <!-- 諛ㅽ븯??諛곌꼍 -->
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone minigame-page">
+    
+    <!-- HUD -->
+    <header class="minigame-hud">
+      <div class="hud-timer" id="hud-timer-container">
+        <span>?깍툘</span>
+        <span id="timer-val">30</span>
+      </div>
+      <h2 style="font-size: var(--font-size-md); font-weight: 800; color: #fff;">?귨툘 ?묓꽭源롪린</h2>
+      <div class="hud-progress-text">
+        <span>?쒓굅??/span>
+        <span id="removal-percent-txt">0%</span>
+      </div>
+    </header>
+
+    <!-- 罹붾쾭???곸뿭 -->
+    <div class="canvas-wrapper">
+      <div class="canvas-frame" id="canvas-frame">
+        <!-- Canvas Stack -->
+        <canvas id="canvas-body"></canvas>
+        <canvas id="canvas-wool"></canvas>
+        <canvas id="canvas-cursor"></canvas>
+      </div>
+    </div>
+
+    <!-- ?섎떒 吏꾪뻾 ?쒖떆 諛??꾨즺 踰꾪듉 -->
+    <footer class="minigame-controls">
+      <div class="removal-bar-section">
+        <span class="removal-bar-label">?꾩껜 ?쒓굅??/span>
+        <div class="removal-bar">
+          <div class="removal-fill" id="removal-fill" style="width: 0%"></div>
+        </div>
+      </div>
+      
+      <div class="text-center text-muted" style="font-size: var(--font-size-xs); margin-bottom: var(--space-2);">
+        諛붾━源≪쓣 諛??씠 ?붾㈃??臾몄쭏???묓꽭??源롮쑝?몄슂! (95% ?댁긽 源롮쑝硫??섑솗 媛??
+      </div>
+
+      <button class="btn btn-primary w-full" id="btn-submit-shear" disabled>
+        ?㎍ ?묓꽭 ?섑솗?섍린
+      </button>
+    </footer>
+
+    <!-- 寃곌낵 ?ㅻ쾭?덉씠 (?깃났 / ?ㅽ뙣) -->
+    <div class="result-overlay hidden" id="result-overlay">
+      <div class="result-card glass-bright">
+        <div class="result-icon" id="result-icon">??/div>
+        <h1 class="result-title" id="result-title">?섑솗 ?깃났!</h1>
+        <div class="result-reward" id="result-reward">
+          <span>?㎍</span>
+          <span id="reward-val">+0</span>
+        </div>
+        <p class="result-desc" id="result-desc">
+          ?꾨꼍?섍쾶 源롮븯?댁슂! ?섑솗???묓꽭? 怨듬갑?먯꽌 媛援ъ? ?섏긽??援щℓ?섎뒗 ???ъ슜?????덉뒿?덈떎.
+        </p>
+        <button class="btn btn-primary" id="btn-back-home" style="padding: var(--space-3) var(--space-8); margin-top: var(--space-3);">
+          ?덉쑝濡?媛湲?        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { initCommon } from '../js/app.js';
+    import { initMinigame, startMinigame, finishMinigame, getRemovalPercent } from '../js/minigame.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+
+      const canvasBody = document.getElementById('canvas-body');
+      const canvasWool = document.getElementById('canvas-wool');
+      const canvasCursor = document.getElementById('canvas-cursor');
+      
+      const timerVal = document.getElementById('timer-val');
+      const removalPercentTxt = document.getElementById('removal-percent-txt');
+      const removalFill = document.getElementById('removal-fill');
+      const btnSubmitShear = document.getElementById('btn-submit-shear');
+      const resultOverlay = document.getElementById('result-overlay');
+      const hudTimerContainer = document.getElementById('hud-timer-container');
+
+      const resultIcon = document.getElementById('result-icon');
+      const resultTitle = document.getElementById('result-title');
+      const resultReward = document.getElementById('result-reward');
+      const resultDesc = document.getElementById('result-desc');
+      const rewardVal = document.getElementById('reward-val');
+
+      // 誘몃땲寃뚯엫 ?곹깭 肄쒕갚 ?깅줉
+      initMinigame({
+        canvasBody,
+        canvasWool,
+        canvasCursor,
+        onUpdate: (percent, sec) => {
+          // ??대㉧ 媛깆떊
+          timerVal.textContent = sec;
+          if (sec <= 5) {
+            hudTimerContainer.classList.add('warning');
+          }
+
+          // ?쒓굅??媛깆떊
+          removalPercentTxt.textContent = `${percent}%`;
+          removalFill.style.width = `${percent}%`;
+
+          if (percent >= 95) {
+            removalFill.classList.add('success');
+            btnSubmitShear.removeAttribute('disabled');
+            btnSubmitShear.classList.add('btn-shear'); // ?묓겕??glow ?곸슜
+          } else {
+            removalFill.classList.remove('success');
+            btnSubmitShear.setAttribute('disabled', 'true');
+            btnSubmitShear.classList.remove('btn-shear');
+          }
+        },
+        onFinish: (percent, reward) => {
+          // 寃뚯엫 ?꾨즺 ?ㅻ쾭?덉씠 ?쒖떆
+          resultOverlay.classList.remove('hidden');
+          rewardVal.textContent = `+${reward}`;
+
+          if (percent >= 95) {
+            resultIcon.textContent = percent === 100 ? '?몣' : '??;
+            resultTitle.textContent = percent === 100 ? '?꾨꼍???쒖뵪! 100%' : '?섑솗 ?깃났! ?럦';
+            resultDesc.innerHTML = `?쒓굅?? <strong>${percent}%</strong><br>?묒씠 留ㅼ슦 ?쒖썝?댄빀?덈떎! ?묓꽭 源롪린媛 ?꾨즺?섏뼱 XP媛 由ъ뀑?⑸땲??`;
+          } else {
+            resultIcon.textContent = '?삟';
+            resultTitle.textContent = '?쒓컙 珥덇낵!';
+            resultDesc.innerHTML = `?쒓굅?? <strong>${percent}%</strong><br>?꾩돺寃뚮룄 95% ?댁긽 源롮? 紐삵빐 ?덈컲???묓꽭留??섑솗?덉뒿?덈떎.`;
+          }
+        }
+      });
+
+      // 誘몃땲寃뚯엫 ?쒖옉
+      startMinigame();
+
+      // ?섑솗 ?꾨즺 踰꾪듉
+      btnSubmitShear.addEventListener('click', () => {
+        finishMinigame();
+      });
+
+      // ?덉쑝濡?媛湲?踰꾪듉
+      document.getElementById('btn-back-home').addEventListener('click', () => {
+        location.href = '../index.html';
+      });
+    });
+  </script>
+</body>
+</html>
+

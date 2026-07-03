@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SleepySheep | 홈</title>
+  
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- 밤하늘 배경 -->
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone">
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="header-left">
+        <div>
+          <h1 id="sheep-name-header">드리미</h1>
+          <p class="subtitle">나만의 힐링 수면 메이트</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="chip-box" id="wool-display" title="보유 양털">
+          <span class="icon">🧶</span>
+          <span id="wool-count">0</span>
+        </div>
+        <button class="btn-back" onclick="location.href='pages/settings.html'" style="font-size: 1rem;" title="설정">⚙️</button>
+      </div>
+    </header>
+
+    <!-- 스크롤 영역 -->
+    <div class="content">
+      
+      <!-- 수면 중 상태 표시 배너 (취침 중일 때만 표시됨) -->
+      <div id="sleeping-banner" class="streak-banner hidden" style="background: linear-gradient(135deg, rgba(124, 110, 250, 0.25), rgba(79, 70, 229, 0.25)); border-color: rgba(167, 139, 250, 0.4);">
+        <span class="streak-number" style="font-size: 1.5rem;">💤</span>
+        <div class="streak-text">
+          <div class="font-bold" style="color: #fff;">수면 기록 중...</div>
+          <div>양이 곤히 자고 있어요. 기상하면 기록을 완료해주세요.</div>
+        </div>
+      </div>
+
+      <!-- 메인 캐릭터 카드 -->
+      <section class="hero-card glass">
+        <!-- 레벨 배지 -->
+        <div style="margin-bottom: var(--space-3);">
+          <span class="level-badge" id="level-badge">Lv.1 새끼양</span>
+        </div>
+
+        <!-- 양 캐릭터 그래픽 컨테이너 -->
+        <div class="sheep-container" id="sheep-container">
+          <!-- SVG가 여기에 렌더링됨 -->
+        </div>
+
+        <!-- 말풍선 -->
+        <div class="speech-bubble" id="speech-bubble">
+          "오늘도 잘 자고 좋은 꿈 꾸자, 양!"
+        </div>
+
+        <!-- XP 진행 바 -->
+        <div class="xp-section">
+          <div class="xp-label">
+            <span>경험치</span>
+            <span id="xp-text">0 / 100 XP</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill fill-xp" id="xp-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 연속 수면 & 오늘 통계 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <div class="streak-banner">
+          <span class="streak-number" id="streak-count">0</span>
+          <div class="streak-text">
+            <div class="font-bold" style="color: #fff;">일 연속 목표 달성 중!</div>
+            <div id="streak-desc">충분한 잠은 양을 무럭무럭 자라게 해요.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 상호작용 액션 버튼 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">🖐️ 상호작용</h3>
+        <div class="action-row">
+          <button class="btn btn-action" id="btn-pet">
+            <span class="btn-icon">🖐️</span>
+            <span>쓰다듬기</span>
+          </button>
+          <button class="btn btn-action" id="btn-feed">
+            <span class="btn-icon">🥕</span>
+            <span>먹이주기</span>
+          </button>
+          <button class="btn btn-action btn-shear" id="btn-shear-game" disabled>
+            <span class="btn-icon">✂️</span>
+            <span>양털깎기</span>
+          </button>
+        </div>
+        <div id="shear-hint" class="text-center text-muted" style="font-size: var(--font-size-2xs); margin-top: var(--space-2);">
+          레벨업하여 양털이 꽉 차면(3단계 자람) 깎을 수 있어요!
+        </div>
+      </section>
+
+      <!-- 메뉴 그리드 -->
+      <nav class="menu-grid">
+        <a href="pages/sleep.html" class="menu-item">
+          <span class="menu-icon">😴</span>
+          <span class="menu-label">수면 기록</span>
+        </a>
+        <a href="pages/sheep.html" class="menu-item">
+          <span class="menu-icon">🐑</span>
+          <span class="menu-label">내 양 정보</span>
+        </a>
+        <a href="pages/workshop.html" class="menu-item">
+          <span class="menu-icon">🏪</span>
+          <span class="menu-label">양털 공방</span>
+        </a>
+        <a href="pages/asmr.html" class="menu-item">
+          <span class="menu-icon">🎵</span>
+          <span class="menu-label">ASMR</span>
+        </a>
+      </nav>
+
+      <!-- 잠자기 메인 액션 버튼 -->
+      <section style="margin-top: var(--space-2);">
+        <button class="btn btn-sleep" id="btn-main-sleep">
+          😴 오늘 잠자기 시작
+        </button>
+      </section>
+
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" data-href="index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="pages/sleep.html">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="pages/sheep.html">
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="pages/workshop.html">
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="pages/friends.html">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
+        <span class="nav-dot"></span>
+      </div>
+    </nav>
+  </main>
+
+  <!-- 수면 모달 -->
+  <div class="overlay" id="sleep-overlay"></div>
+  <div class="modal" id="sleep-modal">
+    <div class="modal-handle"></div>
+    <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">😴 안녕히 주무세요, 양!</h3>
+    <p class="text-center text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--space-5); line-height: 1.6;">
+      취침 기록을 시작합니다.<br>
+      일어나신 후 '기상하기' 버튼을 눌러 수면 기록을 완료해 주세요.
+    </p>
+    <div class="flex flex-col gap-3">
+      <button class="btn btn-primary" id="btn-start-sleep-confirm">😴 지금 자러가기</button>
+      <button class="btn btn-secondary" id="btn-close-sleep-modal">취소</button>
+    </div>
+  </div>
+
+  <!-- 기상(기록) 모달 -->
+  <div class="modal" id="wake-modal">
+    <div class="modal-handle"></div>
+    <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">☀️ 잘 일어나셨나요, 양!</h3>
+    
+    <div class="flex flex-col gap-4" style="margin-bottom: var(--space-5);">
+      <!-- 기분 선택 -->
+      <div>
+        <label class="font-bold text-small text-muted" style="display:block; margin-bottom:8px;">오늘 일어났을 때 기분은 어떤가요?</label>
+        <div class="mood-row">
+          <button class="mood-btn" data-mood="1">😢</button>
+          <button class="mood-btn" data-mood="2">🥱</button>
+          <button class="mood-btn" data-mood="3">😐</button>
+          <button class="mood-btn" data-mood="4">😊</button>
+          <button class="mood-btn" data-mood="5">🥰</button>
+        </div>
+      </div>
+
+      <!-- 간단 메모 -->
+      <div>
+        <label class="font-bold text-small text-muted" style="display:block; margin-bottom:8px;">간단한 메모</label>
+        <input type="text" id="wake-note" class="glass" style="width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); padding: var(--space-3); color: #fff; font-size: var(--font-size-sm);" placeholder="오늘 수면 상태는 어땠나요?">
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <button class="btn btn-primary" id="btn-wake-confirm">☀️ 기상 및 수면기록 완료</button>
+    </div>
+  </div>
+  <!-- 이름 짓기 대화 모달 -->
+  <div class="overlay" id="name-overlay"></div>
+  <div class="modal" id="name-dialog-modal" style="text-align:center;">
+    <div class="modal-handle"></div>
+    <!-- 양 이미지 (미니) -->
+    <div style="font-size:3rem; margin-bottom: var(--space-3); line-height:1;">🐑</div>
+    <!-- 대사 -->
+    <p id="name-dialog-text" class="text-center" style="font-size: var(--font-size-md); font-weight:700; color:var(--text-primary); line-height:1.7; margin-bottom: var(--space-5); white-space:pre-line;"></p>
+    <!-- 버튼 그룹 -->
+    <div id="name-dialog-btns" class="flex gap-3 justify-center"></div>
+  </div>
+
+  <!-- 이름 입력 모달 -->
+  <div class="modal" id="name-input-modal" style="text-align:center;">
+    <div class="modal-handle"></div>
+    <div style="font-size:2.5rem; margin-bottom:var(--space-3);">✨</div>
+    <h3 class="font-bold" style="font-size:var(--font-size-lg); margin-bottom:var(--space-2);">이름을 지어줘!</h3>
+    <p class="text-muted" style="font-size:var(--font-size-sm); margin-bottom:var(--space-4); line-height:1.6;">드리미에게 특별한 이름을 선물해 줘. 💕</p>
+    <input type="text" id="name-input-field" class="glass" maxlength="8"
+      style="width:100%; border-radius:var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-3) var(--space-4); color:#fff; font-size:var(--font-size-lg); font-weight:800; text-align:center; background:rgba(255,255,255,0.08); margin-bottom:var(--space-4);"
+      placeholder="이름 (최대 8자)">
+    <div class="flex gap-3">
+      <button class="btn btn-secondary" id="btn-name-cancel" style="flex:1;">나중에</button>
+      <button class="btn btn-primary" id="btn-name-confirm" style="flex:2;">💕 이 이름으로!</button>
+    </div>
+  </div>
+
+
+  <script type="module">
+    import { initCommon, spawnHearts, showToast } from './js/app.js';
+    import { readSheep, renderSheepTo, updateXPBar, petSheep, feedSheep, decaySheepStats, playSheepAnim } from './js/sheep.js';
+    import { initSound, resumeAudio, playSoundPet, playSoundFeed, playSoundSleep, playSoundClick, playSoundXP } from './js/sound.js';
+    import { recordSleep, getStreak } from './js/sleep.js';
+    import { SHEEP_POSE, NAME_DIALOG_SCRIPT, getRandomQuote } from './js/constants.js';
+    import { saveSheep, setItem, getItem, removeItem } from './js/storage.js';
+    import { checkAndShowOpening } from './js/opening.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+      initSound();
+
+      // 첫 로드 시 오프닝 스토리 노출 여부 체크
+      checkAndShowOpening(document.querySelector('.phone'));
+
+      const sheepContainer   = document.getElementById('sheep-container');
+      const levelBadge       = document.getElementById('level-badge');
+      const speechBubble     = document.getElementById('speech-bubble');
+      const xpText           = document.getElementById('xp-text');
+      const xpFill           = document.getElementById('xp-fill');
+      const woolCount        = document.getElementById('wool-count');
+      const streakCount      = document.getElementById('streak-count');
+      const btnPet           = document.getElementById('btn-pet');
+      const btnFeed          = document.getElementById('btn-feed');
+      const btnShearGame     = document.getElementById('btn-shear-game');
+      const shearHint        = document.getElementById('shear-hint');
+      const sheepNameHeader  = document.getElementById('sheep-name-header');
+      const btnMainSleep     = document.getElementById('btn-main-sleep');
+      const sleepOverlay     = document.getElementById('sleep-overlay');
+      const sleepModal       = document.getElementById('sleep-modal');
+      const wakeModal        = document.getElementById('wake-modal');
+
+      // 이름 짓기 모달 요소
+      const nameOverlay     = document.getElementById('name-overlay');
+      const nameDialogModal = document.getElementById('name-dialog-modal');
+      const nameDialogText  = document.getElementById('name-dialog-text');
+      const nameDialogBtns  = document.getElementById('name-dialog-btns');
+      const nameInputModal  = document.getElementById('name-input-modal');
+      const nameInputField  = document.getElementById('name-input-field');
+      const btnNameCancel   = document.getElementById('btn-name-cancel');
+      const btnNameConfirm  = document.getElementById('btn-name-confirm');
+
+      let currentPose = SHEEP_POSE.IDLE;
+      let activeMood  = 3;
+
+      // ─── 랜덤 포즈 목록 ───
+      const IDLE_POSES = [
+        SHEEP_POSE.IDLE, SHEEP_POSE.HAPPY, SHEEP_POSE.SHY,
+        SHEEP_POSE.SLEEPY, SHEEP_POSE.WINK, SHEEP_POSE.EXCITED,
+        SHEEP_POSE.SMUG, SHEEP_POSE.SURPRISED,
+      ];
+
+      decaySheepStats();
+      let sheep = readSheep();
+
+      // ─── UI 갱신 ───
+      function refreshUI() {
+        sheep = readSheep();
+        sheepNameHeader.textContent = sheep.name;
+        woolCount.textContent = sheep.wool;
+        streakCount.textContent = getStreak();
+
+        const stepName = ['새끼양','솜털양','통통양','포실양','뭉실양','구름양','복슬양','솜구름','털뭉치','성체양'][Math.min(sheep.step - 1, 9)];
+        levelBadge.textContent = `Lv.${sheep.level} ${stepName}`;
+        updateXPBar(xpFill, xpText, sheep);
+
+        if (sheep.woolGrowth >= 3 || sheep.canShear) {
+          btnShearGame.removeAttribute('disabled');
+          shearHint.innerHTML = `<span style="color:var(--color-secondary);font-weight:800;">✂️ 양털을 깎을 준비가 되었습니다!</span>`;
+        } else {
+          btnShearGame.setAttribute('disabled', 'true');
+          shearHint.textContent = `양털 성장도: ${'🐑'.repeat(sheep.woolGrowth)}${'⬜'.repeat(3 - sheep.woolGrowth)} (레벨업 시 한 단계씩 자라요)`;
+        }
+
+        const sleepingSince = getItem('ss_sleeping_since');
+        if (sleepingSince) {
+          currentPose = SHEEP_POSE.SLEEP;
+          btnMainSleep.textContent = '☀️ 일어났어요! 기상 기록하기';
+          btnMainSleep.classList.add('btn-primary');
+          btnMainSleep.classList.remove('btn-sleep');
+          document.getElementById('sleeping-banner').classList.remove('hidden');
+        } else {
+          currentPose = SHEEP_POSE.IDLE;
+          btnMainSleep.textContent = '😴 오늘 잠자기 시작';
+          btnMainSleep.classList.add('btn-sleep');
+          btnMainSleep.classList.remove('btn-primary');
+          document.getElementById('sleeping-banner').classList.add('hidden');
+        }
+        renderSheepTo(sheepContainer, sheep.step, currentPose);
+      }
+
+      // ─── 자동 타이머 ───
+      let quoteTimer = null;
+      let poseTimer  = null;
+      let quoteCount = 0;
+
+      function cycleQuote() {
+        if (getItem('ss_sleeping_since')) return;
+        quoteCount++;
+
+        // 기본 이름이고 7번 이상 멘트 뒤 15% 확률로 이름 대화 시작
+        sheep = readSheep();
+        const isDefaultName = (sheep.name === '드리미');
+        if (isDefaultName && quoteCount >= 7 && Math.random() < 0.15) {
+          quoteCount = 0;
+          setTimeout(startNameDialog, 1000);
+          return;
+        }
+
+        const quote = getRandomQuote();
+        speechBubble.textContent = `"${quote}"`;
+        speechBubble.style.animation = 'none';
+        speechBubble.offsetHeight;
+        speechBubble.style.animation = 'fadeInUp 0.4s ease';
+      }
+
+      function cycleIdlePose() {
+        if (getItem('ss_sleeping_since')) return;
+        const pose = IDLE_POSES[Math.floor(Math.random() * IDLE_POSES.length)];
+        currentPose = pose;
+        sheep = readSheep();
+        renderSheepTo(sheepContainer, sheep.step, pose);
+        setTimeout(() => {
+          currentPose = SHEEP_POSE.IDLE;
+          renderSheepTo(sheepContainer, sheep.step, SHEEP_POSE.IDLE);
+        }, 2200);
+      }
+
+      function startAutoTimers() {
+        quoteTimer = setInterval(cycleQuote, 12000);
+        poseTimer  = setInterval(cycleIdlePose, 8000);
+      }
+
+      function stopAutoTimers() {
+        clearInterval(quoteTimer);
+        clearInterval(poseTimer);
+      }
+
+      // ─── 이름 짓기 대화 흐름 ───
+      let dialogStep = 0;
+
+      function startNameDialog() {
+        dialogStep = 0;
+        stopAutoTimers();
+        sheep = readSheep();
+        renderSheepTo(sheepContainer, sheep.step, SHEEP_POSE.SHY);
+        showDialogStep();
+        nameOverlay.classList.add('active');
+        nameDialogModal.classList.add('active');
+      }
+
+      function showDialogStep() {
+        const step = NAME_DIALOG_SCRIPT[dialogStep];
+        nameDialogText.textContent = step.text;
+        nameDialogBtns.innerHTML = '';
+
+        if (step.type === 'next') {
+          const btn = document.createElement('button');
+          btn.className = 'btn btn-primary';
+          btn.style.minWidth = '120px';
+          btn.textContent = '다음 ›';
+          btn.onclick = () => {
+            dialogStep++;
+            if (dialogStep === 1) renderSheepTo(sheepContainer, sheep.step, SHEEP_POSE.WORRIED);
+            showDialogStep();
+          };
+          nameDialogBtns.appendChild(btn);
+        } else if (step.type === 'choice') {
+          const btnNo = document.createElement('button');
+          btnNo.className = 'btn btn-secondary';
+          btnNo.style.flex = '1';
+          btnNo.textContent = '미안해...';
+          btnNo.onclick = () => closeNameDialog(false);
+
+          const btnYes = document.createElement('button');
+          btnYes.className = 'btn btn-primary';
+          btnYes.style.flex = '2';
+          btnYes.textContent = '이름 지어줄게! 💕';
+          btnYes.onclick = () => openNameInput();
+
+          nameDialogBtns.style.display = 'flex';
+          nameDialogBtns.appendChild(btnNo);
+          nameDialogBtns.appendChild(btnYes);
+        }
+      }
+
+      function closeNameDialog(accepted) {
+        nameDialogModal.classList.remove('active');
+        nameInputModal.classList.remove('active');
+        nameOverlay.classList.remove('active');
+        sheep = readSheep();
+        renderSheepTo(sheepContainer, sheep.step, accepted ? SHEEP_POSE.HAPPY : SHEEP_POSE.SAD);
+        speechBubble.textContent = accepted
+          ? `"새 이름, 마음에 들어! 메에~ 🥰"`
+          : `"...괜찮아. 드리미도 좋은 이름이야."`;
+        setTimeout(startAutoTimers, 3000);
+      }
+
+      function openNameInput() {
+        nameDialogModal.classList.remove('active');
+        nameInputModal.classList.add('active');
+        nameInputField.value = '';
+        setTimeout(() => nameInputField.focus(), 100);
+      }
+
+      btnNameConfirm.addEventListener('click', () => {
+        const newName = nameInputField.value.trim();
+        if (!newName) { nameInputField.focus(); return; }
+        sheep = readSheep();
+        sheep.name = newName;
+        saveSheep(sheep);
+        closeNameDialog(true);
+        sheepNameHeader.textContent = newName;
+        renderSheepTo(sheepContainer, sheep.step, SHEEP_POSE.EXCITED);
+        showToast(`"${newName}"라는 이름, 너무 좋아! 메에~ 🎉`, 'success');
+        speechBubble.textContent = `"${newName}! 이제 내 이름은 ${newName}이야! 🥰"`;
+      });
+
+      btnNameCancel.addEventListener('click', () => {
+        nameInputModal.classList.remove('active');
+        closeNameDialog(false);
+      });
+
+      nameInputField.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') btnNameConfirm.click();
+      });
+
+      // ─── 쓰다듬기 ───
+      btnPet.addEventListener('click', () => {
+        resumeAudio();
+        const res = petSheep();
+        if (res.success) {
+          playSoundPet();
+          showToast(res.msg, 'success');
+          spawnHearts(sheepContainer);
+          playSheepAnim(sheepContainer, 'sheep-pet-anim', 600);
+          speechBubble.textContent = '"기분 좋아! 고마워 양~ ♥"';
+          refreshUI();
+        } else { showToast(res.msg, 'error'); }
+      });
+
+      // ─── 먹이주기 ───
+      btnFeed.addEventListener('click', () => {
+        resumeAudio();
+        const res = feedSheep();
+        if (res.success) {
+          playSoundFeed();
+          showToast(res.msg, 'success');
+          playSheepAnim(sheepContainer, 'sheep-eat-anim', 800);
+          speechBubble.textContent = '"오물오물... 냠냠 당근 맛있다!"';
+          refreshUI();
+        } else { showToast(res.msg, 'error'); }
+      });
+
+      // ─── 양털깎기 ───
+      btnShearGame.addEventListener('click', () => { location.href = 'pages/minigame.html'; });
+
+      // ─── 잠자기 / 기상하기 ───
+      btnMainSleep.addEventListener('click', () => {
+        const sleepingSince = getItem('ss_sleeping_since');
+        if (sleepingSince) {
+          activeMood = 3;
+          document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+          document.querySelector('.mood-btn[data-mood="3"]').classList.add('selected');
+          document.getElementById('wake-note').value = '';
+          sleepOverlay.classList.add('active');
+          wakeModal.classList.add('active');
+        } else {
+          sleepOverlay.classList.add('active');
+          sleepModal.classList.add('active');
+        }
+      });
+
+      document.getElementById('btn-start-sleep-confirm').addEventListener('click', () => {
+        resumeAudio();
+        playSoundSleep();
+        const now = new Date();
+        const bedTimeString = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        setItem('ss_sleeping_since', { time: now.toISOString(), bedtime: bedTimeString });
+        sleepModal.classList.remove('active');
+        sleepOverlay.classList.remove('active');
+        showToast('좋은 꿈 꾸세요! 수면 기록을 시작합니다. 🌙', 'success');
+        refreshUI();
+      });
+
+      document.getElementById('btn-wake-confirm').addEventListener('click', () => {
+        resumeAudio();
+        const session = getItem('ss_sleeping_since');
+        if (!session) return;
+        const now = new Date();
+        const wakeTimeString = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        const res = recordSleep({
+          bedtime: session.bedtime, wakeTime: wakeTimeString,
+          mood: activeMood, note: document.getElementById('wake-note').value.trim()
+        });
+        removeItem('ss_sleeping_since');
+        wakeModal.classList.remove('active');
+        sleepOverlay.classList.remove('active');
+        if (res.xpGained > 0) playSoundXP();
+        showToast(`기상 기록 완료! +${res.xpGained} XP 획득! 🎉`, 'success');
+        renderSheepTo(sheepContainer, sheep.step, SHEEP_POSE.HAPPY);
+        speechBubble.textContent = '"아침이야! 잘 자고 일어났어 메에~ ✨"';
+        setTimeout(() => refreshUI(), 3000);
+      });
+
+      document.getElementById('btn-close-sleep-modal').addEventListener('click', () => {
+        sleepModal.classList.remove('active');
+        sleepOverlay.classList.remove('active');
+      });
+
+      sleepOverlay.addEventListener('click', () => {
+        sleepModal.classList.remove('active');
+        wakeModal.classList.remove('active');
+        sleepOverlay.classList.remove('active');
+      });
+
+      document.querySelectorAll('.mood-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          activeMood = parseInt(btn.dataset.mood);
+        });
+      });
+
+      // ─── 초기 실행 ───
+      refreshUI();
+      speechBubble.textContent = `"${getRandomQuote()}"`;
+      setTimeout(startAutoTimers, 1500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>설정 | SleepySheep</title>
+  
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+  <!-- 밤하늘 배경 -->
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone">
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="header-left">
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
+        <div>
+          <h1>환경 설정</h1>
+          <p class="subtitle">나의 수면 목표와 앱 세팅</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="chip-box" id="wool-display">
+          <span class="icon">🧶</span>
+          <span id="wool-count">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 스크롤 영역 -->
+    <div class="content">
+
+      <!-- 수면 목표 설정 카드 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">💤 나의 수면 목표</h3>
+        
+        <div class="flex flex-col gap-3">
+          <!-- 목표 수면시간 -->
+          <div class="setting-item" style="border-bottom:none; padding:0;">
+            <div class="setting-info">
+              <span class="setting-title">목표 수면 시간</span>
+              <span class="setting-desc">기본 수면 8시간을 권장해요</span>
+            </div>
+            <div>
+              <select id="select-sleep-goal" class="glass" style="border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-2) var(--space-3); color:#fff; font-size:var(--font-size-sm); background: rgba(0,0,0,0.3);">
+                <option value="360">6시간 (360분)</option>
+                <option value="420">7시간 (420분)</option>
+                <option value="480" selected>8시간 (480분)</option>
+                <option value="540">9시간 (540분)</option>
+                <option value="600">10시간 (600분)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="divider" style="margin: 8px 0;"></div>
+
+          <!-- 알람 시간 조절 -->
+          <div class="time-input-group">
+            <div class="time-input-card" style="padding:var(--space-3);">
+              <span class="time-input-label">⏰ 취침 알림 시간</span>
+              <input type="time" id="setting-bed-alarm" class="time-input" style="font-size:var(--font-size-lg);" value="22:30">
+            </div>
+            <div class="time-input-card" style="padding:var(--space-3);">
+              <span class="time-input-label">☀️ 기상 알람 시간</span>
+              <input type="time" id="setting-wake-alarm" class="time-input" style="font-size:var(--font-size-lg);" value="07:00">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 앱 옵션 스위치 설정 카드 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-2); color: var(--text-secondary);">⚙️ 앱 설정</h3>
+        
+        <div class="flex flex-col">
+          <!-- 다크모드 -->
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-title">🌙 다크 모드 테마</span>
+              <span class="setting-desc">밤하늘 밤 분위기로 변경합니다.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="switch-dark-mode" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- 푸쉬 알림 -->
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-title">🔔 푸시 알림 수신</span>
+              <span class="setting-desc">취침 알림 및 기상 격려 알림 수신</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="switch-notify" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- 효과음 -->
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-title">🎵 효과음 & 배경음</span>
+              <span class="setting-desc">메인 사운드 및 효과음 사용</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="switch-bgmusic">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- 진동 -->
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-title">📳 햅틱 진동 효과</span>
+              <span class="setting-desc">기기 상호작용 피드백 진동</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="switch-vibrate" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- 데이터 초기화 및 개발 정보 -->
+      <section class="glass card" style="padding: var(--space-4);">
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-2); color: var(--text-secondary);">📂 정보 및 관리</h3>
+        
+        <div class="flex flex-col gap-2" style="font-size:var(--font-size-xs); color:var(--text-muted); line-height: 1.6; margin-bottom: var(--space-4);">
+          <div>앱 버전: <strong>SleepySheep v1.0.0</strong></div>
+          <div>기술 사양: HTML5, CSS3 Variables, ES6 modules, Canvas</div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <button class="btn btn-secondary w-full" id="btn-replay-opening" style="background: rgba(167, 139, 250, 0.15); border-color: rgba(167, 139, 250, 0.3); color: var(--color-purple-soft); margin-bottom: 4px;">
+            🎬 오프닝 스토리 다시보기
+          </button>
+          
+          <button class="btn btn-secondary w-full" id="btn-reset-data" style="background: rgba(252, 165, 165, 0.1); border-color: rgba(252, 165, 165, 0.3); color: var(--color-danger);">
+            🚨 모든 데이터 초기화
+          </button>
+          
+          <div style="display: flex; justify-content: flex-end; margin-top: var(--space-2);">
+            <button class="btn btn-secondary" id="btn-reset-sheep" style="font-size: var(--font-size-2xs); padding: var(--space-1) var(--space-3); background: rgba(167, 139, 250, 0.1); border-color: rgba(167, 139, 250, 0.3); color: var(--color-purple-soft);">
+              🌱 초기의 드리미로
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bottom-nav">
+      <div class="nav-item" data-href="../index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sleep.html">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sheep.html">
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="workshop.html">
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="friends.html">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
+        <span class="nav-dot"></span>
+      </div>
+    </nav>
+  </main>
+
+  <script type="module">
+    import { initCommon, showToast } from '../js/app.js';
+    import { getSheep, getSettings, saveSettings, clearAll, resetSheep } from '../js/storage.js';
+    import { startOpening } from '../js/opening.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+
+      const woolCount = document.getElementById('wool-count');
+      const selectSleepGoal = document.getElementById('select-sleep-goal');
+      const settingBedAlarm = document.getElementById('setting-bed-alarm');
+      const settingWakeAlarm = document.getElementById('setting-wake-alarm');
+
+      const switchDarkMode = document.getElementById('switch-dark-mode');
+      const switchNotify = document.getElementById('switch-notify');
+      const switchBgMusic = document.getElementById('switch-bgmusic');
+      const switchVibrate = document.getElementById('switch-vibrate');
+      const btnResetData = document.getElementById('btn-reset-data');
+      const btnResetSheep = document.getElementById('btn-reset-sheep');
+      const btnReplayOpening = document.getElementById('btn-replay-opening');
+
+      let settings = getSettings();
+
+      function refreshUI() {
+        const sheep = getSheep();
+        woolCount.textContent = sheep.wool;
+
+        // 세팅 데이터 적용
+        selectSleepGoal.value = settings.sleepGoal;
+        settingBedAlarm.value = settings.bedAlarm;
+        settingWakeAlarm.value = settings.wakeAlarm;
+
+        switchDarkMode.checked = settings.darkMode;
+        switchNotify.checked = settings.notification;
+        switchBgMusic.checked = settings.bgMusic;
+        switchVibrate.checked = settings.vibration;
+      }
+
+      function updateSetting(key, val) {
+        settings[key] = val;
+        saveSettings(settings);
+        showToast('설정이 자동으로 저장되었습니다! 💤', 'success');
+      }
+
+      // 이벤트 리스너들
+      selectSleepGoal.addEventListener('change', () => {
+        updateSetting('sleepGoal', parseInt(selectSleepGoal.value));
+      });
+
+      settingBedAlarm.addEventListener('change', () => {
+        updateSetting('bedAlarm', settingBedAlarm.value);
+      });
+
+      settingWakeAlarm.addEventListener('change', () => {
+        updateSetting('wakeAlarm', settingWakeAlarm.value);
+      });
+
+      switchDarkMode.addEventListener('change', () => {
+        updateSetting('darkMode', switchDarkMode.checked);
+      });
+
+      switchNotify.addEventListener('change', () => {
+        updateSetting('notification', switchNotify.checked);
+      });
+
+      switchBgMusic.addEventListener('change', () => {
+        updateSetting('bgMusic', switchBgMusic.checked);
+      });
+
+      switchVibrate.addEventListener('change', () => {
+        updateSetting('vibration', switchVibrate.checked);
+      });
+
+      // 오프닝 스토리 다시보기
+      btnReplayOpening.addEventListener('click', () => {
+        startOpening(document.querySelector('.phone'), true);
+      });
+
+      // 모든 데이터 초기화
+      btnResetData.addEventListener('click', () => {
+        const check = confirm('정말로 전체 플레이 데이터를 완전히 초기화하시겠습니까? 복구할 수 없습니다.');
+        if (check) {
+          clearAll();
+          showToast('모든 데이터가 성공적으로 초기화되었습니다! 홈으로 이동합니다.', 'success');
+          setTimeout(() => {
+            location.href = '../index.html';
+          }, 1500);
+        }
+      });
+
+      // 초기의 드리미로 (양 데이터 초기화)
+      btnResetSheep.addEventListener('click', () => {
+        const check1 = confirm('드리미를 처음 아기양 상태로 초기화하시겠습니까?');
+        if (check1) {
+          const check2 = confirm('정말로 초기화하시겠습니까? 레벨, 경험치, 모은 양털이 모두 기본 상태로 재설정됩니다.');
+          if (check2) {
+            resetSheep();
+            showToast('드리미가 처음 모습으로 돌아갔습니다! 아기양부터 다시 시작합니다.', 'success');
+            setTimeout(() => {
+              location.href = '../index.html';
+            }, 1500);
+          }
+        }
+      });
+
+      refreshUI();
+    });
+  </script>
+</body>
+</html>
