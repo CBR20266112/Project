@@ -3,210 +3,208 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>드리미 | Sleepy Sheep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="../css/variables.css">
-<link rel="stylesheet" href="../css/style.css">
-<link rel="stylesheet" href="../css/layout.css">
-<link rel="stylesheet" href="../css/components.css">
-<link rel="stylesheet" href="../css/animations.css">
-<link rel="stylesheet" href="../css/responsive.css">
+    <title>내 양 | SheepShip</title>
+
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
 
 </head>
 
 <body>
 
-<div id="app">
+<div class="background">
+
+    <div class="stars"></div>
+
+    <div class="moon"></div>
+
+</div>
 
 <main class="phone">
 
-<header class="header">
+    <header class="header">
 
-<h1>🐑 드리미</h1>
+        <div>
 
-<p>
-꿈나라에서 온 작은 양
-</p>
+            <h1>🐑 내 양</h1>
 
-</header>
+            <p>오늘도 함께 시간을 보내요.</p>
 
-<section class="hero-card glass">
+        </div>
 
-<div class="sheep-box">
+        <div class="point-box">
 
-<img
-id="sheep"
-src="../assets/sheep/growth/cleaned_final/growth_step_01.png"
-alt="드리미">
+            🧶 1250
 
-</div>
+        </div>
 
-<h2>드리미</h2>
+    </header>
 
-<p id="message">
-오늘도 같이 푹 쉬어요!
-</p>
+    <section class="hero-card glass">
 
-</section>
+        <div class="sheep-box">
 
-<section class="status-card glass">
+            <img
 
-<div class="status-item">
+                src="../assets/sheep/idle.png"
 
-<label>❤️ 행복도</label>
+                alt="Sheep"
 
-<div class="progress">
+            >
 
-<div
-class="fill"
-id="happy"
-style="width:82%;">
+        </div>
 
-</div>
+        <h2>
 
-</div>
+            음매
 
-</div>
+        </h2>
 
-<div class="status-item">
+        <p>
 
-<label>🍖 배부름</label>
+            Lv.1
 
-<div class="progress">
+        </p>
 
-<div
-class="fill"
-id="food"
-style="width:70%;">
+    </section>
 
-</div>
+    <section class="status-card glass">
 
-</div>
+        <div class="status-item">
 
-</div>
+            <label>❤️ 행복도</label>
 
-<div class="status-item">
+            <div class="progress">
 
-<label>🧶 양털 성장</label>
+                <div
 
-<div class="progress">
+                    class="fill"
 
-<div
-class="fill"
-id="wool"
-style="width:0%;">
+                    style="width:82%"
 
-</div>
+                ></div>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</section>
+        <div class="status-item">
 
-<section class="sleep-card glass">
+            <label>🍖 배고픔</label>
 
-<h3>
+            <div class="progress">
 
-드리미와 놀아볼까요?
+                <div
 
-</h3>
+                    class="fill"
 
-<div
-style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
-margin-top:20px;">
+                    style="width:61%"
 
-<button
-class="action-button"
-onclick="petSheep()">
+                ></div>
 
-🖐 쓰다듬기
+            </div>
 
-</button>
+        </div>
 
-<button
-class="action-button"
-onclick="feedSheep()">
+        <div class="status-item">
 
-🥕 먹이주기
+            <label>🧶 양털</label>
 
-</button>
+            <div class="progress">
 
-<button
-class="action-button"
-onclick="sleepSheep()">
+                <div
 
-😴 재우기
+                    class="fill"
 
-</button>
+                    style="width:40%"
 
-<button
-class="action-button"
-onclick="shearSheep()">
+                ></div>
 
-✂ 양털깎기
+            </div>
 
-</button>
+        </div>
 
-</div>
+    </section>
 
-</section>
+    <section class="sleep-card glass">
 
-<section class="sleep-card glass">
+        <h3>🖐️ 상호작용</h3>
 
-<h3>현재 상태</h3>
+        <button class="action-button">
 
-<p id="statusText">
-기분이 아주 좋아 보여요.
-</p>
+            쓰다듬기
 
-</section>
+        </button>
 
-<nav class="bottom-nav">
+        <button class="action-button">
 
-<button onclick="location.href='../index.html'">
+            먹이 주기
 
-🏠
+        </button>
 
-</button>
+        <button class="action-button">
 
-<button>
+            꾸미기
 
-🐑
+        </button>
 
-</button>
+    </section>
 
-<button onclick="location.href='sleep.html'">
+    <section class="sleep-card glass">
 
-😴
+        <h3>💬 오늘의 한마디</h3>
 
-</button>
+        <p>
 
-<button onclick="location.href='asmr.html'">
+            "메에~ 오늘도 와줘서 고마워."
 
-🎵
+        </p>
 
-</button>
+    </section>
 
-<button onclick="location.href='settings.html'">
+    <nav class="bottom-nav">
 
-⚙️
+        <button onclick="location.href='../index.html'">
 
-</button>
+            🏠
 
-</nav>
+        </button>
+
+        <button>
+
+            🐑
+
+        </button>
+
+        <button onclick="location.href='asmr.html'">
+
+            🎵
+
+        </button>
+
+        <button>
+
+            🧶
+
+        </button>
+
+        <button onclick="location.href='settings.html'">
+
+            ⚙️
+
+        </button>
+
+    </nav>
 
 </main>
-
-</div>
-
-<script src="../js/sheep.js"></script>
 
 </body>
 

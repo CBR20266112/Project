@@ -3,174 +3,350 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>Sleepy Sheep</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="css/variables.css">
-<link rel="stylesheet" href="css/style.css">
+    <title>SheepShip</title>
+
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
 
 </head>
 
 <body>
 
-<div class="container">
+<div id="app">
 
-<header>
+    <!-- Background -->
 
-<h1>🐑 Sleepy Sheep</h1>
+    <div class="background">
 
-<div class="status">
+        <div class="stars"></div>
 
-<div class="card">
+        <div class="moon"></div>
 
-<span>경험치</span>
+    </div>
 
-<h2 id="xpText">0</h2>
+    <!-- Phone -->
+
+    <main class="phone">
+
+        <!-- Header -->
+
+        <header class="header">
+
+            <div>
+
+                <h1>🌙 SheepShip</h1>
+
+                <p>오늘도 편안한 하루를 시작해요.</p>
+
+            </div>
+
+            <div class="point-box">
+
+                🧶 <span id="point">1250</span>
+
+            </div>
+
+        </header>
+
+        <!-- Hero -->
+
+        <section class="hero-card glass">
+
+            <div class="sheep-box">
+
+                <img
+                    id="sheep"
+                    src="assets/sheep/idle.png"
+                    alt="Sheep">
+
+            </div>
+
+            <h2 id="sheep-name">
+
+                음매
+
+            </h2>
+
+            <p>
+
+                오늘도 푹 쉬어볼까요?
+
+            </p>
+
+            <div
+                id="speech"
+                class="speech hidden">
+
+                메에~
+
+            </div>
+
+        </section>
+
+        <!-- Status -->
+
+        <section class="status-card glass">
+
+            <div class="status-item">
+
+                <label>❤️ 행복도</label>
+
+                <div class="progress">
+
+                    <div
+                        id="happy-bar"
+                        class="fill"
+                        style="width:82%;">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="status-item">
+
+                <label>🍖 배고픔</label>
+
+                <div class="progress">
+
+                    <div
+                        id="hunger-bar"
+                        class="fill"
+                        style="width:61%;">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="status-item">
+
+                <label>🧶 양털</label>
+
+                <div class="progress">
+
+                    <div
+                        id="wool-bar"
+                        class="fill"
+                        style="width:40%;">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Sleep -->
+
+        <section class="sleep-card glass">
+
+            <h3>
+
+                😴 오늘의 수면
+
+            </h3>
+
+            <h2>
+
+                7시간 32분
+
+            </h2>
+
+            <p>
+
+                어제보다 42분 더 오래 잤어요.
+
+            </p>
+
+        </section>
+                <!-- Sleep Score -->
+
+        <section class="sleep-card glass">
+
+            <h3>
+
+                🌙 오늘의 수면 점수
+
+            </h3>
+
+            <div class="score-card">
+
+                <div class="score-number">
+
+                    92점
+
+                </div>
+
+                <div class="score-stars">
+
+                    ⭐⭐⭐⭐☆
+
+                </div>
+
+                <p>
+
+                    이번 주 평균보다 8점 높아요.
+
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- Sheep Notice -->
+
+        <section class="sleep-card glass">
+
+            <h3>
+
+                🐑 음매가 기다리고 있어요!
+
+            </h3>
+
+            <p>
+
+                행복도가 조금 떨어졌어요.<br>
+
+                쓰다듬어 주면 기분이 좋아집니다.
+
+            </p>
+
+            <button
+                class="action-button"
+                onclick="location.href='pages/sheep.html'">
+
+                만나러 가기
+
+            </button>
+
+        </section>
+
+        <!-- Today's ASMR -->
+
+        <section class="sleep-card glass">
+
+            <h3>
+
+                🎵 오늘의 추천 ASMR
+
+            </h3>
+
+            <h2>
+
+                🌧 빗소리
+
+            </h2>
+
+            <p>
+
+                잔잔한 빗소리로 편안한 잠을 준비해보세요.
+
+            </p>
+
+            <button
+                class="action-button"
+                onclick="location.href='pages/asmr.html'">
+
+                ASMR 보러가기
+
+            </button>
+
+        </section>
+
+        <!-- Weekly Summary -->
+
+        <section class="sleep-card glass">
+
+            <h3>
+
+                📊 이번 주 요약
+
+            </h3>
+
+            <p>
+
+                평균 수면 시간
+
+            </p>
+
+            <h2>
+
+                7시간 11분
+
+            </h2>
+
+            <p>
+
+                목표 달성률 82%
+
+            </p>
+
+        </section>
+
+        <!-- Navigation -->
+
+        <nav class="bottom-nav">
+
+            <button
+                onclick="location.href='index.html'"
+                title="홈">
+
+                🏠
+
+            </button>
+
+            <button
+                onclick="location.href='pages/sheep.html'"
+                title="내 양">
+
+                🐑
+
+            </button>
+
+            <button
+                onclick="location.href='pages/sleep.html'"
+                title="수면기록">
+
+                😴
+
+            </button>
+
+            <button
+                onclick="location.href='pages/asmr.html'"
+                title="ASMR">
+
+                🎵
+
+            </button>
+
+            <button
+                onclick="location.href='pages/settings.html'"
+                title="설정">
+
+                ⚙️
+
+            </button>
+
+        </nav>
+
+    </main>
 
 </div>
 
-<div class="card">
-
-<span>성장 단계</span>
-
-<h2 id="growthText">
-
-STEP 1
-
-</h2>
-
-</div>
-
-<div class="card">
-
-<span>양털</span>
-
-<h2 id="woolText">
-
-0g
-
-</h2>
-
-</div>
-
-</div>
-
-</header>
-
-<main>
-
-<div id="sheepArea">
-
-<img id="growthImage" src="assets/sheep/growth/cleaned_final/growth_step_01.png" alt="Sleepy Sheep">
-
-</div>
-
-<div class="actionButtons">
-
-<button id="petBtn">
-
-🤍 쓰다듬기
-
-</button>
-
-<button id="feedBtn">
-
-🥕 먹이주기
-
-</button>
-
-<button id="sleepBtn">
-
-😴 잠자기
-
-</button>
-
-<button id="sleepMateBtn">
-
-🛏 수면 메이트
-
-</button>
-
-</div>
-
-<button
-
-id="shearingBtn"
-
-disabled>
-
-✂ 양털 깎기
-
-</button>
-
-</main>
-
-</div>
-
-<script src="js/storage.js"></script>
-<script src="js/sheep.js"></script>
-
-<script>
-
-document
-.getElementById("sleepBtn")
-.addEventListener("click",()=>{
-
-addSleepXP();
-
-});
-
-document
-.getElementById("petBtn")
-.addEventListener("click",()=>{
-
-alert("메에~ 🐑");
-
-});
-
-document
-.getElementById("feedBtn")
-.addEventListener("click",()=>{
-
-alert("냠냠! 🥕");
-
-});
-
-// Sleep Mate popup + image viewer
-document.getElementById('sleepMateBtn').addEventListener('click', ()=>{
-	// create popup if not exists
-	if (!document.getElementById('sleepMatePopup')){
-		const pop = document.createElement('div');
-		pop.id = 'sleepMatePopup';
-		pop.innerHTML = `
-			<div class="popupInner">
-				<h3>나졸려 님의 침실</h3>
-				<p>팝업을 눌러 방으로 이동하세요.</p>
-				<img id="sleepThumb" src="assets/ui/sleep_room.png" alt="sleep room" />
-				<div class="popupBtns">
-					<button id="openRoom">입장</button>
-					<button id="closePopup">닫기</button>
-				</div>
-			</div>
-		`;
-		document.body.appendChild(pop);
-		document.getElementById('closePopup').addEventListener('click', ()=> pop.remove());
-		document.getElementById('openRoom').addEventListener('click', ()=>{
-			// open full-screen viewer
-			const viewer = document.createElement('div');
-			viewer.id = 'roomViewer';
-					viewer.innerHTML = `<div class="viewerBg"></div><img src="assets/ui/sleep_room.png" class="viewerImg" alt="room" /><button id="closeViewer">닫기</button>`;
-			document.body.appendChild(viewer);
-			document.getElementById('closeViewer').addEventListener('click', ()=> viewer.remove());
-		});
-		// clicking thumbnail also opens viewer
-		document.getElementById('sleepThumb').addEventListener('click', ()=> document.getElementById('openRoom').click());
-	}
-});
-
-</script>
+<script type="module" src="js/main.js"></script>
 
 </body>
 

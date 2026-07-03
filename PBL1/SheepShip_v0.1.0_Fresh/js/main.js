@@ -1,20 +1,13 @@
-const sheep = document.getElementById("sheep");
+import App from "./app.js";
 
-if(sheep){
+window.addEventListener(
 
-const faces = [
+    "DOMContentLoaded",
 
-"idle.png",
-"happy.png",
-"wink.png",
-"smug.png",
-"worried.png"
+    ()=>{
 
-];
+        App.init();
 
-sheep.src =
-`assets/sheep/${
-faces[Math.floor(Math.random()*faces.length)]
-}`;
+    }
 
-}
+);
