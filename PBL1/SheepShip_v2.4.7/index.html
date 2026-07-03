@@ -35,6 +35,7 @@
           <span id="wool-count">0</span>
         </div>
         <button class="btn-back" onclick="location.href='pages/settings.html'" style="font-size: 1rem;" title="설정">⚙️</button>
+        <button class="btn-back" id="btn-bgm-toggle" style="font-size: 1rem;" title="배경음악 온/오프">🎵</button>
       </div>
     </header>
 
@@ -219,8 +220,10 @@
   <div class="overlay" id="name-overlay"></div>
   <div class="modal" id="name-dialog-modal" style="text-align:center;">
     <div class="modal-handle"></div>
-    <!-- 양 이미지 (미니) -->
-    <div style="font-size:3rem; margin-bottom: var(--space-3); line-height:1;">🐑</div>
+    <!-- 양 이미지 -->
+    <div style="margin-bottom: var(--space-3); display: flex; justify-content: center;">
+      <img src="assets/sheep/givemename.png" alt="이름을 지어줘" style="width: 130px; height: 130px; object-fit: contain; border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    </div>
     <!-- 대사 -->
     <p id="name-dialog-text" class="text-center" style="font-size: var(--font-size-md); font-weight:700; color:var(--text-primary); line-height:1.7; margin-bottom: var(--space-5); white-space:pre-line;"></p>
     <!-- 버튼 그룹 -->
@@ -230,7 +233,9 @@
   <!-- 이름 입력 모달 -->
   <div class="modal" id="name-input-modal" style="text-align:center;">
     <div class="modal-handle"></div>
-    <div style="font-size:2.5rem; margin-bottom:var(--space-3);">✨</div>
+    <div style="margin-bottom: var(--space-3); display: flex; justify-content: center;">
+      <img src="assets/sheep/givemename.png" alt="이름을 지어줘" style="width: 110px; height: 110px; object-fit: contain; border-radius: var(--radius-md);">
+    </div>
     <h3 class="font-bold" style="font-size:var(--font-size-lg); margin-bottom:var(--space-2);">이름을 지어줘!</h3>
     <p class="text-muted" style="font-size:var(--font-size-sm); margin-bottom:var(--space-4); line-height:1.6;">드리미에게 특별한 이름을 선물해 줘. 💕</p>
     <input type="text" id="name-input-field" class="glass" maxlength="8"
@@ -246,7 +251,7 @@
   <script type="module">
     import { initCommon, spawnHearts, showToast } from './js/app.js';
     import { readSheep, renderSheepTo, updateXPBar, petSheep, feedSheep, decaySheepStats, playSheepAnim } from './js/sheep.js';
-    import { initSound, resumeAudio, playSoundPet, playSoundFeed, playSoundSleep, playSoundClick, playSoundXP } from './js/sound.js';
+    import { initSound, resumeAudio, playSoundPet, playSoundFeed, playSoundSleep, playSoundClick, playSoundXP, startBgm, stopBgm, isBgmPlaying, setBgmEnabled, isBgmEnabled } from './js/sound.js';
     import { recordSleep, getStreak } from './js/sleep.js';
     import { SHEEP_POSE, NAME_DIALOG_SCRIPT, getRandomQuote } from './js/constants.js';
     import { saveSheep, setItem, getItem, removeItem } from './js/storage.js';
@@ -255,6 +260,34 @@
     document.addEventListener('DOMContentLoaded', () => {
       initCommon();
       initSound();
+
+      // ─── 오르골 배경음악 토글 ───
+      const btnBgmToggle = document.getElementById('btn-bgm-toggle');
+      function updateBgmBtn() {
+        btnBgmToggle.textContent = isBgmEnabled() ? '🎵' : '🔕';
+        btnBgmToggle.style.opacity = isBgmEnabled() ? '1' : '0.5';
+      }
+      updateBgmBtn();
+      btnBgmToggle.addEventListener('click', () => {
+        const newState = !isBgmEnabled();
+        setBgmEnabled(newState);
+        if (newState) {
+          resumeAudio();
+          startBgm();
+          showToast('🎵 오르골 배경음악 시작', 'success');
+        } else {
+          showToast('🔕 배경음악 꺼짐', 'success');
+        }
+        updateBgmBtn();
+      });
+
+      // 첫 번째 사용자 인터랙션 시 BGM 자동 시작
+      let _bgmStarted = false;
+      function tryStartBgm() {
+        if (_bgmStarted) return;
+        _bgmStarted = true;
+        if (isBgmEnabled()) startBgm();
+      }
 
       // 첫 로드 시 오프닝 스토리 노출 여부 체크
       checkAndShowOpening(document.querySelector('.phone'));
@@ -474,6 +507,7 @@
       // ─── 쓰다듬기 ───
       btnPet.addEventListener('click', () => {
         resumeAudio();
+        tryStartBgm();
         const res = petSheep();
         if (res.success) {
           playSoundPet();
@@ -488,6 +522,7 @@
       // ─── 먹이주기 ───
       btnFeed.addEventListener('click', () => {
         resumeAudio();
+        tryStartBgm();
         const res = feedSheep();
         if (res.success) {
           playSoundFeed();
@@ -519,6 +554,7 @@
 
       document.getElementById('btn-start-sleep-confirm').addEventListener('click', () => {
         resumeAudio();
+        tryStartBgm();
         playSoundSleep();
         const now = new Date();
         const bedTimeString = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
@@ -572,6 +608,16 @@
       refreshUI();
       speechBubble.textContent = `"${getRandomQuote()}"`;
       setTimeout(startAutoTimers, 1500);
+
+      // 화면 어느 곳이든 최초 터치/클릭 시 오디오를 활성화하고 BGM을 자동 재생
+      const handleFirstInteraction = () => {
+        resumeAudio();
+        tryStartBgm();
+        document.removeEventListener('click', handleFirstInteraction);
+        document.removeEventListener('touchstart', handleFirstInteraction);
+      };
+      document.addEventListener('click', handleFirstInteraction, { passive: true });
+      document.addEventListener('touchstart', handleFirstInteraction, { passive: true });
     });
   </script>
 </body>

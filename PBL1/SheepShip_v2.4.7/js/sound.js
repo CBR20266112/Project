@@ -1,4 +1,4 @@
-﻿/**
+/**
  * sound.js - Sleepy Sheep 사운드 시스템
  * Web Audio API를 사용한 프로시저럴 사운드 합성
  */
@@ -7,6 +7,7 @@ let _ctx = null;
 let _masterGain = null;
 let _sfxGain = null;
 let _asmrtGain = null;
+let _bgmGain = null;
 
 function getCtx() {
   if (!_ctx) {
@@ -20,6 +21,9 @@ function getCtx() {
     _asmrtGain = _ctx.createGain();
     _asmrtGain.gain.value = 0.6;
     _asmrtGain.connect(_masterGain);
+    _bgmGain = _ctx.createGain();
+    _bgmGain.gain.value = 0.18; // 배경음악은 기본적으로 작게
+    _bgmGain.connect(_masterGain);
   }
   if (_ctx.state === 'suspended') _ctx.resume();
   return _ctx;
@@ -34,16 +38,21 @@ function savePrefs() {
 
 export function setSfxVolume(v) { _prefs.sfxVol = v; savePrefs(); if (_sfxGain) _sfxGain.gain.value = v; }
 export function setAsmrVolume(v) { _prefs.asmrVol = v; savePrefs(); if (_asmrtGain) _asmrtGain.gain.value = v; }
+export function setBgmVolume(v) { _prefs.bgmVol = v; savePrefs(); if (_bgmGain) _bgmGain.gain.value = v; }
 export function getSfxVolume()  { return _prefs.sfxVol  ?? 0.9; }
 export function getAsmrVolume() { return _prefs.asmrVol ?? 0.6; }
+export function getBgmVolume()  { return _prefs.bgmVol  ?? 0.18; }
 export function isSfxEnabled()  { return _prefs.sfxOn  !== false; }
 export function isAsmrEnabled() { return _prefs.asmrOn !== false; }
+export function isBgmEnabled()  { return _prefs.bgmOn  !== false; }
 export function setSfxEnabled(v)  { _prefs.sfxOn  = v; savePrefs(); }
 export function setAsmrEnabled(v) { _prefs.asmrOn = v; savePrefs(); }
+export function setBgmEnabled(v)  { _prefs.bgmOn  = v; savePrefs(); if (!v) stopBgm(); else if (!_bgmRunning) startBgm(); }
 
 function syncVolumes() {
   if (_sfxGain)   _sfxGain.gain.value   = getSfxVolume();
   if (_asmrtGain) _asmrtGain.gain.value  = getAsmrVolume();
+  if (_bgmGain)   _bgmGain.gain.value    = getBgmVolume();
 }
 
 function rand(min, max) { return min + Math.random() * (max - min); }
@@ -84,48 +93,96 @@ function createGain(val) {
 
 // --- SFX ---
 
+/**
+ * 양 쓰다듬기 소리: 귀여운 "뾱뾱" pitch glide + "메에~" 양 울음 혼합
+ */
 export function playSoundPet() {
   if (!isSfxEnabled()) return;
   const ctx = getCtx();
   const now = ctx.currentTime;
-  const count = Math.floor(rand(2, 4));
-  for (let i = 0; i < count; i++) {
-    const t = now + i * rand(0.08, 0.14);
-    const dur = rand(0.18, 0.32);
-    const noise = createNoise(dur + 0.05);
-    const lpf   = createFilter('lowpass', rand(800, 1600));
-    const hpf   = createFilter('highpass', rand(200, 500));
-    const env   = createGain(0);
-    const pan   = ctx.createStereoPanner();
-    pan.pan.value = rand(-0.4, 0.4);
-    noise.connect(lpf); lpf.connect(hpf); hpf.connect(env); env.connect(pan); pan.connect(_sfxGain);
-    const vol = rand(0.25, 0.45);
-    env.gain.setValueAtTime(0, t);
-    env.gain.linearRampToValueAtTime(vol, t + dur * 0.2);
-    env.gain.linearRampToValueAtTime(vol * 0.6, t + dur * 0.7);
-    env.gain.linearRampToValueAtTime(0, t + dur);
-    noise.start(t); noise.stop(t + dur + 0.02);
+
+  // 1) 뾱뾱 (짧은 pitch glide 연속)
+  const boingCount = Math.floor(rand(2, 4));
+  for (let i = 0; i < boingCount; i++) {
+    const t = now + i * rand(0.07, 0.13);
+    const o = ctx.createOscillator();
+    const g = createGain(0);
+    o.type = 'sine';
+    const startFreq = rand(900, 1400);
+    o.frequency.setValueAtTime(startFreq * 0.6, t);
+    o.frequency.linearRampToValueAtTime(startFreq, t + 0.025);
+    o.frequency.exponentialRampToValueAtTime(startFreq * 0.4, t + 0.18);
+    o.connect(g); g.connect(_sfxGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(rand(0.3, 0.45), t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    o.start(t); o.stop(t + 0.22);
   }
+
+  // 2) 뒤따라 나오는 양 울음 "메에~"
+  const maaTime = now + boingCount * 0.1 + rand(0.05, 0.12);
+  const maaDur  = rand(0.38, 0.58);
+  const baseFreq = rand(310, 370);
+  const o1 = ctx.createOscillator();
+  const o2 = ctx.createOscillator();
+  const maaGain = createGain(0);
+  o1.type = 'sawtooth';
+  o2.type = 'sine';
+  o1.frequency.setValueAtTime(baseFreq, maaTime);
+  o1.frequency.linearRampToValueAtTime(baseFreq * 1.18, maaTime + 0.07);
+  o1.frequency.exponentialRampToValueAtTime(baseFreq * 0.88, maaTime + maaDur);
+  o2.frequency.setValueAtTime(baseFreq * 2.02, maaTime);
+  o2.frequency.linearRampToValueAtTime(baseFreq * 2.35, maaTime + 0.07);
+  o2.frequency.exponentialRampToValueAtTime(baseFreq * 1.75, maaTime + maaDur);
+  const lpf = createFilter('lowpass', 900, 2);
+  o1.connect(lpf); o2.connect(lpf); lpf.connect(maaGain); maaGain.connect(_sfxGain);
+  maaGain.gain.setValueAtTime(0, maaTime);
+  maaGain.gain.linearRampToValueAtTime(0.28, maaTime + 0.04);
+  maaGain.gain.setValueAtTime(0.22, maaTime + maaDur * 0.7);
+  maaGain.gain.linearRampToValueAtTime(0, maaTime + maaDur);
+  o1.start(maaTime); o1.stop(maaTime + maaDur + 0.05);
+  o2.start(maaTime); o2.stop(maaTime + maaDur + 0.05);
 }
 
+/**
+ * 먹이주기 소리: 냠냠 씹어먹는 소리 + 짧고 만족스러운 "메에~"
+ */
 export function playSoundFeed() {
   if (!isSfxEnabled()) return;
   const ctx = getCtx();
   const now = ctx.currentTime;
-  const bites = Math.floor(rand(3, 6));
+
+  // 1) 냠냠 씹는 소리 (높은 주파수 밴드패스 필터 노이즈)
+  const bites = Math.floor(rand(3, 5));
   for (let i = 0; i < bites; i++) {
-    const t   = now + i * rand(0.12, 0.22);
-    const dur = rand(0.06, 0.12);
-    const noise = createNoise(dur + 0.05);
-    const bpf   = createFilter('bandpass', rand(600, 2200), rand(2, 5));
+    const t   = now + i * rand(0.10, 0.18);
+    const dur = rand(0.05, 0.09);
+    const noise = createNoise(dur + 0.04);
+    const bpf   = createFilter('bandpass', rand(1800, 3200), rand(3, 7));
     const env   = createGain(0);
     noise.connect(bpf); bpf.connect(env); env.connect(_sfxGain);
-    const vol = rand(0.3, 0.55);
     env.gain.setValueAtTime(0, t);
-    env.gain.linearRampToValueAtTime(vol, t + 0.01);
+    env.gain.linearRampToValueAtTime(rand(0.35, 0.55), t + 0.008);
     env.gain.exponentialRampToValueAtTime(0.001, t + dur);
     noise.start(t); noise.stop(t + dur + 0.02);
   }
+
+  // 2) 만족스러운 짧은 "메에" 소리
+  const meeTime = now + bites * 0.14 + 0.06;
+  const meeDur  = rand(0.22, 0.35);
+  const baseF   = rand(380, 460);
+  const o = ctx.createOscillator();
+  const g = createGain(0);
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(baseF, meeTime);
+  o.frequency.linearRampToValueAtTime(baseF * 1.12, meeTime + 0.05);
+  o.frequency.exponentialRampToValueAtTime(baseF * 0.82, meeTime + meeDur);
+  const lpf2 = createFilter('lowpass', 800, 1.5);
+  o.connect(lpf2); lpf2.connect(g); g.connect(_sfxGain);
+  g.gain.setValueAtTime(0, meeTime);
+  g.gain.linearRampToValueAtTime(0.22, meeTime + 0.03);
+  g.gain.exponentialRampToValueAtTime(0.001, meeTime + meeDur);
+  o.start(meeTime); o.stop(meeTime + meeDur + 0.05);
 }
 
 export function playSoundSleep() {
@@ -571,6 +628,136 @@ function _addCrickets(now, dur, vol) {
   }
   _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
 }
+
+// ─── BGM (오르골 배경음악) ───
+
+// 잠자기 좋은 오르골 멜로디 노트 배열 (주파수, 박자길이)
+// C장조 계열의 잔잔한 멜로디
+const BGM_MELODY = [
+  // 1절: 자장가 느낌의 C장조 선율
+  [523.25, 0.5], [659.25, 0.5], [783.99, 0.5], [659.25, 0.5],
+  [783.99, 0.5], [880.00, 0.5], [1046.5, 1.0],
+  [880.00, 0.5], [783.99, 0.5], [659.25, 0.5], [523.25, 0.5],
+  [392.00, 0.5], [440.00, 0.5], [523.25, 1.5],
+  // 2절: 조금 더 높게
+  [659.25, 0.5], [783.99, 0.5], [880.00, 0.5], [783.99, 0.5],
+  [659.25, 0.5], [587.33, 0.5], [523.25, 1.0],
+  [440.00, 0.5], [523.25, 0.5], [587.33, 0.5], [523.25, 0.5],
+  [493.88, 0.5], [440.00, 0.5], [392.00, 1.5],
+  // 3절: 마무리
+  [523.25, 0.5], [587.33, 0.5], [659.25, 0.5], [587.33, 0.5],
+  [523.25, 0.5], [493.88, 0.5], [440.00, 1.0],
+  [392.00, 0.5], [440.00, 0.5], [493.88, 0.5], [523.25, 0.5],
+  [659.25, 0.5], [783.99, 0.5], [523.25, 2.0],
+];
+
+const BGM_BPM = 72; // 느리고 잔잔하게
+const BGM_BEAT_SEC = 60 / BGM_BPM;
+
+let _bgmRunning = false;
+let _bgmTimeout = null;
+let _bgmNodes = [];
+
+/**
+ * 오르골 단일 노트 합성
+ * 오르골 특성: 즉각적인 어택, 사인파+약간의 배음, 빠른 감쇠
+ */
+function _playMusicBoxNote(ctx, freq, startTime, duration) {
+  if (!_bgmGain) return;
+
+  // 기본 사인파 (오르골의 맑은 음색)
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = freq;
+
+  // 2배음 (약하게, 오르골 특유의 따듯한 배음)
+  const osc2 = ctx.createOscillator();
+  const env2 = ctx.createGain();
+  osc2.type = 'sine';
+  osc2.frequency.value = freq * 2;
+
+  // 3배음 (매우 약하게)
+  const osc3 = ctx.createOscillator();
+  const env3 = ctx.createGain();
+  osc3.type = 'sine';
+  osc3.frequency.value = freq * 3;
+
+  osc.connect(env);   env.connect(_bgmGain);
+  osc2.connect(env2); env2.connect(_bgmGain);
+  osc3.connect(env3); env3.connect(_bgmGain);
+
+  const attackTime = 0.005; // 오르골의 즉각적인 어택
+  const decayTime  = Math.min(duration * 0.85, 1.8); // 오르골 특유의 긴 여운
+
+  // 기본음 엔벨로프
+  env.gain.setValueAtTime(0, startTime);
+  env.gain.linearRampToValueAtTime(0.7, startTime + attackTime);
+  env.gain.exponentialRampToValueAtTime(0.001, startTime + decayTime);
+
+  // 2배음 엔벨로프 (더 빨리 감쇠)
+  env2.gain.setValueAtTime(0, startTime);
+  env2.gain.linearRampToValueAtTime(0.2, startTime + attackTime);
+  env2.gain.exponentialRampToValueAtTime(0.001, startTime + decayTime * 0.5);
+
+  // 3배음 엔벨로프 (가장 빨리 감쇠)
+  env3.gain.setValueAtTime(0, startTime);
+  env3.gain.linearRampToValueAtTime(0.06, startTime + attackTime);
+  env3.gain.exponentialRampToValueAtTime(0.001, startTime + decayTime * 0.25);
+
+  const stopAt = startTime + decayTime + 0.05;
+  osc.start(startTime);  osc.stop(stopAt);
+  osc2.start(startTime); osc2.stop(stopAt * 0.6);
+  osc3.start(startTime); osc3.stop(stopAt * 0.3);
+
+  _bgmNodes.push(osc, env, osc2, env2, osc3, env3);
+}
+
+/**
+ * 오르골 배경음악 한 사이클 재생
+ */
+function _playBgmCycle() {
+  if (!_bgmRunning || !isBgmEnabled()) return;
+  const ctx = getCtx();
+  const now = ctx.currentTime + 0.05; // 약간의 여유
+
+  let t = now;
+  let totalDuration = 0;
+  BGM_MELODY.forEach(([freq, beats]) => {
+    const dur = beats * BGM_BEAT_SEC;
+    _playMusicBoxNote(ctx, freq, t, dur);
+    t += dur;
+    totalDuration += dur;
+  });
+
+  // 마지막 노트 이후 잠시 쉬었다가 다시 반복 (자연스러운 루프)
+  const loopAfter = (totalDuration + 2.0) * 1000;
+  _bgmTimeout = setTimeout(() => {
+    // 이전 노드 정리
+    _bgmNodes.forEach(n => { try { n.disconnect(); } catch(e) {} });
+    _bgmNodes = [];
+    if (_bgmRunning && isBgmEnabled()) _playBgmCycle();
+  }, loopAfter);
+}
+
+/** 오르골 배경음악 시작 */
+export function startBgm() {
+  if (_bgmRunning) return;
+  if (!isBgmEnabled()) return;
+  _bgmRunning = true;
+  _playBgmCycle();
+}
+
+/** 오르골 배경음악 정지 */
+export function stopBgm() {
+  _bgmRunning = false;
+  clearTimeout(_bgmTimeout);
+  _bgmNodes.forEach(n => { try { n.stop(); } catch(e) {} try { n.disconnect(); } catch(e) {} });
+  _bgmNodes = [];
+}
+
+/** 현재 BGM 재생 중 여부 */
+export function isBgmPlaying() { return _bgmRunning; }
 
 export function initSound() {
   syncVolumes();
