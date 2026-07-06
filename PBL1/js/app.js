@@ -148,15 +148,19 @@ export function initCommon() {
   initStars();
   initNav();
   initPageAnimation();
-  initPwaAlarmLazy();
+  initPwaServicesLazy();
 }
 
-/** PWA 알람 (홈에서 모닝콜 핸들러 연결) */
-let _pwaAlarmBooted = false;
-export function initPwaAlarmLazy() {
-  if (_pwaAlarmBooted) return;
-  _pwaAlarmBooted = true;
-  import('./pwa-alarm.js').then(({ initPwaAlarm, syncAlarmToServiceWorker }) => {
+/** PWA 알람·설치 유도 */
+let _pwaBooted = false;
+export function initPwaServicesLazy() {
+  if (_pwaBooted) return;
+  _pwaBooted = true;
+
+  Promise.all([
+    import('./pwa-alarm.js'),
+    import('./pwa-install.js'),
+  ]).then(([{ initPwaAlarm, syncAlarmToServiceWorker }, { initPwaInstallPrompt }]) => {
     initPwaAlarm({
       onMorningCall: () => {
         const isHome = !window.location.pathname.includes('/pages/');
@@ -169,5 +173,8 @@ export function initPwaAlarmLazy() {
       },
     });
     window.ssSyncBackgroundAlarm = syncAlarmToServiceWorker;
+
+    initPwaInstallPrompt({ showToast });
+    window.ssPromptAppInstall = () => import('./pwa-install.js').then(m => m.promptInstall({ showToast }));
   }).catch(() => {});
 }

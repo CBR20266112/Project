@@ -187,6 +187,15 @@
               <span class="switch-slider"></span>
             </label>
           </div>
+
+          <!-- 앱 바로가기 -->
+          <div class="setting-item" style="border-bottom:none; flex-direction:column; align-items:stretch; gap:var(--space-2);">
+            <div class="setting-info">
+              <span class="setting-title">📲 앱 바로가기</span>
+              <span class="setting-desc">홈 화면에 추가하면 앱처럼 바로 열 수 있어요.</span>
+            </div>
+            <button class="btn btn-secondary w-full" id="btn-pwa-install" type="button">바로가기 추가하기</button>
+          </div>
         </div>
       </section>
 
@@ -302,6 +311,7 @@
     import { GROWTH_TABLE, APP_VERSION } from '../js/constants.js';
     import { startOpening } from '../js/opening.js';
     import { saveMorningCallSchedule } from '../js/morningcall.js';
+    import { promptInstall, isAppInstalled } from '../js/pwa-install.js';
     import { initSound, isBgmEnabled, setBgmEnabled, startBgm, stopBgm, resumeAudio, getBgmVolume, setBgmVolume } from '../js/sound.js';
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -330,6 +340,7 @@
       const inputGeminiKey = document.getElementById('input-gemini-key');
       const btnSaveGeminiKey = document.getElementById('btn-save-gemini-key');
       const btnDeleteGeminiKey = document.getElementById('btn-delete-gemini-key');
+      const btnPwaInstall = document.getElementById('btn-pwa-install');
 
       let settings = getSettings();
 
@@ -356,6 +367,13 @@
 
         // Gemini API Key 로드
         inputGeminiKey.value = settings.geminiApiKey || '';
+
+        if (btnPwaInstall) {
+          btnPwaInstall.textContent = isAppInstalled()
+            ? '✓ 바로가기 추가됨'
+            : '바로가기 추가하기';
+          btnPwaInstall.disabled = isAppInstalled();
+        }
       }
 
       function updateBgmSliderState(enabled) {
@@ -425,6 +443,10 @@
 
       switchVibrate.addEventListener('change', () => {
         updateSetting('vibration', switchVibrate.checked);
+      });
+
+      btnPwaInstall?.addEventListener('click', () => {
+        promptInstall({ showToast }).then(() => refreshUI());
       });
 
       switchMorningCallSimple.addEventListener('change', () => {

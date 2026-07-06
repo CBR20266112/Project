@@ -50,7 +50,7 @@ export function getPetPoseCandidates() {
   const base = getAssetBasePath();
   const paths = [];
 
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 8; i++) {
     paths.push(`${base}assets/pet/poses/pose${i}.png`);
   }
   for (let i = 1; i <= 16; i++) {
