@@ -14,7 +14,7 @@ GitHub Pages는 공개 HTTPS 주소이므로 **다른 네트워크·IP에서도*
 
 ## 현재 버전
 
-**v1.72.3** (`PBL1/js/constants.js`의 `APP_VERSION`)
+**v1.72.4** (`PBL1/js/constants.js`의 `APP_VERSION`)
 
 ## 폴더 구조
 
@@ -31,24 +31,24 @@ PBL1/                   ← GitHub 리포지토리
     └── assets/
 ```
 
-## 브랜치 동기화 (main · v1.72.3)
+## 브랜치 동기화 (main · v1.72.4)
 
-업데이트 후 아래처럼 `main`과 `v1.72.3` 브랜치를 맞춥니다.
+업데이트 후 아래처럼 `main`과 `v1.72.4` 브랜치를 맞춥니다.
 
 ```bash
 git add .
 git commit -m "업데이트 내용"
 git push origin main
-git push origin main:v1.72.3
+git push origin main:v1.72.4
 ```
 
-`v1.72.3` 브랜치가 아직 없으면 위 `git push origin main:v1.72.3` 한 번으로 생성됩니다.
+`v1.72.4` 브랜치가 아직 없으면 위 `git push origin main:v1.72.4` 한 번으로 생성됩니다.
 
 ## GitHub Pages 설정
 
 리포지토리 **Settings → Pages** 에서:
 
 - **Source**: Deploy from a branch
-- **Branch**: `main` (또는 `v1.72.3`) / **Folder**: `/ (root)`
+- **Branch**: `main` (또는 `v1.72.4`) / **Folder**: `/ (root)`
 
 저장 후 1~3분 뒤 배포 링크에서 반영됩니다.

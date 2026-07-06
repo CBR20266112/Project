@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>메에메에 캘린더 | SleepySheep</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <style>
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 6px;
+      text-align: center;
+      font-size: var(--font-size-2xs);
+      color: var(--text-muted);
+      font-weight: 800;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .cal-cell {
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 2px;
+    }
+    .cal-cell.empty { visibility: hidden; pointer-events: none; }
+    .cal-cell:hover:not(.empty) { background: rgba(167,139,250,0.15); }
+    .cal-cell.today { border-color: var(--color-purple-soft); box-shadow: 0 0 8px rgba(167,139,250,0.25); }
+    .cal-cell.selected { background: rgba(167,139,250,0.28); border-color: var(--color-purple); }
+    .cal-day-num { font-size: var(--font-size-sm); font-weight: 800; }
+    .cal-dots { display: flex; gap: 3px; min-height: 6px; }
+    .cal-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .cal-dot-sleep { background: #A78BFA; }
+    .cal-dot-worry { background: #F9A8D4; }
+    .day-detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-2);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--glass-border);
+      font-size: var(--font-size-sm);
+    }
+    .day-detail-row:last-child { border-bottom: none; }
+    .day-quote {
+      background: rgba(167,139,250,0.1);
+      border-left: 3px solid var(--color-purple-soft);
+      padding: var(--space-3);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone">
+    <header class="header">
+      <div class="header-left">
+        <button class="btn-back" onclick="location.href='sleep.html'" title="뒤로가기">←</button>
+        <div>
+          <h1>📅 메에메에 캘린더</h1>
+          <p class="subtitle">날짜별 수면과 마음 기록</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="glass card" style="padding: var(--space-4);">
+        <div class="flex justify-between items-center" style="margin-bottom: var(--space-3);">
+          <button class="btn btn-secondary" id="btn-prev-month" style="padding: var(--space-2) var(--space-3);">‹</button>
+          <h2 class="font-bold" id="cal-month-title" style="font-size: var(--font-size-md);">2026년 7월</h2>
+          <button class="btn btn-secondary" id="btn-next-month" style="padding: var(--space-2) var(--space-3);">›</button>
+        </div>
+        <div class="cal-weekdays" id="cal-weekdays"></div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="flex gap-3 justify-center" style="margin-top: var(--space-3); font-size: var(--font-size-2xs); color: var(--text-muted);">
+          <span><span class="cal-dot cal-dot-sleep" style="display:inline-block;vertical-align:middle;"></span> 수면</span>
+          <span><span class="cal-dot cal-dot-worry" style="display:inline-block;vertical-align:middle;"></span> 고민</span>
+        </div>
+      </section>
+
+      <section class="glass card" style="padding: var(--space-4);" id="day-detail-section">
+        <h3 class="font-bold" id="detail-date-title" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">
+          날짜를 선택해 주세요
+        </h3>
+        <div id="day-detail-body">
+          <p class="text-muted text-center" style="font-size: var(--font-size-sm); line-height: 1.6; padding: var(--space-4) 0;">
+            캘린더에서 날짜를 누르면<br>수면·고민·AI 답변을 볼 수 있어요.
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item" data-href="../index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item active" data-href="sleep.html">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sheep.html">
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="workshop.html">
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="friends.html">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
+        <span class="nav-dot"></span>
+      </div>
+    </nav>
+  </main>
+
+  <script type="module">
+    import { initCommon } from '../js/app.js';
+    import {
+      buildMonthGrid,
+      getMonthDataMap,
+      getDayEntry,
+      formatMonthTitle,
+      todayKey,
+      moodEmoji,
+      formatDuration,
+      WEEKDAY_LABELS,
+    } from '../js/calendar.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+
+      const now = new Date();
+      let viewYear = now.getFullYear();
+      let viewMonth = now.getMonth();
+      let selectedDate = todayKey();
+
+      const monthTitle = document.getElementById('cal-month-title');
+      const calWeekdays = document.getElementById('cal-weekdays');
+      const calGrid = document.getElementById('cal-grid');
+      const detailTitle = document.getElementById('detail-date-title');
+      const detailBody = document.getElementById('day-detail-body');
+
+      calWeekdays.innerHTML = WEEKDAY_LABELS.map(d => `<span>${d}</span>`).join('');
+
+      function renderDetail(dateStr) {
+        const entry = getDayEntry(dateStr);
+        const [y, m, d] = dateStr.split('-');
+        detailTitle.textContent = `${y}년 ${parseInt(m)}월 ${parseInt(d)}일 기록`;
+
+        if (!entry.hasAny) {
+          detailBody.innerHTML = `
+            <p class="text-muted text-center" style="font-size: var(--font-size-sm); line-height: 1.6; padding: var(--space-3) 0;">
+              이 날은 아직 기록이 없어요.<br>
+              수면 기록이나 마음 상담소를 이용해 보세요.
+            </p>
+          `;
+          return;
+        }
+
+        let html = '';
+
+        if (entry.sleep) {
+          const s = entry.sleep;
+          html += `
+            <div style="margin-bottom: var(--space-4);">
+              <h4 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-2);">😴 수면</h4>
+              <div class="day-detail-row"><span class="text-muted">취침</span><span class="font-bold">${s.bedtime}</span></div>
+              <div class="day-detail-row"><span class="text-muted">기상</span><span class="font-bold">${s.wakeTime}</span></div>
+              <div class="day-detail-row"><span class="text-muted">수면 시간</span><span class="font-bold">${formatDuration(s.duration)}</span></div>
+              <div class="day-detail-row"><span class="text-muted">기분</span><span class="font-bold">${moodEmoji(s.mood)}</span></div>
+              ${s.note ? `<div class="day-detail-row"><span class="text-muted">메모</span><span style="text-align:right;max-width:65%;">${escapeHtml(s.note)}</span></div>` : ''}
+            </div>
+          `;
+        }
+
+        if (entry.worry) {
+          html += `
+            <div>
+              <h4 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-2);">💭 오늘의 고민</h4>
+              <div class="day-quote" style="margin-bottom: var(--space-3);">${escapeHtml(entry.worry.content)}</div>
+              <h4 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-2);">🐑 드리미의 답변</h4>
+              <div class="day-quote">${escapeHtml(entry.worry.reply)}</div>
+            </div>
+          `;
+        }
+
+        detailBody.innerHTML = html;
+      }
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function renderCalendar() {
+        monthTitle.textContent = formatMonthTitle(viewYear, viewMonth);
+        const { sleepMap, worryMap } = getMonthDataMap(viewYear, viewMonth);
+        const cells = buildMonthGrid(viewYear, viewMonth);
+        const today = todayKey();
+
+        calGrid.innerHTML = '';
+        cells.forEach(cell => {
+          const el = document.createElement('div');
+          if (!cell.inMonth) {
+            el.className = 'cal-cell empty';
+            calGrid.appendChild(el);
+            return;
+          }
+
+          const hasSleep = !!sleepMap[cell.date];
+          const hasWorry = !!worryMap[cell.date];
+          el.className = 'cal-cell';
+          if (cell.date === today) el.classList.add('today');
+          if (cell.date === selectedDate) el.classList.add('selected');
+
+          el.innerHTML = `
+            <span class="cal-day-num">${cell.day}</span>
+            <div class="cal-dots">
+              ${hasSleep ? '<span class="cal-dot cal-dot-sleep"></span>' : ''}
+              ${hasWorry ? '<span class="cal-dot cal-dot-worry"></span>' : ''}
+            </div>
+          `;
+
+          el.addEventListener('click', () => {
+            selectedDate = cell.date;
+            renderCalendar();
+            renderDetail(cell.date);
+          });
+
+          calGrid.appendChild(el);
+        });
+
+        if (selectedDate) renderDetail(selectedDate);
+      }
+
+      document.getElementById('btn-prev-month').addEventListener('click', () => {
+        viewMonth -= 1;
+        if (viewMonth < 0) { viewMonth = 11; viewYear -= 1; }
+        renderCalendar();
+      });
+
+      document.getElementById('btn-next-month').addEventListener('click', () => {
+        viewMonth += 1;
+        if (viewMonth > 11) { viewMonth = 0; viewYear += 1; }
+        renderCalendar();
+      });
+
+      renderCalendar();
+    });
+  </script>
+</body>
+</html>
