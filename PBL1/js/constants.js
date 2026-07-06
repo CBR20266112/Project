@@ -4,7 +4,7 @@
  */
 
 /** 앱 버전 (설정 화면·배포 기준) */
-export const APP_VERSION = '1.72.2';
+export const APP_VERSION = '1.72.3';
 
 // ─── localStorage 키 ───
 export const STORAGE_KEYS = Object.freeze({
@@ -121,6 +121,16 @@ export const DEFAULT_SETTINGS = Object.freeze({
   morningCallSimple: false, // true면 상호작용 없이 알람 끄기 버튼만
   geminiApiKey:      '',
 });
+
+// ─── 출석 보상 ───
+export const DAILY_ATTENDANCE_WOOL = 3;
+
+/** 연속 출석 스토리 해금 (7 / 14 / 21일) */
+export const ATTENDANCE_STORIES = Object.freeze([
+  { id: 'story_7',  days: 7,  title: '7일째, 꿈이 열리다',     from: 1,  to: 5  },
+  { id: 'story_14', days: 14, title: '14일째, 별의 약속',      from: 6,  to: 10 },
+  { id: 'story_21', days: 21, title: '21일째, 영원한 밤하늘',  from: 11, to: 14 },
+]);
 
 // ─── 아이템 초기값 ───
 export const DEFAULT_ITEMS = Object.freeze({

@@ -51,6 +51,9 @@ export function clearAll() {
   Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
   // 오프닝 시청 기록 (opening.js) — 전체 초기화 시 스토리 다시 재생
   localStorage.removeItem('ss_opening_viewed');
+  localStorage.removeItem('ss_attendance');
+  localStorage.removeItem('ss_sleeping_since');
+  localStorage.removeItem('ss_morningcall_fired_date');
 }
 
 // ─── 도메인별 헬퍼 ───

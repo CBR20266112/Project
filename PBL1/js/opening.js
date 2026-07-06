@@ -26,45 +26,43 @@ export function checkAndShowOpening(parentContainer, onComplete = null) {
 }
 
 /**
- * 오프닝 스토리 강제 재생 (다시보기 등)
- * @param {HTMLElement} parentContainer 오버레이를 삽입할 부모 엘리먼트
- * @param {boolean} isReplay 다시보기 모드 여부 (스토리지 저장 여부 결정)
- * @param {Function} onComplete 콜백 함수
+ * 이미지 슬라이드쇼 재생 (오프닝·출석 스토리 공통)
+ * @param {HTMLElement} parentContainer
+ * @param {string[]} images
+ * @param {{ onComplete?: Function, onClose?: Function, skipText?: string, hintText?: string }} options
  */
-export function startOpening(parentContainer, isReplay = false, onComplete = null) {
-  if (!parentContainer) return;
+export function startImageSlideshow(parentContainer, images, options = {}) {
+  if (!parentContainer || !images?.length) return;
 
-  // 기존 오버레이가 있다면 제거
+  const {
+    onComplete = null,
+    onClose = null,
+    skipText = 'Skip',
+    hintText = '화면을 터치하면 다음으로 넘어갑니다',
+  } = options;
+
   const existing = parentContainer.querySelector('.opening-overlay');
   if (existing) existing.remove();
 
-  // 오버레이 엘리먼트 생성
   const overlay = document.createElement('div');
   overlay.className = 'opening-overlay';
   overlay.style.opacity = '1';
 
-  // 이미지 1, 2 생성 (크로스페이드용)
   const img1 = document.createElement('img');
   img1.className = 'opening-img active';
-  img1.alt = 'Opening Story 1';
-  
   const img2 = document.createElement('img');
   img2.className = 'opening-img';
-  img2.alt = 'Opening Story 2';
-
   overlay.appendChild(img1);
   overlay.appendChild(img2);
 
-  // 건너뛰기 버튼 생성
   const skipBtn = document.createElement('button');
   skipBtn.className = 'opening-skip-btn';
-  skipBtn.textContent = 'Skip';
+  skipBtn.textContent = skipText;
   overlay.appendChild(skipBtn);
 
-  // 안내 힌트 문구 생성
   const hint = document.createElement('div');
   hint.className = 'opening-hint';
-  hint.textContent = '화면을 터치하면 다음으로 넘어갑니다';
+  hint.textContent = hintText;
   overlay.appendChild(hint);
 
   parentContainer.appendChild(overlay);
@@ -74,83 +72,68 @@ export function startOpening(parentContainer, isReplay = false, onComplete = nul
   let inactiveImg = img2;
   let transitioning = false;
 
-  // 첫 이미지 로드
-  activeImg.src = OPENING_IMAGES[0];
+  activeImg.src = images[0];
   preloadNext(0);
 
-  // 다음 이미지 프리로드
   function preloadNext(index) {
-    if (index + 1 < OPENING_IMAGES.length) {
+    if (index + 1 < images.length) {
       const img = new Image();
-      img.src = OPENING_IMAGES[index + 1];
+      img.src = images[index + 1];
     }
   }
 
-  // 다음 이미지로 진행
-  function nextImage() {
-    if (transitioning) return;
-    
-    currentIndex++;
-    if (currentIndex >= OPENING_IMAGES.length) {
-      closeOpening();
-      return;
-    }
-
-    transitioning = true;
-    
-    // 비활성 이미지의 src 교체 및 로드 대기
-    inactiveImg.src = OPENING_IMAGES[currentIndex];
-    
-    inactiveImg.onload = () => {
-      // 크로스페이드 트랜지션 작동
-      inactiveImg.classList.add('active');
-      activeImg.classList.remove('active');
-      
-      // 다음 이미지 백그라운드 프리로드
-      preloadNext(currentIndex);
-
-      // 레퍼런스 스왑
-      const temp = activeImg;
-      activeImg = inactiveImg;
-      inactiveImg = temp;
-      
-      setTimeout(() => {
-        transitioning = false;
-      }, 800); // CSS 트랜지션 시간(800ms)과 동일하게 동기화
-    };
-
-    inactiveImg.onerror = () => {
-      // 이미지 로드 실패 시 강제 인덱스 진행
-      transitioning = false;
-      nextImage();
-    };
-  }
-
-  // 닫기 및 초기화 처리
-  function closeOpening() {
+  function closeSlideshow() {
     overlay.style.transition = 'opacity 0.6s ease';
     overlay.style.opacity = '0';
-    
-    if (!isReplay) {
-      setItem(STORAGE_KEY_VIEWED, true);
-    }
-    
+    if (onClose) onClose();
     setTimeout(() => {
       overlay.remove();
       if (onComplete) onComplete();
     }, 600);
   }
 
-  // 이벤트 바인딩
-  overlay.addEventListener('click', (e) => {
-    // skip 버튼을 누르지 않은 경우에만 다음 이미지로
-    if (e.target !== skipBtn) {
-      nextImage();
+  function nextImage() {
+    if (transitioning) return;
+    currentIndex++;
+    if (currentIndex >= images.length) {
+      closeSlideshow();
+      return;
     }
-  });
+    transitioning = true;
+    inactiveImg.src = images[currentIndex];
+    inactiveImg.onload = () => {
+      inactiveImg.classList.add('active');
+      activeImg.classList.remove('active');
+      preloadNext(currentIndex);
+      const temp = activeImg;
+      activeImg = inactiveImg;
+      inactiveImg = temp;
+      setTimeout(() => { transitioning = false; }, 800);
+    };
+    inactiveImg.onerror = () => {
+      transitioning = false;
+      nextImage();
+    };
+  }
 
+  overlay.addEventListener('click', (e) => {
+    if (e.target !== skipBtn) nextImage();
+  });
   skipBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    closeOpening();
+    closeSlideshow();
+  });
+}
+
+/**
+ * 오프닝 스토리 강제 재생 (다시보기 등)
+ */
+export function startOpening(parentContainer, isReplay = false, onComplete = null) {
+  if (!parentContainer) return;
+  startImageSlideshow(parentContainer, OPENING_IMAGES, {
+    onComplete,
+    onClose: () => {
+      if (!isReplay) setItem(STORAGE_KEY_VIEWED, true);
+    },
   });
 }

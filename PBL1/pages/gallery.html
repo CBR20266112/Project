@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>갤러리 | SleepySheep</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+  <div class="background">
+    <canvas id="star-canvas"></canvas>
+    <div class="moon"></div>
+  </div>
+
+  <main class="phone">
+    <header class="header">
+      <div class="header-left">
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
+        <div>
+          <h1>🖼️ 갤러리</h1>
+          <p class="subtitle">모은 이야기와 이미지</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="glass card" style="padding: var(--space-4);">
+        <p class="text-muted" style="font-size: var(--font-size-sm); line-height: 1.6; margin-bottom: var(--space-3);">
+          해금한 스토리와 오프닝을 다시 감상할 수 있어요.
+        </p>
+        <div id="gallery-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-3);"></div>
+        <p id="gallery-empty" class="text-center text-muted hidden" style="font-size:var(--font-size-sm);padding:var(--space-4);">
+          아직 해금한 이미지가 없어요.<br>출석체크로 스토리를 모아보세요!
+        </p>
+      </section>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item" data-href="../index.html">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">홈</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sleep.html">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">수면</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="sheep.html">
+        <span class="nav-icon">🐑</span>
+        <span class="nav-label">내 양</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="workshop.html">
+        <span class="nav-icon">🧶</span>
+        <span class="nav-label">공방</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="friends.html">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">친구</span>
+        <span class="nav-dot"></span>
+      </div>
+    </nav>
+  </main>
+
+  <script type="module">
+    import { initCommon } from '../js/app.js';
+    import { getItem } from '../js/storage.js';
+    import { ATTENDANCE_STORIES } from '../js/constants.js';
+    import { getAttendance, getStoryImages, getStoryCover, isStoryUnlocked, getAssetPrefix } from '../js/attendance.js';
+    import { startImageSlideshow, startOpening } from '../js/opening.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+
+      const grid = document.getElementById('gallery-grid');
+      const empty = document.getElementById('gallery-empty');
+      const phone = document.querySelector('.phone');
+      const prefix = getAssetPrefix();
+      const openingViewed = !!getItem('ss_opening_viewed');
+
+      const items = [];
+
+      if (openingViewed) {
+        items.push({
+          id: 'opening',
+          title: '오프닝 스토리',
+          cover: `${prefix}assets/sheep/Opening/opening_1.png`,
+          unlocked: true,
+          onView: () => startOpening(phone, true),
+        });
+      } else {
+        items.push({
+          id: 'opening',
+          title: '오프닝 스토리',
+          cover: `${prefix}assets/sheep/Opening/opening_1.png`,
+          unlocked: false,
+        });
+      }
+
+      ATTENDANCE_STORIES.forEach(story => {
+        const unlocked = isStoryUnlocked(story.id);
+        items.push({
+          id: story.id,
+          title: story.title,
+          cover: getStoryCover(story),
+          unlocked,
+          onView: () => startImageSlideshow(phone, getStoryImages(story), {
+            hintText: `${story.title} — 터치하여 넘기기`,
+          }),
+        });
+      });
+
+      const unlockedCount = items.filter(i => i.unlocked).length;
+      if (unlockedCount === 0) {
+        empty.classList.remove('hidden');
+      } else {
+        empty.classList.add('hidden');
+      }
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'glass';
+        card.style.cssText = 'border-radius:var(--radius-md);overflow:hidden;cursor:pointer;opacity:' + (item.unlocked ? '1' : '0.45') + ';';
+        card.innerHTML = `
+          <div style="aspect-ratio:4/3;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+            <img src="${item.cover}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;${item.unlocked ? '' : 'filter:grayscale(1) brightness(0.5);'}">
+          </div>
+          <div style="padding:var(--space-2);">
+            <div style="font-size:var(--font-size-xs);font-weight:800;">${item.unlocked ? '' : '🔒 '}${item.title}</div>
+          </div>
+        `;
+        if (item.unlocked && item.onView) {
+          card.addEventListener('click', item.onView);
+        }
+        grid.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -146,6 +146,14 @@
           <span class="menu-icon">🎵</span>
           <span class="menu-label">ASMR</span>
         </a>
+        <a href="pages/attendance.html" class="menu-item">
+          <span class="menu-icon">📅</span>
+          <span class="menu-label">출석체크</span>
+        </a>
+        <a href="pages/gallery.html" class="menu-item">
+          <span class="menu-icon">🖼️</span>
+          <span class="menu-label">갤러리</span>
+        </a>
       </nav>
 
       <!-- 잠자기 메인 액션 버튼 -->
@@ -307,6 +315,7 @@
     import { saveSheep, setItem, getItem, removeItem, getSettings } from './js/storage.js';
     import { checkAndShowOpening } from './js/opening.js';
     import { pickMorningAction, MORNING_ACTION, initWakeAlarmScheduler } from './js/morningcall.js';
+    import { recordAttendance } from './js/attendance.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       initCommon();
@@ -770,24 +779,6 @@
         return { bonusXp: 2, bonusWool: 2 };
       }
 
-      function updateAttendanceByMorningCall() {
-        const today = new Date().toISOString().slice(0, 10);
-        const attendance = getItem('ss_attendance', { total: 0, streak: 0, lastDate: null });
-        if (attendance.lastDate === today) return attendance;
-
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().slice(0, 10);
-        const newStreak = attendance.lastDate === yesterdayStr ? (attendance.streak || 0) + 1 : 1;
-        const nextAttendance = {
-          total: (attendance.total || 0) + 1,
-          streak: newStreak,
-          lastDate: today,
-        };
-        setItem('ss_attendance', nextAttendance);
-        return nextAttendance;
-      }
-
       function finalizeWakeRecord({ success, simple = false }) {
         resumeAudio();
         stopMorningCallAlarm();
@@ -810,8 +801,8 @@
         bonusSheep.wool += bonusWool;
         saveSheep(bonusSheep);
 
-        let attendanceInfo = null;
-        if (success || simple) attendanceInfo = updateAttendanceByMorningCall();
+        let attResult = null;
+        if (success || simple) attResult = recordAttendance();
 
         wakeModal.classList.remove('active');
         morningCallModal.classList.remove('active');
@@ -826,12 +817,22 @@
               : `기상 완료! 수면 XP +${res.xpGained}, 모닝콜 실패로 보상 축소(+${bonusXp}XP / 양털 +${bonusWool})`,
             success || simple ? 'success' : 'info'
           );
-        } else {
+        } else if (attResult && !attResult.alreadyChecked) {
           showToast(`모닝콜 완료! +${bonusXp}XP / 양털 +${bonusWool}`, 'success');
         }
 
+        if (attResult && !attResult.alreadyChecked && attResult.woolGained > 0) {
+          showToast(`출석 완료! 양털 +${attResult.woolGained} 🧶`, 'success');
+        }
+        if (attResult?.newlyUnlocked?.length) {
+          const title = attResult.newlyUnlocked[0].title;
+          setTimeout(() => showToast(`🎉 스토리 해금! 「${title}」`, 'success'), 600);
+        }
+
         if (success || simple) {
-          const streakText = attendanceInfo?.streak ? `출석 ${attendanceInfo.streak}일 연속!` : '출석 인정!';
+          const streakText = attResult?.attendance?.streak
+            ? `출석 ${attResult.attendance.streak}일 연속!`
+            : '출석 인정!';
           speechBubble.textContent = `"기상 성공! 메에~ 오늘도 응원해! ${streakText}"`;
           renderSheepTo(sheepContainer, bonusSheep.step, SHEEP_POSE.EXCITED);
         } else {
