@@ -97,10 +97,10 @@ export function initNav() {
   const pageMap = {
     'index.html':    0,
     '/':             0,
-    'sleep.html':    1,
-    'sheep.html':    2,
-    'workshop.html': 3,
-    'friends.html':  4,
+    'sleep.html':    0,
+    'sheep.html':    0,
+    'workshop.html': 1,
+    'friends.html':  2,
   };
 
   const filename = path.split('/').pop() || 'index.html';

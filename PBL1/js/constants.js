@@ -4,7 +4,7 @@
  */
 
 /** 앱 버전 (설정 화면·배포 기준) */
-export const APP_VERSION = '1.72.7';
+export const APP_VERSION = '1.72.8';
 
 // ─── localStorage 키 ───
 export const STORAGE_KEYS = Object.freeze({
@@ -86,8 +86,7 @@ export function calcShearReward(percent, step) {
 export function calcSleepReward(minutes, goalMinutes = 480) {
   const ratio = Math.min(minutes / goalMinutes, 1.2); // 최대 120%까지
   const xp = Math.floor(ratio * 50);         // 목표 달성 시 최대 50xp
-  const woolGrowth = ratio >= 1.0 ? 1 : 0;  // 목표 달성해야 woolGrowth +1
-  return { xp, woolGrowth };
+  return { xp };
 }
 
 // ─── 양 상태 초기값 ───
@@ -98,9 +97,11 @@ export const DEFAULT_SHEEP = Object.freeze({
   xpToNext:     100,
   step:         1,
   wool:         0,
-  woolGrowth:   0,    // 0~3: 3이 되면 양털깎기 가능
+  woolGrowth:   0,    // 0~3: 행복·포만 MAX 시 한 칸씩, 3이면 양털깎기
+  atStatMax:    false,
+  lastRegularityBonus: null,
   happiness:    80,
-  hunger:       80,
+  hunger:       80,   // 포만감 (높을수록 배부름)
   lastPetAt:    null,
   lastFedAt:    null,
   shearedAt:    null,
@@ -124,9 +125,25 @@ export const DEFAULT_SETTINGS = Object.freeze({
 });
 
 // ─── 출석 보상 ───
-export const DAILY_ATTENDANCE_WOOL = 3;
+/** 7일 주기: 1·2·4·5·6일차 소량 양털, 3일차 단일 일러스트, 7일차 4컷 */
+export const ATTENDANCE_CYCLE = Object.freeze({
+  WOOL_DAYS: [1, 2, 4, 5, 6],
+  /** 미니게임 기본 보상(~30) 대비 출석 소량 양털 */
+  WOOL_SMALL: 10,
+  SINGLE_DAY: 3,
+  STRIP_DAY: 7,
+});
 
-/** 연속 출석 스토리 해금 (7 / 14 / 21일) */
+/** 이름 짓기 거절 시 행복도 감소 */
+export const NAME_REJECT_HAPPINESS_DELTA = 8;
+
+export const ATTENDANCE_SINGLE_COUNT = 45;
+export const ATTENDANCE_STRIP_COUNT = 0; // strips/ 에 추가 시 갱신
+
+/** @deprecated 주기 소량 양털로 대체 — 호환용 */
+export const DAILY_ATTENDANCE_WOOL = ATTENDANCE_CYCLE.WOOL_SMALL;
+
+/** 연속 출석 스토리 해금 (7 / 14 / 21일) — 오프닝 슬라이드 */
 export const ATTENDANCE_STORIES = Object.freeze([
   { id: 'story_7',  days: 7,  title: '7일째, 꿈이 열리다',     from: 1,  to: 5  },
   { id: 'story_14', days: 14, title: '14일째, 별의 약속',      from: 6,  to: 10 },

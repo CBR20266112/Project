@@ -169,7 +169,7 @@
   <main class="phone">
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='sleep.html'" title="뒤로가기">←</button>
+        <button class="btn-back" onclick="location.href='../index.html#sleep-section'" title="뒤로가기">←</button>
         <div>
           <h1>📅 메에메에 캘린더</h1>
           <p class="subtitle">날짜별 수면과 마음 기록</p>
@@ -215,16 +215,6 @@
       <div class="nav-item" data-href="../index.html">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">홈</span>
-        <span class="nav-dot"></span>
-      </div>
-      <div class="nav-item active" data-href="sleep.html">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">수면</span>
-        <span class="nav-dot"></span>
-      </div>
-      <div class="nav-item" data-href="sheep.html">
-        <span class="nav-icon">🐑</span>
-        <span class="nav-label">내 양</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="workshop.html">
@@ -307,7 +297,7 @@
               이 날은 아직 기록이 없어요.
             </p>
             <div class="detail-actions">
-              <a href="sleep.html" class="btn btn-secondary">😴 수면 기록하기</a>
+              <a href="../index.html#sleep-section" class="btn btn-secondary">😴 수면 기록하기</a>
               <a href="worry.html" class="btn btn-secondary">💭 고민 쓰러가기</a>
             </div>
           `;
@@ -353,7 +343,7 @@
 
         html += `
           <div class="detail-actions">
-            ${!entry.hasSleep ? '<a href="sleep.html" class="btn btn-secondary">😴 수면 기록하기</a>' : ''}
+            ${!entry.hasSleep ? '<a href="../index.html#sleep-section" class="btn btn-secondary">😴 수면 기록하기</a>' : ''}
             ${!entry.hasWorry ? '<a href="worry.html" class="btn btn-secondary">💭 고민 쓰러가기</a>' : ''}
           </div>
         `;

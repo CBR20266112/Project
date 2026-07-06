@@ -2,10 +2,13 @@
  * sheep.js — 양 상태 관리, XP, 레벨업, 상호작용
  */
 
-import { GROWTH_TABLE, SHEEP_POSE, DAILY_QUOTES, DEFAULT_SHEEP } from './constants.js';
+import { GROWTH_TABLE, SHEEP_POSE, DAILY_QUOTES, NAME_REJECT_HAPPINESS_DELTA } from './constants.js';
 import { getSheep, saveSheep } from './storage.js';
 import { getSheepSVG } from './sheep-renderer.js';
 import { showToast } from './app.js';
+
+const WOOL_GROWTH_MAX = 3;
+const STAT_MAX = 100;
 
 // ─── 상태 조회 ───
 
@@ -17,6 +20,40 @@ export function readSheep() {
 /** 현재 성장 단계 config 반환 */
 export function getStepConfig(step) {
   return GROWTH_TABLE[Math.min(Math.max(step, 1), 10)];
+}
+
+// ─── 양털 성장 (행복·포만 MAX) ───
+
+/**
+ * 행복도·포만감이 동시에 MAX일 때 양털 성장도 +1
+ * @returns {boolean} 이번에 성장했는지
+ */
+export function tryWoolGrowthFromStats(sheep = getSheep()) {
+  const atMax = sheep.happiness >= STAT_MAX && sheep.hunger >= STAT_MAX;
+
+  if (!atMax) {
+    sheep.atStatMax = false;
+    return false;
+  }
+
+  if (sheep.atStatMax) return false;
+
+  sheep.atStatMax = true;
+  if (sheep.woolGrowth >= WOOL_GROWTH_MAX) return false;
+
+  sheep.woolGrowth = Math.min(WOOL_GROWTH_MAX, sheep.woolGrowth + 1);
+  if (sheep.woolGrowth >= WOOL_GROWTH_MAX) sheep.canShear = true;
+  saveSheep(sheep);
+  return true;
+}
+
+/** 이름 짓기 거절 */
+export function rejectNaming() {
+  const sheep = getSheep();
+  sheep.happiness = Math.max(10, sheep.happiness - NAME_REJECT_HAPPINESS_DELTA);
+  sheep.atStatMax = false;
+  saveSheep(sheep);
+  return sheep.happiness;
 }
 
 // ─── XP & 레벨 ───
@@ -33,26 +70,19 @@ export function addXP(amount) {
   let leveledUp = false;
   let newStep   = false;
 
-  // 레벨업 루프 (한 번에 여러 레벨 가능)
   while (sheep.xp >= sheep.xpToNext && sheep.level < 10) {
     sheep.xp      -= sheep.xpToNext;
     sheep.level   += 1;
     sheep.xpToNext = calcXpToNext(sheep.level);
     leveledUp = true;
 
-    // 성장 단계 계산
     const newStepVal = calcStep(sheep.level);
     if (newStepVal !== sheep.step) {
       sheep.step = newStepVal;
       newStep = true;
-
-      // 양털 성장 ++
-      sheep.woolGrowth = Math.min(sheep.woolGrowth + 1, 3);
-      if (sheep.woolGrowth >= 3) sheep.canShear = true;
     }
   }
 
-  // MAX 레벨 10이면 xp 고정
   if (sheep.level >= 10) {
     sheep.xp = Math.min(sheep.xp, sheep.xpToNext - 1);
   }
@@ -61,94 +91,110 @@ export function addXP(amount) {
   return { sheep, leveledUp, newStep };
 }
 
-/** 레벨 → 다음 레벨까지 필요 XP */
 function calcXpToNext(level) {
   const table = [null, 100, 150, 200, 250, 300, 350, 400, 450, 500, Infinity];
   return table[Math.min(level, 10)] ?? 500;
 }
 
-/** 레벨 → 성장 단계 (GROWTH_TABLE 기반) */
 function calcStep(level) {
-  // 레벨 1~2 → step 1, 3~4 → step 2, ... 순으로 매핑
   return Math.min(Math.ceil(level / 1), 10);
 }
 
 // ─── 상호작용 ───
 
 /**
+ * 가벼운 터치 (부위 탭) — 행복도 소폭 상승
+ */
+export function touchSheep(happinessGain = 4) {
+  const sheep = getSheep();
+  sheep.happiness = Math.min(STAT_MAX, sheep.happiness + happinessGain);
+  const woolGrew = tryWoolGrowthFromStats(sheep);
+  if (!woolGrew) saveSheep(sheep);
+  return { success: true, happiness: sheep.happiness, woolGrew };
+}
+
+/**
  * 쓰다듬기
- * @returns {{ happiness: number, msg: string }}
  */
 export function petSheep() {
   const sheep = getSheep();
-
-  // 쿨타임: 30초
   const now = Date.now();
+
   if (sheep.lastPetAt && now - sheep.lastPetAt < 30_000) {
     const remain = Math.ceil((30_000 - (now - sheep.lastPetAt)) / 1000);
     return { success: false, msg: `${remain}초 후에 다시 쓰다듬을 수 있어요!` };
   }
 
-  // 경험치 추가
   const xpRes = addXP(5);
   const currentSheep = xpRes.sheep;
 
-  currentSheep.happiness = Math.min(currentSheep.happiness + 10, 100);
+  currentSheep.happiness = Math.min(STAT_MAX, currentSheep.happiness + 12);
   currentSheep.lastPetAt = now;
-  saveSheep(currentSheep);
+  const woolGrew = tryWoolGrowthFromStats(currentSheep);
+  if (!woolGrew) saveSheep(currentSheep);
 
   const msgs = ['메에~ 좋아! (+5 XP) 🥰', '좋아! 더 해줘~ (+5 XP) 💕', '행복해요 ♥ (+5 XP)', '메메메~ (+5 XP) 🎵'];
-  return { 
-    success: true, 
-    msg: msgs[Math.floor(Math.random() * msgs.length)], 
+  return {
+    success: true,
+    msg: msgs[Math.floor(Math.random() * msgs.length)],
     happiness: currentSheep.happiness,
-    leveledUp: xpRes.leveledUp
+    leveledUp: xpRes.leveledUp,
+    woolGrew,
   };
 }
 
 export function feedSheep() {
   const sheep = getSheep();
-
-  // 쿨타임: 60초
   const now = Date.now();
+
   if (sheep.lastFedAt && now - sheep.lastFedAt < 60_000) {
     const remain = Math.ceil((60_000 - (now - sheep.lastFedAt)) / 1000);
     return { success: false, msg: `${remain}초 후에 먹이를 줄 수 있어요!` };
   }
 
-  // 경험치 추가
   const xpRes = addXP(8);
   const currentSheep = xpRes.sheep;
 
-  currentSheep.hunger    = Math.min(currentSheep.hunger + 15, 100);
+  currentSheep.hunger    = Math.min(STAT_MAX, currentSheep.hunger + 15);
   currentSheep.lastFedAt = now;
-  saveSheep(currentSheep);
+  const woolGrew = tryWoolGrowthFromStats(currentSheep);
+  if (!woolGrew) saveSheep(currentSheep);
 
   const msgs = ['냠냠~ 맛있어! (+8 XP) 🥕', '당근 최고야! (+8 XP) 😋', '배 불러! 고마워 (+8 XP) 💕', '메에~ 맛있다! (+8 XP) 🌟'];
-  return { 
-    success: true, 
-    msg: msgs[Math.floor(Math.random() * msgs.length)], 
+  return {
+    success: true,
+    msg: msgs[Math.floor(Math.random() * msgs.length)],
     hunger: currentSheep.hunger,
-    leveledUp: xpRes.leveledUp
+    leveledUp: xpRes.leveledUp,
+    woolGrew,
   };
 }
 
-
 /**
- * 시간에 따라 행복도/배고픔 자연 감소 (앱 열 때마다 호출)
+ * 포만감 보조 상승 (수면 규칙성 등)
+ * @param {number} amount
+ * @returns {{ woolGrew: boolean }}
  */
+export function boostHunger(amount) {
+  if (amount <= 0) return { woolGrew: false };
+  const sheep = getSheep();
+  sheep.hunger = Math.min(STAT_MAX, sheep.hunger + amount);
+  const woolGrew = tryWoolGrowthFromStats(sheep);
+  if (!woolGrew) saveSheep(sheep);
+  return { woolGrew };
+}
+
 export function decaySheepStats() {
   const sheep = getSheep();
   const now   = Date.now();
-
-  // 마지막 업데이트 시간
   const lastUpdate = sheep.lastDecayAt ?? now;
   const hours      = (now - lastUpdate) / (1000 * 60 * 60);
 
-  if (hours >= 0.5) { // 30분마다 감소
-    const decay       = Math.floor(hours * 4); // 시간당 -4씩
+  if (hours >= 0.5) {
+    const decay       = Math.floor(hours * 4);
     sheep.happiness   = Math.max(sheep.happiness - decay, 10);
     sheep.hunger      = Math.max(sheep.hunger     - decay, 10);
+    sheep.atStatMax   = false;
     sheep.lastDecayAt = now;
     saveSheep(sheep);
   }
@@ -158,17 +204,10 @@ export function decaySheepStats() {
 
 // ─── UI 렌더링 헬퍼 ───
 
-/**
- * 양 SVG를 DOM 요소에 주입
- * @param {HTMLElement} container
- * @param {number} step
- * @param {string} pose
- */
 export function renderSheepTo(container, step, pose = SHEEP_POSE.IDLE) {
   if (!container) return;
   container.innerHTML = getSheepSVG(step, pose);
 
-  // PNG 이미지 모드: 로드 실패 시 귀여운 SVG 양으로 폴백
   const img = container.querySelector('img.sheep-svg');
   if (img) {
     img.onerror = () => {
@@ -194,13 +233,6 @@ export function renderSheepTo(container, step, pose = SHEEP_POSE.IDLE) {
   }
 }
 
-
-/**
- * XP 바 업데이트
- * @param {HTMLElement} fillEl   fill div
- * @param {HTMLElement} labelEl  텍스트 레이블
- * @param {object} sheep
- */
 export function updateXPBar(fillEl, labelEl, sheep) {
   if (!fillEl) return;
   const pct = sheep.xpToNext > 0
@@ -212,30 +244,16 @@ export function updateXPBar(fillEl, labelEl, sheep) {
   }
 }
 
-/**
- * 상태 바 업데이트
- * @param {HTMLElement} el fill div
- * @param {number} value 0~100
- */
 export function updateStatBar(el, value) {
   if (!el) return;
   el.style.width = `${Math.max(0, Math.min(value, 100))}%`;
 }
 
-/**
- * 오늘의 한마디 반환
- */
 export function getDailyQuote() {
   const day = new Date().getDate();
   return DAILY_QUOTES[day % DAILY_QUOTES.length];
 }
 
-/**
- * 양 포즈 이름 → 애니메이션 실행
- * @param {HTMLElement} container
- * @param {string} animClass CSS animation class
- * @param {number} ms 지속 시간
- */
 export function playSheepAnim(container, animClass, ms = 800) {
   if (!container) return;
   const svgEl = container.querySelector('.sheep-svg');

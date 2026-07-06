@@ -9,7 +9,60 @@ import {
   getTodaySleep,
   getSettings,
 } from './storage.js';
-import { addXP } from './sheep.js';
+import { addXP, boostHunger } from './sheep.js';
+import { getSheep, saveSheep } from './storage.js';
+
+// ─── 수면 규칙성 ───
+
+function timeToMinutes(time) {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function stdDev(values) {
+  if (values.length < 2) return 0;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  return Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / values.length);
+}
+
+/**
+ * 최근 수면 패턴 규칙성 (0~1)
+ * @returns {{ score: number, label: string, days: number }}
+ */
+export function getSleepRegularity(days = 14) {
+  const recs = getRecentRecords(days).filter(r => r.bedtime && r.wakeTime);
+  if (recs.length < 2) {
+    return { score: 0, label: '기록 부족', days: recs.length };
+  }
+
+  const bedStd  = stdDev(recs.map(r => timeToMinutes(r.bedtime)));
+  const wakeStd = stdDev(recs.map(r => timeToMinutes(r.wakeTime)));
+  const spread  = bedStd + wakeStd;
+  const score   = Math.max(0, Math.min(1, 1 - spread / 120));
+
+  let label = '불규칙';
+  if (score >= 0.8) label = '아주 규칙적';
+  else if (score >= 0.55) label = '규칙적';
+  else if (score >= 0.3) label = '보통';
+
+  return { score, label, days: recs.length };
+}
+
+/** 하루 1회 — 규칙적이면 포만감 소폭 상승 */
+export function applyDailyRegularityBonus() {
+  const sheep = getSheep();
+  const today = new Date().toISOString().slice(0, 10);
+  if (sheep.lastRegularityBonus === today) return null;
+
+  const reg = getSleepRegularity();
+  if (reg.score < 0.25) return null;
+
+  const bonus = Math.max(1, Math.round(reg.score * 8));
+  sheep.lastRegularityBonus = today;
+  saveSheep(sheep);
+  boostHunger(bonus);
+  return { bonus, label: reg.label };
+}
 
 // ─── 수면 기록 처리 ───
 
@@ -20,12 +73,12 @@ import { addXP } from './sheep.js';
  * @param {string} params.wakeTime 'HH:MM'
  * @param {number} params.mood     1~5
  * @param {string} params.note     메모
- * @returns {{ record: object, xpGained: number, woolGained: number }}
+ * @returns {{ record: object, xpGained: number, regularityBonus: number, regularityLabel: string }}
  */
 export function recordSleep({ bedtime, wakeTime, mood = 3, note = '' }) {
   const duration   = calcDurationMinutes(bedtime, wakeTime);
   const settings   = getSettings();
-  const { xp, woolGrowth } = calcSleepReward(duration, settings.sleepGoal);
+  const { xp } = calcSleepReward(duration, settings.sleepGoal);
   const date       = new Date().toISOString().slice(0, 10);
 
   const record = {
@@ -36,16 +89,26 @@ export function recordSleep({ bedtime, wakeTime, mood = 3, note = '' }) {
     mood,
     note,
     xpGained:    xp,
-    woolGained:  woolGrowth,
     recordedAt:  new Date().toISOString(),
   };
 
   upsertSleepRecord(record);
 
-  // XP 반영
   if (xp > 0) addXP(xp);
 
-  return { record, xpGained: xp, woolGained: woolGrowth };
+  const reg = getSleepRegularity();
+  let regularityBonus = 0;
+  if (reg.score >= 0.2) {
+    regularityBonus = Math.max(1, Math.round(reg.score * 12));
+    boostHunger(regularityBonus);
+  }
+
+  return {
+    record,
+    xpGained: xp,
+    regularityBonus,
+    regularityLabel: reg.label,
+  };
 }
 
 /**
