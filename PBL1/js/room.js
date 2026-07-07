@@ -61,7 +61,7 @@ export function renderRoom(container, equipped = null, step = 1, pose = 'idle', 
 <div class="room-viewport" style="width:100%;aspect-ratio:1.2;position:relative;overflow:hidden;border-radius:var(--radius-lg);background:${bgFallback};${bgStyle}box-shadow:var(--shadow-lg);">
   ${wallpaperHTML}
   ${propsHTML}
-  <div class="room-sheep-wrapper" style="position:absolute;bottom:26px;left:50%;transform:translateX(-50%);width:120px;height:120px;z-index:4;display:flex;justify-content:center;align-items:center;">
+  <div class="room-sheep-wrapper" style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);width:140px;height:140px;z-index:4;display:flex;justify-content:center;align-items:center;overflow:visible;">
     ${getSheepSVG(currentStep, pose)}
     ${wearablesHTML}
   </div>

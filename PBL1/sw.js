@@ -17,13 +17,14 @@ function localTodayKey(date = new Date()) {
 
 function parseTimeToMinutes(timeStr) {
   const [h, m] = (timeStr || '07:00').split(':').map(Number);
-  return h * 60 + (m || 0);
+  if (!Number.isFinite(h)) return 7 * 60;
+  return h * 60 + (Number.isFinite(m) ? m : 0);
 }
 
-function isWakeAlarmNow(wakeTime) {
+function isWakeAlarmDue(wakeTime) {
   const now = new Date();
   const current = now.getHours() * 60 + now.getMinutes();
-  return Math.abs(current - parseTimeToMinutes(wakeTime)) <= 1;
+  return current >= parseTimeToMinutes(wakeTime);
 }
 
 async function persistState() {
@@ -59,8 +60,9 @@ async function checkAlarm() {
 
   const today = localTodayKey();
   if (alarmState.alarmDate !== today) return;
+  if (alarmState.completedDate === today) return;
   if (alarmState.firedDate === today) return;
-  if (!isWakeAlarmNow(alarmState.wakeTime)) return;
+  if (!isWakeAlarmDue(alarmState.wakeTime)) return;
 
   alarmState.firedDate = today;
   await persistState();

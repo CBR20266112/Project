@@ -39,6 +39,20 @@
           아직 해금한 이미지가 없어요.<br>출석체크로 스토리를 모아보세요!
         </p>
       </section>
+
+      <section class="glass card" style="padding: var(--space-4); margin-top: var(--space-3);">
+        <div class="section-header">
+          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">단일 일러스트 컬렉션</h3>
+        </div>
+        <div id="gallery-singles-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-2);"></div>
+      </section>
+
+      <section class="glass card" style="padding: var(--space-4); margin-top: var(--space-3);">
+        <div class="section-header">
+          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">4컷 만화 컬렉션</h3>
+        </div>
+        <div id="gallery-strips-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-2);"></div>
+      </section>
     </div>
 
     <nav class="bottom-nav">
@@ -68,8 +82,8 @@
   <script type="module">
     import { initCommon } from '../js/app.js';
     import { getItem } from '../js/storage.js';
-    import { ATTENDANCE_STORIES } from '../js/constants.js';
-    import { getAttendance, getStoryImages, getStoryCover, isStoryUnlocked, getAssetPrefix } from '../js/attendance.js';
+    import { ATTENDANCE_STORIES, ATTENDANCE_SINGLE_COUNT, ATTENDANCE_STRIP_COUNT } from '../js/constants.js';
+    import { getAttendance, getStoryImages, getStoryCover, isStoryUnlocked, getAssetPrefix, getCollectedSingleItems, getCollectedStripItems, singleIdFromIndex, stripIdFromIndex, getSingleIllustPath, getStripIllustPath, getSingleIllustTitle, getStripIllustTitle } from '../js/attendance.js';
     import { startImageSlideshow, startOpening } from '../js/opening.js';
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -137,6 +151,56 @@
         }
         grid.appendChild(card);
       });
+
+      function renderCollectionGrid(container, collected, totalCount, makeId, makePath, makeTitle, columnsType) {
+        if (!container) return;
+        const collectedIds = new Set(collected.map(item => item.id));
+        const previewCount = Math.min(totalCount, collected.length + 6);
+        const cards = [];
+
+        for (let i = 1; i <= previewCount; i++) {
+          const id = makeId(i);
+          const unlocked = collectedIds.has(id);
+          const item = collected.find(entry => entry.id === id) || {
+            id,
+            title: makeTitle(id),
+            cover: makePath(id),
+          };
+          cards.push({ ...item, unlocked });
+        }
+
+        container.innerHTML = cards.map(item => `
+          <div class="glass" style="border-radius:var(--radius-md);overflow:hidden;opacity:${item.unlocked ? '1' : '0.42'};">
+            <div style="aspect-ratio:${columnsType === 'strip' ? '4/3' : '1'};background:rgba(0,0,0,0.25);overflow:hidden;position:relative;">
+              <img src="${item.cover}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover;${item.unlocked ? '' : 'filter:grayscale(1) brightness(0.45);'}">
+              ${item.unlocked ? '' : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🔒</div>'}
+            </div>
+            <div style="padding:var(--space-2);font-size:var(--font-size-2xs);font-weight:800;line-height:1.3;">
+              ${item.unlocked ? item.title : '출석 보상으로 해금'}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      renderCollectionGrid(
+        document.getElementById('gallery-singles-grid'),
+        getCollectedSingleItems(),
+        ATTENDANCE_SINGLE_COUNT,
+        singleIdFromIndex,
+        getSingleIllustPath,
+        getSingleIllustTitle,
+        'single',
+      );
+
+      renderCollectionGrid(
+        document.getElementById('gallery-strips-grid'),
+        getCollectedStripItems(),
+        ATTENDANCE_STRIP_COUNT,
+        stripIdFromIndex,
+        getStripIllustPath,
+        getStripIllustTitle,
+        'strip',
+      );
     });
   </script>
 </body>

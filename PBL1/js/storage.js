@@ -54,6 +54,7 @@ export function clearAll() {
   localStorage.removeItem('ss_attendance');
   localStorage.removeItem('ss_sleeping_since');
   localStorage.removeItem('ss_morningcall_fired_date');
+  localStorage.removeItem('ss_morningcall_completed_date');
   localStorage.removeItem('ss_morningcall_schedule');
   localStorage.removeItem('ss_pwa_install_dismiss');
 }
@@ -81,8 +82,15 @@ export function saveSleepRecords(records) {
 }
 
 /** 오늘 날짜 'YYYY-MM-DD' */
+export function getLocalDateKey(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+  return getLocalDateKey();
 }
 
 /** 오늘 수면 기록 찾기 */

@@ -35,13 +35,14 @@ export function getEquippedItems(equipped = null) {
 }
 
 /** 양에게 붙이는 착용 슬롯 */
-export const WEARABLE_SLOTS = ['hat', 'ribbon', 'scarf'];
+export const WEARABLE_SLOTS = ['hat', 'ribbon', 'glasses', 'scarf'];
 
 /** 착용 오버레이 위치 (room-sheep-wrapper / sheep-container 기준 %) */
 export const WEARABLE_LAYOUT = {
-  hat:    { top: '-14%', left: '50%', width: '62%', transform: 'translateX(-50%)', zIndex: 5 },
-  ribbon: { top: '8%',  left: '-4%', width: '38%', zIndex: 5 },
-  scarf:  { top: '42%', left: '50%', width: '58%', transform: 'translateX(-50%)', zIndex: 5 },
+  hat:     { top: '12%', left: '50%', width: '54%', transform: 'translate(-50%, -50%)', zIndex: 7 },
+  ribbon:  { top: '28%', left: '29%', width: '30%', transform: 'translate(-50%, -50%) rotate(-10deg)', zIndex: 8 },
+  glasses: { top: '45%', left: '50%', width: '38%', transform: 'translate(-50%, -50%)', zIndex: 9 },
+  scarf:   { top: '64%', left: '50%', width: '48%', transform: 'translate(-50%, -50%)', zIndex: 8 },
 };
 
 /** 방 소품 배치 (room-viewport 기준) */

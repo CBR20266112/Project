@@ -368,16 +368,18 @@ export function initHomeAsmrSection() {
   const chipsEl = document.getElementById('home-asmr-chips');
   const nowEl = document.getElementById('home-asmr-now');
   const nowLabel = document.getElementById('home-asmr-now-label');
-  if (!chipsEl) return;
+  if (!presetsEl && !chipsEl) return;
 
   const list = getAsmrList();
-  const presets = list.filter(i => i.category === 'preset');
+  const presets = list.filter(i => i.category === 'preset').slice(0, 3);
   const singles = list.filter(i => i.category !== 'preset');
 
   if (presetsEl) {
     presets.forEach(item => presetsEl.appendChild(createAsmrChip(item)));
   }
-  singles.forEach(item => chipsEl.appendChild(createAsmrChip(item)));
+  if (chipsEl) {
+    singles.forEach(item => chipsEl.appendChild(createAsmrChip(item)));
+  }
 
   function updateHomeAsmrUI() {
     const cur = getCurrentAsmrId();

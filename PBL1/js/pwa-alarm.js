@@ -7,6 +7,8 @@ import {
   getWakeAlarmTarget,
   getMorningCallConfig,
   localTodayKey,
+  MORNINGCALL_FIRED_DATE_KEY,
+  MORNINGCALL_COMPLETED_DATE_KEY,
 } from './morningcall.js';
 import { getAppIconAbsoluteUrl } from './app-icon.js';
 
@@ -52,7 +54,8 @@ export async function syncAlarmToServiceWorker() {
     payload: {
       wakeTime: target?.wakeTime ?? null,
       alarmDate: target?.alarmDate ?? null,
-      firedDate: getItem('ss_morningcall_fired_date') ?? null,
+      firedDate: getItem(MORNINGCALL_FIRED_DATE_KEY) ?? null,
+      completedDate: getItem(MORNINGCALL_COMPLETED_DATE_KEY) ?? null,
       notificationEnabled: notification,
       simple,
       appUrl: `${getAppBaseUrl()}index.html`,
@@ -89,7 +92,7 @@ export async function initPwaAlarm({ onMorningCall } = {}) {
 
     if (msg.type === 'MORNINGCALL_ALARM') {
       if (msg.firedDate) {
-        setItem('ss_morningcall_fired_date', msg.firedDate);
+        setItem(MORNINGCALL_FIRED_DATE_KEY, msg.firedDate);
       }
       onMorningCall?.();
     }
@@ -117,6 +120,6 @@ export async function initPwaAlarm({ onMorningCall } = {}) {
 
 export function markMorningCallFiredToday() {
   const today = localTodayKey();
-  setItem('ss_morningcall_fired_date', today);
+  setItem(MORNINGCALL_FIRED_DATE_KEY, today);
   syncAlarmToServiceWorker();
 }

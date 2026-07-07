@@ -435,7 +435,7 @@
 
   <script type="module">
     import { initCommon, showToast, spawnHearts } from '../js/app.js';
-    import { getSheep, saveSheep, getSettings, getWorries, saveWorry } from '../js/storage.js';
+    import { getSheep, saveSheep, getSettings, getWorries, saveWorry, getLocalDateKey } from '../js/storage.js';
     import { getLocalWorryReply, getGeminiWorryReply, getWorryCategory } from '../js/worry.js';
     import { resumeAudio } from '../js/sound.js';
 
@@ -475,7 +475,7 @@
       }
 
       function todayStr() {
-        return new Date().toISOString().slice(0, 10);
+        return getLocalDateKey();
       }
 
       function renderTimeline() {

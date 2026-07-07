@@ -8,19 +8,19 @@ import {
   ATTENDANCE_SINGLE_COUNT,
   ATTENDANCE_STRIP_COUNT,
 } from './constants.js';
-import { getItem, setItem } from './storage.js';
+import { getItem, setItem, getLocalDateKey } from './storage.js';
 import { getSheep, saveSheep } from './storage.js';
 
 export const ATTENDANCE_KEY = 'ss_attendance';
 
 function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+  return getLocalDateKey();
 }
 
 function yesterdayStr() {
   const d = new Date();
   d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
+  return getLocalDateKey(d);
 }
 
 function pad2(n) {

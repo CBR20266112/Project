@@ -157,6 +157,10 @@
               <span class="switch-slider"></span>
             </label>
           </div>
+          <div class="flex gap-2" style="margin-top: var(--space-3);">
+            <button type="button" class="btn btn-secondary w-full" id="btn-test-morningcall-now">지금 테스트</button>
+            <button type="button" class="btn btn-secondary w-full" id="btn-test-morningcall-minute">1분 뒤 테스트</button>
+          </div>
         </div>
       </section>
 
@@ -509,6 +513,22 @@
 
       switchMorningCallSimple.addEventListener('change', () => {
         updateSetting('morningCallSimple', switchMorningCallSimple.checked);
+      });
+
+      document.getElementById('btn-test-morningcall-now')?.addEventListener('click', () => {
+        location.href = '../index.html?morningcall=1';
+      });
+
+      document.getElementById('btn-test-morningcall-minute')?.addEventListener('click', () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + 1);
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const wakeTime = `${hh}:${mm}`;
+        settingWakeAlarm.value = wakeTime;
+        updateSetting('wakeAlarm', wakeTime);
+        saveMorningCallSchedule(settingBedAlarm.value, wakeTime);
+        showToast(`1분 뒤(${wakeTime}) 모닝콜 테스트를 예약했어요.`, 'success');
       });
 
       selectIconMode?.addEventListener('change', () => {

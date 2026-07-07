@@ -8,6 +8,7 @@ import {
   upsertSleepRecord,
   getTodaySleep,
   getSettings,
+  getLocalDateKey,
 } from './storage.js';
 import { addXP, boostHunger } from './sheep.js';
 import { getSheep, saveSheep } from './storage.js';
@@ -51,7 +52,7 @@ export function getSleepRegularity(days = 14) {
 /** 하루 1회 — 규칙적이면 포만감 소폭 상승 */
 export function applyDailyRegularityBonus() {
   const sheep = getSheep();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getLocalDateKey();
   if (sheep.lastRegularityBonus === today) return null;
 
   const reg = getSleepRegularity();
@@ -79,7 +80,7 @@ export function recordSleep({ bedtime, wakeTime, mood = 3, note = '' }) {
   const duration   = calcDurationMinutes(bedtime, wakeTime);
   const settings   = getSettings();
   const { xp } = calcSleepReward(duration, settings.sleepGoal);
-  const date       = new Date().toISOString().slice(0, 10);
+  const date       = getLocalDateKey();
 
   const record = {
     date,
@@ -223,7 +224,7 @@ export function drawSleepChart(canvas, mode = 'weekly') {
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = getLocalDateKey(d);
     labels.push(mode === 'weekly'
       ? ['일', '월', '화', '수', '목', '금', '토'][d.getDay()]
       : `${d.getDate()}`);

@@ -10,6 +10,8 @@ export const MORNING_ACTION = Object.freeze({
 });
 
 export const MORNINGCALL_SCHEDULE_KEY = 'ss_morningcall_schedule';
+export const MORNINGCALL_FIRED_DATE_KEY = 'ss_morningcall_fired_date';
+export const MORNINGCALL_COMPLETED_DATE_KEY = 'ss_morningcall_completed_date';
 
 export function pickMorningAction() {
   return Math.random() < 0.5 ? MORNING_ACTION.PET : MORNING_ACTION.FEED;
@@ -34,7 +36,8 @@ export function localTodayKey(date = new Date()) {
 /** 'HH:MM' → 분 */
 export function parseTimeToMinutes(timeStr) {
   const [h, m] = (timeStr || '07:00').split(':').map(Number);
-  return h * 60 + (m || 0);
+  if (!Number.isFinite(h)) return 7 * 60;
+  return h * 60 + (Number.isFinite(m) ? m : 0);
 }
 
 /** 기상 시각이 취침 다음날인지 계산해 알람 날짜 반환 */
@@ -114,6 +117,30 @@ export function isWakeAlarmNow(wakeAlarm) {
   return Math.abs(current - target) <= 1;
 }
 
+export function getNowLocalMinutes(date = new Date()) {
+  return date.getHours() * 60 + date.getMinutes();
+}
+
+export function isWakeAlarmDue(target, date = new Date()) {
+  if (!target?.wakeTime || !target?.alarmDate) return false;
+
+  const today = localTodayKey(date);
+  if (target.alarmDate !== today) return false;
+  if (getItem(MORNINGCALL_COMPLETED_DATE_KEY) === today) return false;
+
+  return getNowLocalMinutes(date) >= parseTimeToMinutes(target.wakeTime);
+}
+
+export function markMorningCallFired(todayKey = localTodayKey()) {
+  setItem(MORNINGCALL_FIRED_DATE_KEY, todayKey);
+  notifyAlarmScheduleChanged();
+}
+
+export function markMorningCallCompleted(todayKey = localTodayKey()) {
+  setItem(MORNINGCALL_COMPLETED_DATE_KEY, todayKey);
+  notifyAlarmScheduleChanged();
+}
+
 /**
  * 입력한 기상 시간에 모닝콜 콜백 실행
  * @param {(payload: { simple: boolean, scheduled: boolean }) => void} onTrigger
@@ -127,15 +154,16 @@ export function initWakeAlarmScheduler(onTrigger) {
     if (!target) return;
 
     const today = localTodayKey();
-    if (target.alarmDate !== today) return;
-    if (getItem('ss_morningcall_fired_date') === today) return;
-    if (!isWakeAlarmNow(target.wakeTime)) return;
+    if (!isWakeAlarmDue(target)) return;
 
-    setItem('ss_morningcall_fired_date', today);
-    notifyAlarmScheduleChanged();
+    markMorningCallFired(today);
     onTrigger({ simple, scheduled: true });
   };
 
   check();
+  window.addEventListener('focus', check);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) check();
+  });
   return setInterval(check, 30000);
 }

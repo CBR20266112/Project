@@ -4,7 +4,7 @@
  */
 
 /** 앱 버전 (설정 화면·배포 기준) */
-export const APP_VERSION = '1.91.4';
+export const APP_VERSION = '1.92.0';
 
 // ─── localStorage 키 ───
 export const STORAGE_KEYS = Object.freeze({
@@ -165,6 +165,7 @@ export const DEFAULT_ITEMS = Object.freeze({
   equipped: {
     ribbon:     null,
     hat:        null,
+    glasses:    null,
     scarf:      null,
     cushion:    null,
     carpet:     null,
@@ -375,4 +376,3 @@ export function getRandomQuote() {
   }
   return DAILY_QUOTES[Math.floor(Math.random() * DAILY_QUOTES.length)];
 }
-
