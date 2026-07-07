@@ -7,6 +7,7 @@ let _ctx = null;
 let _masterGain = null;
 let _sfxGain = null;
 let _asmrtGain = null;
+let _binauralGain = null;
 let _bgmGain = null;
 
 function getCtx() {
@@ -21,6 +22,9 @@ function getCtx() {
     _asmrtGain = _ctx.createGain();
     _asmrtGain.gain.value = 0.6;
     _asmrtGain.connect(_masterGain);
+    _binauralGain = _ctx.createGain();
+    _binauralGain.gain.value = 0;
+    _binauralGain.connect(_masterGain);
     _bgmGain = _ctx.createGain();
     _bgmGain.gain.value = 0.18; // 배경음악은 기본적으로 작게
     _bgmGain.connect(_masterGain);
@@ -52,6 +56,7 @@ export function setBgmEnabled(v)  { _prefs.bgmOn  = v; savePrefs(); if (!v) stop
 function syncVolumes() {
   if (_sfxGain)   _sfxGain.gain.value   = getSfxVolume();
   if (_asmrtGain) _asmrtGain.gain.value  = getAsmrVolume();
+  if (_binauralGain && _currentBinauralId) _applyBinauralGain();
   if (_bgmGain)   _bgmGain.gain.value    = getBgmVolume();
 }
 
@@ -865,57 +870,160 @@ export function playShearPeelPop(intensity = 0.6) {
 // --- ASMR ---
 
 export const ASMR_LIST = [
-  { id: 'sheep',   icon: 'sheep-icon.svg',  emoji: '🐑', name: '양 울음소리',    desc: '메에~ 부드러운 양 울음' },
-  { id: 'ranch',   icon: 'ranch-icon.svg',  emoji: '🌙', name: '밤의 목장',       desc: '고요한 밤 목장의 바람과 풀벌레' },
-  { id: 'bugs',    icon: 'bugs-icon.svg',   emoji: '🦗', name: '풀벌레 소리',     desc: '여름밤 귀뚜라미와 풀벌레' },
-  { id: 'wind',    icon: 'wind-icon.svg',   emoji: '🍃', name: '바람 소리',        desc: '살랑살랑 산들바람' },
-  { id: 'rain',    icon: 'rain-icon.svg',   emoji: '🌧️', name: '빗소리',           desc: '창문에 떨어지는 빗방울 소리' },
-  { id: 'fire',    icon: 'fire-icon.svg',   emoji: '🔥', name: '장작 타는 소리',  desc: '포근한 벽난로 장작불' },
-  { id: 'forest',  icon: 'forest-icon.svg', emoji: '🌲', name: '숲속 새벽',        desc: '새벽 숲에서 들려오는 새소리' },
-  { id: 'river',   icon: 'river-icon.svg',  emoji: '💧', name: '시냇물',           desc: '졸졸 흐르는 맑은 시냇물' },
-  { id: 'white',   icon: 'white-icon.svg',  emoji: '⬜', name: '백색소음',         desc: '집중과 수면에 도움되는 화이트 노이즈' },
-  { id: 'piano',   icon: 'piano-icon.svg',  emoji: '🎹', name: '잔잔한 피아노',   desc: '자연과 함께하는 피아노 선율' },
+  { id: 'sheep',   category: 'cozy',   icon: 'sheep-icon.svg',  emoji: '🐑', name: '양 울음소리',    desc: '메에~ 부드러운 양 울음' },
+  { id: 'ranch',   category: 'nature', icon: 'ranch-icon.svg',  emoji: '🌙', name: '밤의 목장',       desc: '고요한 밤 목장의 바람과 풀벌레' },
+  { id: 'bugs',    category: 'nature', icon: 'bugs-icon.svg',   emoji: '🦗', name: '풀벌레 소리',     desc: '여름밤 귀뚜라미와 풀벌레' },
+  { id: 'wind',    category: 'nature', icon: 'wind-icon.svg',   emoji: '🍃', name: '바람 소리',        desc: '살랑살랑 산들바람' },
+  { id: 'rain',    category: 'nature', icon: 'rain-icon.svg',   emoji: '🌧️', name: '빗소리',           desc: '창문에 떨어지는 빗방울 소리' },
+  { id: 'snow',    category: 'nature', icon: 'snow-icon.svg',   emoji: '❄️', name: '눈 내리는 밤',     desc: '고요한 겨울밤 눈발 소리' },
+  { id: 'ocean',   category: 'nature', icon: 'ocean-icon.svg',  emoji: '🌊', name: '파도 소리',        desc: '해변에 밀려오는 잔잔한 파도' },
+  { id: 'river',   category: 'nature', icon: 'river-icon.svg',  emoji: '💧', name: '시냇물',           desc: '졸졸 흐르는 맑은 시냇물' },
+  { id: 'forest',  category: 'nature', icon: 'forest-icon.svg', emoji: '🌲', name: '숲속 새벽',        desc: '새벽 숲에서 들려오는 새소리' },
+  { id: 'fire',    category: 'cozy',   icon: 'fire-icon.svg',   emoji: '🔥', name: '장작 타는 소리',  desc: '포근한 벽난로 장작불' },
+  { id: 'fan',     category: 'focus',  icon: 'fan-icon.svg',    emoji: '🌀', name: '선풍기',           desc: '규칙적인 팬 소음으로 숙면 유도' },
+  { id: 'white',   category: 'focus',  icon: 'white-icon.svg',  emoji: '⬜', name: '백색소음',         desc: '집중과 수면에 도움되는 화이트 노이즈' },
+  { id: 'brown',   category: 'focus',  icon: 'brown-icon.svg',  emoji: '🟤', name: '브라운 노이즈',    desc: '더 깊고 포근한 저음 노이즈' },
+  { id: 'heartbeat', category: 'focus', icon: 'heart-icon.svg', emoji: '💓', name: '심장 박동',        desc: '느린 리듬의 안정감' },
+  { id: 'piano',   category: 'cozy',   icon: 'piano-icon.svg',  emoji: '🎹', name: '잔잔한 피아노',   desc: '자연과 함께하는 피아노 선율' },
+  { id: 'musicbox', category: 'cozy', icon: 'box-icon.svg',    emoji: '🎠', name: '오르골',           desc: '자장가 같은 오르골 멜로디' },
+  { id: 'preset_rainy',  category: 'preset', emoji: '🌧️', name: '비 오는 밤',   desc: '빗소리 + 살랑 바람 믹스' },
+  { id: 'preset_cozy',   category: 'preset', emoji: '🔥', name: '포근한 난로',  desc: '장작불 + 잔잔한 바람' },
+  { id: 'preset_deep',   category: 'preset', emoji: '😴', name: '깊은 잠',      desc: '브라운 노이즈 + 심장 박동' },
+  { id: 'preset_starry', category: 'preset', emoji: '✨', name: '별빛 목장',    desc: '밤 목장 + 풀벌레' },
+  { id: 'preset_ocean',  category: 'preset', emoji: '🌊', name: '해변의 밤',    desc: '파도 + 귀뚜라미' },
 ];
+
+export function getAsmrItem(id) {
+  return ASMR_LIST.find(i => i.id === id) ?? null;
+}
+
+export function getLastAsmrId() {
+  return _prefs.lastAsmrId ?? null;
+}
+
+export function isAsmrSleepAutoplay() {
+  return _prefs.asmrSleepAutoplay !== false;
+}
+
+export function setAsmrSleepAutoplay(v) {
+  _prefs.asmrSleepAutoplay = !!v;
+  savePrefs();
+}
 
 export function getAsmrList() { return ASMR_LIST; }
 
 let _currentAsmrId   = null;
 let _asmrNodes       = [];
 let _asmrScheduleId  = null;
+let _asmrTimerId     = null;
+let _asmrTimerEnd    = null;
 
-export function playAsmr(id) {
-  stopAsmr();
+export function playAsmr(id, opts = {}) {
+  stopAsmr({ keepTimer: true });
   if (!isAsmrEnabled()) return;
   _currentAsmrId = id;
+  _prefs.lastAsmrId = id;
+  savePrefs();
+  if (opts.fadeIn) _fadeInAsmrGain(2.5);
   _startAsmrById(id);
 }
 
-export function stopAsmr() {
+export function stopAsmr(opts = {}) {
   _currentAsmrId = null;
   clearTimeout(_asmrScheduleId);
+  _asmrScheduleId = null;
   _asmrNodes.forEach(n => {
-    try { n.stop(); } catch(e) {}
-    try { n.disconnect(); } catch(e) {}
+    try { n.stop(); } catch (e) { /* noop */ }
+    try { n.disconnect(); } catch (e) { /* noop */ }
   });
   _asmrNodes = [];
+  if (_asmrtGain) _asmrtGain.gain.value = getAsmrVolume();
+  if (!opts.keepTimer) clearAsmrSleepTimer();
+}
+
+export function fadeOutAndStopAsmr(sec = 4) {
+  if (!_asmrtGain || !_currentAsmrId) {
+    stopAsmr();
+    return;
+  }
+  const ctx = getCtx();
+  const g = _asmrtGain.gain;
+  const vol = getAsmrVolume();
+  g.cancelScheduledValues(ctx.currentTime);
+  g.setValueAtTime(g.value, ctx.currentTime);
+  g.linearRampToValueAtTime(0.001, ctx.currentTime + sec);
+  setTimeout(() => {
+    stopAsmr();
+    if (_asmrtGain) _asmrtGain.gain.value = vol;
+  }, sec * 1000 + 50);
+}
+
+export function setAsmrSleepTimer(minutes) {
+  clearAsmrSleepTimer();
+  if (!minutes || minutes <= 0) return;
+  _asmrTimerEnd = Date.now() + minutes * 60 * 1000;
+  _asmrTimerId = setTimeout(() => {
+    fadeOutAndStopAsmr(5);
+    fadeOutAndStopBinaural(5);
+  }, minutes * 60 * 1000);
+  _prefs.asmrTimerMin = minutes;
+  savePrefs();
+}
+
+export function clearAsmrSleepTimer() {
+  clearTimeout(_asmrTimerId);
+  _asmrTimerId = null;
+  _asmrTimerEnd = null;
+  _prefs.asmrTimerMin = 0;
+  savePrefs();
+}
+
+export function getAsmrTimerMinutesLeft() {
+  if (!_asmrTimerEnd) return 0;
+  return Math.max(0, Math.ceil((_asmrTimerEnd - Date.now()) / 60000));
+}
+
+export function getAsmrSleepTimerMinutes() {
+  return _prefs.asmrTimerMin ?? 0;
 }
 
 export function getCurrentAsmrId() { return _currentAsmrId; }
 
 function _registerNode(node) { _asmrNodes.push(node); return node; }
 
+function _fadeInAsmrGain(sec) {
+  if (!_asmrtGain) return;
+  const ctx = getCtx();
+  const target = getAsmrVolume();
+  const g = _asmrtGain.gain;
+  g.cancelScheduledValues(ctx.currentTime);
+  g.setValueAtTime(0.001, ctx.currentTime);
+  g.linearRampToValueAtTime(target, ctx.currentTime + sec);
+}
+
 function _startAsmrById(id) {
-  switch(id) {
+  switch (id) {
     case 'sheep':  _asmrSheep();  break;
     case 'ranch':  _asmrRanch();  break;
     case 'bugs':   _asmrBugs();   break;
     case 'wind':   _asmrWind();   break;
     case 'rain':   _asmrRain();   break;
+    case 'snow':   _asmrSnow();   break;
+    case 'ocean':  _asmrOcean();  break;
     case 'fire':   _asmrFire();   break;
+    case 'fan':    _asmrFan();    break;
     case 'forest': _asmrForest(); break;
     case 'river':  _asmrRiver();  break;
     case 'white':  _asmrWhite();  break;
+    case 'brown':  _asmrBrown();  break;
+    case 'heartbeat': _asmrHeartbeat(); break;
     case 'piano':  _asmrPiano();  break;
+    case 'musicbox': _asmrMusicbox(); break;
+    case 'preset_rainy':  _asmrPresetRainy();  break;
+    case 'preset_cozy':   _asmrPresetCozy();   break;
+    case 'preset_deep':   _asmrPresetDeep();   break;
+    case 'preset_starry': _asmrPresetStarry(); break;
+    case 'preset_ocean':  _asmrPresetOcean();  break;
   }
 }
 
@@ -1148,6 +1256,385 @@ function _asmrPiano() {
     _registerNode(o2); o2.start(t); o2.stop(t + noteDur * 0.7);
   }
   _scheduleLoop('piano', dur * 1000);
+}
+
+function _asmrSnow() {
+  const ctx = getCtx();
+  const dur = 22;
+  const now = ctx.currentTime;
+  const noise = createNoise(dur);
+  const lpf = createFilter('lowpass', 1200);
+  const hpf = createFilter('highpass', 120);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.22, now + 2);
+  g.gain.setValueAtTime(0.22, now + dur - 2);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+  for (let i = 0; i < 55; i++) {
+    const t = now + rand(0, dur - 0.4);
+    const drp = createNoise(0.08);
+    const bpf = createFilter('bandpass', rand(800, 2400), rand(0.4, 1.2));
+    const dg = createGain(0);
+    drp.connect(bpf); bpf.connect(dg); dg.connect(_asmrtGain);
+    dg.gain.setValueAtTime(rand(0.02, 0.08), t);
+    dg.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    _registerNode(drp); drp.start(t); drp.stop(t + 0.14);
+  }
+  _scheduleLoop('snow', dur * 1000);
+}
+
+function _asmrOcean() {
+  const ctx = getCtx();
+  const dur = 24;
+  const now = ctx.currentTime;
+  for (let w = 0; w < 6; w++) {
+    const t = now + w * 4 + rand(0, 0.5);
+    const waveDur = rand(3.2, 4.5);
+    const noise = createNoise(waveDur);
+    const lpf = createFilter('lowpass', rand(280, 480));
+    const g = createGain(0);
+    noise.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(rand(0.2, 0.32), t + waveDur * 0.45);
+    g.gain.linearRampToValueAtTime(0, t + waveDur);
+    _registerNode(noise); noise.start(t); noise.stop(t + waveDur + 0.1);
+  }
+  _addSoftWind(now, dur, 0.12);
+  _scheduleLoop('ocean', dur * 1000);
+}
+
+function _asmrFan() {
+  const ctx = getCtx();
+  const dur = 28;
+  const now = ctx.currentTime;
+  const noise = createBrownNoise(dur);
+  const bpf = createFilter('bandpass', 180, 0.35);
+  const g = createGain(0);
+  noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.28, now + 2);
+  g.gain.setValueAtTime(0.28, now + dur - 2);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+  _scheduleLoop('fan', dur * 1000);
+}
+
+function _asmrBrown() {
+  const ctx = getCtx();
+  const dur = 32;
+  const now = ctx.currentTime;
+  const noise = createBrownNoise(dur);
+  const lpf = createFilter('lowpass', 420);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.32, now + 2.5);
+  g.gain.setValueAtTime(0.32, now + dur - 2);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+  _scheduleLoop('brown', dur * 1000);
+}
+
+function _asmrHeartbeat() {
+  const ctx = getCtx();
+  const dur = 20;
+  const now = ctx.currentTime;
+  const bpm = 58;
+  const beat = 60 / bpm;
+  const beats = Math.floor(dur / beat);
+  for (let i = 0; i < beats; i++) {
+    const t = now + i * beat;
+    [[0, 55, 0.14], [0.14, 42, 0.1]].forEach(([off, freq, noteDur]) => {
+      const o = ctx.createOscillator();
+      const g = createGain(0);
+      o.type = 'sine'; o.frequency.value = freq;
+      o.connect(g); g.connect(_asmrtGain);
+      g.gain.setValueAtTime(0, t + off);
+      g.gain.linearRampToValueAtTime(0.12, t + off + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, t + off + noteDur);
+      _registerNode(o); o.start(t + off); o.stop(t + off + noteDur + 0.05);
+    });
+  }
+  _scheduleLoop('heartbeat', dur * 1000);
+}
+
+function _asmrMusicbox() {
+  const ctx = getCtx();
+  const dur = 26;
+  const now = ctx.currentTime;
+  const melody = [523.25, 523.25, 783.99, 783.99, 880.0, 880.0, 783.99, 659.25, 659.25, 587.33, 587.33, 523.25];
+  melody.forEach((freq, i) => {
+    const t = now + 0.8 + i * 0.55;
+    const noteDur = 0.48;
+    const o = ctx.createOscillator();
+    const g = createGain(0);
+    o.type = 'triangle'; o.frequency.value = freq;
+    o.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.1, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t + noteDur);
+    _registerNode(o); o.start(t); o.stop(t + noteDur + 0.05);
+  });
+  _addSoftWind(now, dur, 0.06);
+  _scheduleLoop('musicbox', dur * 1000);
+}
+
+function _asmrPresetRainy() {
+  const dur = 20;
+  const now = getCtx().currentTime;
+  _asmrRainLayer(now, dur, 0.3);
+  _addSoftWind(now, dur, 0.14);
+  _scheduleLoop('preset_rainy', dur * 1000);
+}
+
+function _asmrPresetCozy() {
+  const dur = 18;
+  const now = getCtx().currentTime;
+  _asmrFireLayer(now, dur, 0.22);
+  _addSoftWind(now, dur, 0.1);
+  _scheduleLoop('preset_cozy', dur * 1000);
+}
+
+function _asmrPresetDeep() {
+  const dur = 30;
+  const now = getCtx().currentTime;
+  _asmrBrownLayer(now, dur, 0.26);
+  _asmrHeartbeatLayer(now, dur, 0.08);
+  _scheduleLoop('preset_deep', dur * 1000);
+}
+
+function _asmrPresetStarry() {
+  const dur = 16;
+  const now = getCtx().currentTime;
+  _addSoftWind(now, dur, 0.2);
+  _addCrickets(now, dur, 0.28);
+  _asmrSheepLayer(now, dur, 0.05);
+  _scheduleLoop('preset_starry', dur * 1000);
+}
+
+function _asmrPresetOcean() {
+  const dur = 24;
+  const now = getCtx().currentTime;
+  _asmrOceanLayer(now, dur);
+  _addCrickets(now, dur, 0.12);
+  _scheduleLoop('preset_ocean', dur * 1000);
+}
+
+function _asmrRainLayer(now, dur, vol) {
+  const ctx = getCtx();
+  const noise = createNoise(dur);
+  const lpf = createFilter('lowpass', 2000);
+  const hpf = createFilter('highpass', 200);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(vol, now + 1.2);
+  g.gain.setValueAtTime(vol, now + dur - 1.5);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+}
+
+function _asmrFireLayer(now, dur, vol) {
+  const ctx = getCtx();
+  const noise = createNoise(dur);
+  const lpf = createFilter('lowpass', 500);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(vol, now + 1);
+  g.gain.setValueAtTime(vol, now + dur - 1.5);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+}
+
+function _asmrBrownLayer(now, dur, vol) {
+  const noise = createBrownNoise(dur);
+  const lpf = createFilter('lowpass', 420);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(vol, now + 2);
+  g.gain.setValueAtTime(vol, now + dur - 2);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+}
+
+function _asmrHeartbeatLayer(now, dur, vol) {
+  const ctx = getCtx();
+  const beat = 60 / 58;
+  const beats = Math.floor(dur / beat);
+  for (let i = 0; i < beats; i++) {
+    const t = now + i * beat;
+    const o = ctx.createOscillator();
+    const g = createGain(0);
+    o.type = 'sine'; o.frequency.value = 50;
+    o.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    _registerNode(o); o.start(t); o.stop(t + 0.22);
+  }
+}
+
+function _asmrSheepLayer(now, dur, vol) {
+  [3, 9].forEach(offset => {
+    const t = now + offset;
+    const o = getCtx().createOscillator();
+    const g = createGain(0);
+    const lpf = createFilter('lowpass', 500);
+    o.type = 'sawtooth'; o.frequency.value = 200;
+    o.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.08);
+    g.gain.linearRampToValueAtTime(0, t + 0.55);
+    _registerNode(o); o.start(t); o.stop(t + 0.6);
+  });
+}
+
+function _asmrOceanLayer(now, dur) {
+  for (let w = 0; w < 5; w++) {
+    const t = now + w * 4.5;
+    const waveDur = 4;
+    const noise = createNoise(waveDur);
+    const lpf = createFilter('lowpass', 380);
+    const g = createGain(0);
+    noise.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.26, t + 2);
+    g.gain.linearRampToValueAtTime(0, t + waveDur);
+    _registerNode(noise); noise.start(t); noise.stop(t + waveDur + 0.1);
+  }
+}
+
+function createBrownNoise(duration) {
+  const ctx = getCtx();
+  const frames = Math.ceil(ctx.sampleRate * duration);
+  const buf = ctx.createBuffer(1, frames, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < frames; i++) {
+    const white = Math.random() * 2 - 1;
+    last = (last + white * 0.02) / 1.02;
+    data[i] = last * 3.5;
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  return src;
+}
+
+// --- 바이노럴 비트 (ASMR과 동시 재생 가능) ---
+
+export const BINARURAL_LIST = [
+  { id: 'delta_2',  emoji: '🌙', name: '깊은 수면',  desc: '2Hz 델타 · 깊은 숙면 유도',     carrier: 200, beat: 2 },
+  { id: 'delta_1',  emoji: '💤', name: '초깊은 잠',  desc: '1Hz 델타 · 아주 느린 뇌파',     carrier: 180, beat: 1 },
+  { id: 'theta_6',  emoji: '🧘', name: '이완',       desc: '6Hz 세타 · 몸과 마음 풀기',     carrier: 220, beat: 6 },
+  { id: 'theta_4',  emoji: '😌', name: '명상',       desc: '4Hz 세타 · 호흡에 집중',        carrier: 210, beat: 4 },
+  { id: 'alpha_10', emoji: '☁️', name: '안정',       desc: '10Hz 알파 · 긴장 완화',         carrier: 240, beat: 10 },
+];
+
+let _binauralOscL = null;
+let _binauralOscR = null;
+let _currentBinauralId = null;
+
+const BINARURAL_MAX_GAIN = 0.38;
+
+function _binauralTargetGain() {
+  return (getBinauralVolume() / 100) * BINARURAL_MAX_GAIN;
+}
+
+function _applyBinauralGain() {
+  if (!_binauralGain) return;
+  _binauralGain.gain.value = _currentBinauralId ? _binauralTargetGain() : 0;
+}
+
+export function getBinauralList() { return BINARURAL_LIST; }
+
+export function getBinauralItem(id) {
+  return BINARURAL_LIST.find(i => i.id === id) ?? null;
+}
+
+export function getBinauralVolume() {
+  const v = _prefs.binauralVol ?? 25;
+  return Math.max(1, Math.min(100, Math.round(v)));
+}
+
+export function setBinauralVolume(v) {
+  _prefs.binauralVol = Math.max(1, Math.min(100, Math.round(v)));
+  savePrefs();
+  _applyBinauralGain();
+}
+
+export function getCurrentBinauralId() { return _currentBinauralId; }
+
+export function getLastBinauralId() { return _prefs.lastBinauralId ?? null; }
+
+export function playBinaural(id, opts = {}) {
+  stopBinaural();
+  const item = getBinauralItem(id);
+  if (!item) return;
+  const ctx = getCtx();
+  _currentBinauralId = id;
+  _prefs.lastBinauralId = id;
+  savePrefs();
+
+  const oscL = ctx.createOscillator();
+  const oscR = ctx.createOscillator();
+  oscL.type = 'sine';
+  oscR.type = 'sine';
+  oscL.frequency.value = item.carrier;
+  oscR.frequency.value = item.carrier + item.beat;
+
+  const panL = ctx.createStereoPanner();
+  const panR = ctx.createStereoPanner();
+  panL.pan.value = -1;
+  panR.pan.value = 1;
+
+  const gL = createGain(0.5);
+  const gR = createGain(0.5);
+
+  oscL.connect(gL); gL.connect(panL); panL.connect(_binauralGain);
+  oscR.connect(gR); gR.connect(panR); panR.connect(_binauralGain);
+
+  oscL.start();
+  oscR.start();
+  _binauralOscL = oscL;
+  _binauralOscR = oscR;
+
+  if (opts.fadeIn) {
+    const target = _binauralTargetGain();
+    const g = _binauralGain.gain;
+    g.cancelScheduledValues(ctx.currentTime);
+    g.setValueAtTime(0.001, ctx.currentTime);
+    g.linearRampToValueAtTime(target, ctx.currentTime + (opts.fadeInSec ?? 2.5));
+  } else {
+    _applyBinauralGain();
+  }
+}
+
+export function stopBinaural() {
+  [_binauralOscL, _binauralOscR].forEach(o => {
+    if (!o) return;
+    try { o.stop(); } catch (e) { /* noop */ }
+    try { o.disconnect(); } catch (e) { /* noop */ }
+  });
+  _binauralOscL = _binauralOscR = null;
+  _currentBinauralId = null;
+  if (_binauralGain) _binauralGain.gain.value = 0;
+}
+
+export function fadeOutAndStopBinaural(sec = 4) {
+  if (!_binauralGain || !_currentBinauralId) {
+    stopBinaural();
+    return;
+  }
+  const ctx = getCtx();
+  const g = _binauralGain.gain;
+  g.cancelScheduledValues(ctx.currentTime);
+  g.setValueAtTime(g.value, ctx.currentTime);
+  g.linearRampToValueAtTime(0.001, ctx.currentTime + sec);
+  setTimeout(() => stopBinaural(), sec * 1000 + 50);
 }
 
 // --- 공유 블록 ---

@@ -446,6 +446,130 @@
   background: rgba(167,139,250,0.15);
   color: #fff;
 }
+.home-asmr-subtitle {
+  font-size: var(--font-size-2xs);
+  font-weight: 800;
+  color: var(--text-muted);
+  margin: var(--space-2) 0 var(--space-1);
+}
+.home-asmr-hint {
+  font-weight: 500;
+  opacity: 0.75;
+}
+.home-asmr-timer {
+  margin-top: var(--space-3);
+}
+.home-asmr-autoplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--glass-border);
+}
+.home-asmr-autoplay-label {
+  font-size: var(--font-size-2xs);
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+.home-asmr-stop {
+  margin-left: auto;
+  background: rgba(252,165,165,0.15);
+  border: 1px solid rgba(252,165,165,0.3);
+  color: #fca5a5;
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-size: var(--font-size-2xs);
+  cursor: pointer;
+}
+.home-binaural-now {
+  margin-bottom: var(--space-2);
+}
+.binaural-vol-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.binaural-vol-label {
+  font-size: var(--font-size-2xs);
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.binaural-vol-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--radius-full);
+}
+.binaural-vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #7dd3fc;
+  cursor: pointer;
+}
+.binaural-vol-val {
+  font-size: var(--font-size-2xs);
+  color: var(--text-muted);
+  width: 28px;
+  text-align: right;
+}
+.binaural-chip.playing {
+  border-color: #7dd3fc;
+  background: rgba(125,211,252,0.12);
+}
+.binaural-card.playing {
+  border-color: #7dd3fc;
+  background: rgba(125,211,252,0.1);
+  box-shadow: 0 0 12px rgba(125,211,252,0.2);
+}
+.binaural-now-bar {
+  background: linear-gradient(135deg, rgba(14,116,144,0.2), rgba(125,211,252,0.08));
+  border-color: rgba(125,211,252,0.35);
+}
+.asm-timer-row,
+.asmr-timer-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.asmr-timer-btn {
+  flex: 1;
+  min-width: 56px;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  font-size: var(--font-size-2xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+.asmr-timer-label {
+  font-size: var(--font-size-2xs);
+  color: var(--text-muted);
+  margin-top: var(--space-2);
+}
+.sleep-asmr-mini .sleep-asmr-now {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(167,139,250,0.08);
+  border: 1px solid rgba(167,139,250,0.2);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+.sleep-asmr-mini .sleep-asmr-now.playing {
+  border-color: var(--color-purple);
+  color: var(--text-primary);
+}
 .home-sleep-actions {
   padding: var(--space-4);
   margin-top: var(--space-2);

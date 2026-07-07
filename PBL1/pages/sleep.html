@@ -106,9 +106,27 @@
     </header>
 
     <div class="content">
-      <a href="calendar.html" class="btn btn-secondary w-full" style="display:block;text-align:center;text-decoration:none;margin-bottom:var(--space-3);">
-        📅 메에메에 캘린더
+      <a href="calendar.html" class="sleep-calendar-link" aria-label="메에메에 캘린더 열기">
+        <span class="sleep-calendar-link__icon" aria-hidden="true">📅</span>
+        <span class="sleep-calendar-link__body">
+          <span class="sleep-calendar-link__title">메에메에 캘린더</span>
+          <span class="sleep-calendar-link__desc">수면·고민 기록을 한눈에</span>
+        </span>
+        <span class="sleep-calendar-link__arrow" aria-hidden="true">›</span>
       </a>
+
+      <section class="glass card sleep-asmr-mini" style="padding: var(--space-4); margin-bottom: var(--space-3);">
+        <div class="flex justify-between items-center" style="margin-bottom: var(--space-2);">
+          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">🎵 수면 사운드</h3>
+          <a href="asmr.html" class="home-link" style="font-size: var(--font-size-2xs);">전체 ›</a>
+        </div>
+        <div class="sleep-asmr-now" id="sleep-asmr-now-wrap">
+          <span id="sleep-asmr-now">소리를 골라 잠들 준비를 해요</span>
+          <button type="button" class="home-asmr-stop" id="btn-sleep-asmr-stop" style="display:none;" title="ASMR 정지">⏹</button>
+        </div>
+        <p class="home-asmr-subtitle" style="margin-top: var(--space-2);">✨ 추천 믹스</p>
+        <div class="home-asmr-scroll" id="sleep-asmr-presets"></div>
+      </section>
 
       <section class="glass card" style="padding: var(--space-4); margin-bottom: var(--space-3);">
         <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--space-3);">오늘의 수면</h3>
@@ -223,9 +241,13 @@
     import { saveMorningCallSchedule, getSleepTimeDefaults, formatAlarmHint } from '../js/morningcall.js';
     import { getDreamDiaryEntries, formatDiarySummary } from '../js/dream-diary.js';
     import { moodEmoji } from '../js/calendar.js';
+    import { initSound } from '../js/sound.js';
+    import { initSleepAsmrMini } from '../js/asmr.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       initCommon();
+      initSound();
+      initSleepAsmrMini();
 
       const woolCount = document.getElementById('wool-count');
       const diaryList = document.getElementById('diary-list');

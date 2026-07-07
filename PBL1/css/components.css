@@ -365,6 +365,81 @@
   backdrop-filter: var(--glass-blur-sm);
 }
 
+/* 링크형 전체 너비 버튼 (a 태그) */
+a.btn {
+  text-decoration: none;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+a.btn.btn-block-link {
+  display: flex;
+  width: 100%;
+  white-space: normal;
+  line-height: 1.4;
+  text-align: center;
+  justify-content: center;
+}
+
+/* 수면 탭 — 캘린더 바로가기 */
+.sleep-calendar-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border-bright);
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur-sm);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.sleep-calendar-link:hover {
+  border-color: rgba(167, 139, 250, 0.45);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.sleep-calendar-link:active {
+  transform: scale(0.99);
+}
+
+.sleep-calendar-link__icon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.sleep-calendar-link__body {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.sleep-calendar-link__title {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: 800;
+}
+
+.sleep-calendar-link__desc {
+  display: block;
+  font-size: var(--font-size-2xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.sleep-calendar-link__arrow {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
 /* Action (작은 아이콘 버튼) */
 .btn-action {
   flex-direction: column;

@@ -70,8 +70,35 @@
         <div id="home-asmr-now" class="home-asmr-now idle">
           <span>🎵</span>
           <span id="home-asmr-now-label">재생할 소리를 골라 보세요</span>
+          <button type="button" class="home-asmr-stop" id="btn-home-asmr-stop" style="display:none;" title="정지">⏹</button>
         </div>
+        <p class="home-asmr-subtitle">✨ 추천 믹스</p>
+        <div class="home-asmr-scroll home-asmr-presets" id="home-asmr-presets"></div>
+        <p class="home-asmr-subtitle">🌙 사운드</p>
         <div class="home-asmr-scroll" id="home-asmr-chips"></div>
+        <div class="home-asmr-timer" id="home-asmr-timer">
+          <div class="asmr-timer-row" data-asmr-timer-row></div>
+          <p class="asmr-timer-label" data-asmr-timer-label>타이머 꺼짐</p>
+        </div>
+        <div class="home-asmr-autoplay">
+          <span class="home-asmr-autoplay-label">잠자기 시 자동 재생</span>
+          <label class="switch switch-sm">
+            <input type="checkbox" id="switch-home-asmr-autoplay" checked>
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+        <p class="home-asmr-subtitle">🎧 바이노럴 비트 <span class="home-asmr-hint">ASMR과 함께 · 이어폰 권장</span></p>
+        <div id="home-binaural-now" class="home-asmr-now home-binaural-now idle">
+          <span>🎧</span>
+          <span id="home-binaural-now-label">바이노럴 비트 끄기</span>
+          <button type="button" class="home-asmr-stop" id="btn-home-binaural-stop" style="display:none;" title="정지">⏹</button>
+        </div>
+        <div class="home-asmr-scroll" id="home-binaural-chips"></div>
+        <div class="binaural-vol-row">
+          <span class="binaural-vol-label">비트 볼륨</span>
+          <input type="range" class="binaural-vol-slider" id="slider-home-binaural-vol" min="1" max="100" step="1" value="25">
+          <span class="binaural-vol-val" id="home-binaural-vol-val">25</span>
+        </div>
       </section>
 
       <!-- 메인 캐릭터 카드 -->
@@ -170,7 +197,7 @@
         <button class="btn btn-sleep w-full" id="btn-main-sleep">
           😴 오늘 잠자기 시작
         </button>
-        <a href="pages/sleep.html" class="btn btn-secondary w-full" style="display:block;text-align:center;text-decoration:none;margin-top:var(--space-3);">
+        <a href="pages/sleep.html" class="btn btn-secondary btn-block-link" style="margin-top:var(--space-3);">
           📊 수면 기록 · 꿈일기
         </a>
       </section>
@@ -362,7 +389,8 @@
   <script type="module">
     import { initCommon, showToast } from './js/app.js';
     import { readSheep, renderSheepTo, updateXPBar, updateStatBar, petSheep, feedSheep, decaySheepStats, playSheepAnim, addXP, touchSheep, rejectNaming } from './js/sheep.js';
-    import { initSound, resumeAudio, playSoundFeed, playSoundSleep, playSoundClick, playSoundXP, playSoundEar, playSoundHead, playSoundFace, playSoundBelly, playSoundBack, startBgm, stopBgm, isBgmPlaying, setBgmEnabled, isBgmEnabled, playMorningCallAlarm, stopMorningCallAlarm, getAsmrList, playAsmr, stopAsmr, getCurrentAsmrId } from './js/sound.js';
+    import { initSound, resumeAudio, playSoundFeed, playSoundSleep, playSoundClick, playSoundXP, playSoundEar, playSoundHead, playSoundFace, playSoundBelly, playSoundBack, startBgm, stopBgm, isBgmPlaying, setBgmEnabled, isBgmEnabled, playMorningCallAlarm, stopMorningCallAlarm, playAsmr, getLastAsmrId, isAsmrSleepAutoplay } from './js/sound.js';
+    import { initHomeAsmrSection } from './js/asmr.js';
     import { runPetInteraction } from './js/pet-effects.js';
     import { initSheepStrokePet, getLastStrokeTravel } from './js/sheep-stroke.js';
     import { recordSleep, getStreak, getSleepRegularity, applyDailyRegularityBonus } from './js/sleep.js';
@@ -610,48 +638,6 @@
         renderSheepTo(sheepRenderTarget, sheep.step, currentPose);
       }
 
-      function initHomeAsmr() {
-        const chipsEl = document.getElementById('home-asmr-chips');
-        const nowEl = document.getElementById('home-asmr-now');
-        const nowLabel = document.getElementById('home-asmr-now-label');
-        if (!chipsEl) return;
-
-        const list = getAsmrList();
-        list.forEach(item => {
-          const chip = document.createElement('button');
-          chip.type = 'button';
-          chip.className = 'home-asmr-chip';
-          chip.dataset.id = item.id;
-          chip.innerHTML = `<span class="emoji">${item.emoji}</span><span>${item.name}</span>`;
-          chip.addEventListener('click', () => {
-            resumeAudio();
-            if (getCurrentAsmrId() === item.id) stopAsmr();
-            else playAsmr(item.id);
-            updateHomeAsmrUI();
-          });
-          chipsEl.appendChild(chip);
-        });
-
-        function updateHomeAsmrUI() {
-          const cur = getCurrentAsmrId();
-          const playing = list.find(i => i.id === cur);
-          chipsEl.querySelectorAll('.home-asmr-chip').forEach(c => {
-            c.classList.toggle('playing', c.dataset.id === cur);
-          });
-          if (!nowEl || !nowLabel) return;
-          if (playing) {
-            nowEl.classList.remove('idle');
-            nowLabel.textContent = `${playing.emoji} ${playing.name} 재생 중`;
-          } else {
-            nowEl.classList.add('idle');
-            nowLabel.textContent = '재생할 소리를 골라 보세요';
-          }
-        }
-
-        updateHomeAsmrUI();
-      }
-
-      // ─── 자동 타이머 ───
       let quoteTimer = null;
       let poseTimer  = null;
       let quoteCount = 0;
@@ -1006,6 +992,9 @@
         resumeAudio();
         tryStartBgm();
         playSoundSleep();
+        if (isAsmrSleepAutoplay()) {
+          playAsmr(getLastAsmrId() || 'preset_deep', { fadeIn: true });
+        }
         const now = new Date();
         const bedTimeString = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
         const plannedBed = document.getElementById('sleep-modal-bedtime')?.value || bedTimeString;
@@ -1254,7 +1243,7 @@
       });
 
       // ─── 초기 실행 ───
-      initHomeAsmr();
+      initHomeAsmrSection();
       refreshUI();
       speechBubble.textContent = `"${getRandomQuote()}"`;
       setTimeout(startAutoTimers, 1500);
