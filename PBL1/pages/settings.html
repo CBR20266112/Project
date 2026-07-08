@@ -515,6 +515,8 @@
         updateSetting('morningCallSimple', switchMorningCallSimple.checked);
       });
 
+      let morningCallMinuteTestTimer = null;
+
       document.getElementById('btn-test-morningcall-now')?.addEventListener('click', () => {
         location.href = '../index.html?morningcall=1';
       });
@@ -529,6 +531,10 @@
         updateSetting('wakeAlarm', wakeTime);
         saveMorningCallSchedule(settingBedAlarm.value, wakeTime);
         showToast(`1분 뒤(${wakeTime}) 모닝콜 테스트를 예약했어요.`, 'success');
+        if (morningCallMinuteTestTimer) clearTimeout(morningCallMinuteTestTimer);
+        morningCallMinuteTestTimer = setTimeout(() => {
+          location.href = '../index.html?morningcall=1';
+        }, 60 * 1000);
       });
 
       selectIconMode?.addEventListener('change', () => {

@@ -4,7 +4,7 @@
  */
 
 /** 앱 버전 (설정 화면·배포 기준) */
-export const APP_VERSION = '1.92.0';
+export const APP_VERSION = '1.92.1';
 
 // ─── localStorage 키 ───
 export const STORAGE_KEYS = Object.freeze({

@@ -137,7 +137,7 @@ let _state = {
   totalPixels: 0,
   isDrawing: false,
   isRunning: false,
-  timerSec: 30,
+  timerSec: 15,
   timerInterval: null,
   brushSize: 17,
   onUpdate: null,
@@ -201,7 +201,7 @@ export function startMinigame() {
 
   const run = () => {
     _state.isRunning = true;
-    _state.timerSec = 30;
+    _state.timerSec = 15;
     _state.lastPercent = 0;
     _state.milestones = new Set();
     _percentCache = 0;
