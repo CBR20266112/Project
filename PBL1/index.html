@@ -410,9 +410,9 @@
     import { recordSleep, getStreak, getSleepRegularity, applyDailyRegularityBonus } from './js/sleep.js';
     import { SHEEP_POSE, NAME_DIALOG_SCRIPT, getRandomQuote } from './js/constants.js';
     import { saveSheep, setItem, getItem, removeItem, getSettings, getLocalDateKey } from './js/storage.js';
-    import { checkAndShowOpening } from './js/opening.js';
+    import { checkAndShowOpening, startImageSlideshow } from './js/opening.js';
     import { pickMorningAction, MORNING_ACTION, initWakeAlarmScheduler, saveMorningCallSchedule, getSleepTimeDefaults, formatAlarmHint, markMorningCallCompleted } from './js/morningcall.js';
-    import { recordAttendance, getAttendanceRewardMessages, getAttendance, isCheckedInToday, getWeekCycleProgress, getNextCycleReward, getTodayCycleRewardPreview } from './js/attendance.js';
+    import { recordAttendance, getAttendanceRewardMessages, getAttendance, isCheckedInToday, getWeekCycleProgress, getNextCycleReward, getTodayCycleRewardPreview, getStoryImages } from './js/attendance.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       initCommon();
@@ -585,6 +585,42 @@
         attendanceModal?.classList.remove('active');
       }
 
+      function showAttendanceUnlocks(res) {
+        const phone = document.querySelector('.phone');
+        if (!phone || !res || res.alreadyChecked) return;
+
+        const queue = [];
+        if (res.newSingle) {
+          queue.push({
+            images: [res.newSingle.path],
+            hintText: `${res.newSingle.title} 해금! × 버튼으로 닫을 수 있어요.`,
+          });
+        }
+        if (res.newStrip) {
+          queue.push({
+            images: [res.newStrip.path],
+            hintText: `${res.newStrip.title} 해금! × 버튼으로 닫을 수 있어요.`,
+          });
+        }
+        (res.newlyUnlocked || []).forEach(story => {
+          queue.push({
+            images: getStoryImages(story),
+            hintText: `${story.title} 해금! 화면을 터치하면 다음 장으로 넘어가요.`,
+          });
+        });
+
+        const showNext = () => {
+          const item = queue.shift();
+          if (!item) return;
+          startImageSlideshow(phone, item.images, {
+            skipText: '×',
+            hintText: item.hintText,
+            onComplete: showNext,
+          });
+        };
+        setTimeout(showNext, 450);
+      }
+
       function showAttendancePromptOnFirstVisit() {
         const today = getLocalDateKey();
         if (isCheckedInToday()) return;
@@ -611,6 +647,7 @@
         }
         refreshUI();
         renderAttendanceModal();
+        showAttendanceUnlocks(res);
       });
 
       // ─── UI 갱신 ───

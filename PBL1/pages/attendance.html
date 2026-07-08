@@ -12,7 +12,6 @@
   <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
-
   <div class="background">
     <canvas id="star-canvas"></canvas>
     <div class="moon"></div>
@@ -21,7 +20,7 @@
   <main class="phone">
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">‹</button>
         <div>
           <h1>📅 출석체크</h1>
           <p class="subtitle">매일 출석하고 스토리를 모아요</p>
@@ -40,25 +39,25 @@
         <div class="streak-banner">
           <span class="streak-number" id="att-streak">0</span>
           <div class="streak-text">
-            <div class="font-bold" style="color: #fff;">일 연속 출석 중!</div>
-            <div id="att-next-milestone">다음 스토리까지 —</div>
+            <div class="font-bold" style="color:#fff;">일 연속 출석 중</div>
+            <div id="att-next-milestone">다음 스토리까지 계산 중</div>
           </div>
         </div>
         <div style="margin-top: var(--space-3);">
           <div class="flex justify-between" style="font-size: var(--font-size-xs); color: var(--text-muted); margin-bottom: 6px;">
-            <span>이번 주 출석</span>
+            <span>이번 주기 출석</span>
             <span id="att-week-label">0 / 7</span>
           </div>
-          <div class="flex gap-2" id="att-week-dots" style="justify-content: center;"></div>
+          <div class="flex gap-2" id="att-week-dots" style="justify-content:center;"></div>
         </div>
       </section>
 
-      <section class="glass card" style="padding: var(--space-4); text-align: center;">
+      <section class="glass card" style="padding: var(--space-4); text-align:center;">
         <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); line-height: 1.6;">
-          매일 출석하면 <strong style="color: var(--color-purple-soft);">양털 +3</strong>을 받아요.<br>
-          7·14·21일 연속 출석 시 스토리가 해금됩니다.
+          매일 출석하면 양털, 일러스트, 4컷 만화를 받을 수 있어요.<br>
+          7일·14일·21일 연속 출석 시 스토리가 해금됩니다.
         </p>
-        <button class="btn btn-primary w-full" id="btn-check-in">✨ 오늘 출석하기</button>
+        <button class="btn btn-primary w-full" id="btn-check-in">오늘 출석하기</button>
         <p id="att-status-msg" class="text-muted" style="font-size: var(--font-size-xs); margin-top: var(--space-2);"></p>
       </section>
 
@@ -68,9 +67,7 @@
       </section>
 
       <section style="margin-top: var(--space-2);">
-        <a href="gallery.html" class="btn btn-secondary btn-block-link">
-          🖼️ 갤러리에서 모아보기
-        </a>
+        <a href="gallery.html" class="btn btn-secondary btn-block-link">갤러리에서 모아보기</a>
       </section>
     </div>
 
@@ -81,7 +78,7 @@
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
-        <span class="nav-icon">😴</span>
+        <span class="nav-icon">🌙</span>
         <span class="nav-label">수면</span>
         <span class="nav-dot"></span>
       </div>
@@ -90,7 +87,7 @@
         <span class="nav-label">공방</span>
         <span class="nav-dot"></span>
       </div>
-      <div class="nav-item" data-href="gallery.html">
+      <div class="nav-item active" data-href="gallery.html">
         <span class="nav-icon">🖼️</span>
         <span class="nav-label">수집</span>
         <span class="nav-dot"></span>
@@ -106,6 +103,7 @@
       getAttendance, recordAttendance, isCheckedInToday,
       getNextMilestone, getWeekCycleProgress,
       getStoryImages, isStoryUnlocked,
+      getAttendanceRewardMessages,
     } from '../js/attendance.js';
     import { startImageSlideshow } from '../js/opening.js';
 
@@ -122,6 +120,31 @@
       const storyList = document.getElementById('story-list');
       const phone = document.querySelector('.phone');
 
+      function showUnlocks(res) {
+        if (!phone || !res || res.alreadyChecked) return;
+        const queue = [];
+        if (res.newSingle) {
+          queue.push({ images: [res.newSingle.path], hintText: `${res.newSingle.title} 해금! × 버튼으로 닫을 수 있어요.` });
+        }
+        if (res.newStrip) {
+          queue.push({ images: [res.newStrip.path], hintText: `${res.newStrip.title} 해금! × 버튼으로 닫을 수 있어요.` });
+        }
+        (res.newlyUnlocked || []).forEach(story => {
+          queue.push({ images: getStoryImages(story), hintText: `${story.title} 해금! 화면을 터치하면 다음 장으로 넘어가요.` });
+        });
+
+        const showNext = () => {
+          const item = queue.shift();
+          if (!item) return;
+          startImageSlideshow(phone, item.images, {
+            skipText: '×',
+            hintText: item.hintText,
+            onComplete: showNext,
+          });
+        };
+        setTimeout(showNext, 450);
+      }
+
       function renderUI() {
         const sheep = getSheep();
         woolCount.textContent = sheep.wool;
@@ -131,8 +154,8 @@
 
         const next = getNextMilestone(att.streak);
         attNext.textContent = next
-          ? `다음 스토리 「${next.title}」까지 ${next.days - att.streak}일`
-          : '모든 출석 스토리를 해금했어요! 🎉';
+          ? `다음 스토리 "${next.title}"까지 ${next.days - att.streak}일`
+          : '모든 출석 스토리를 해금했어요';
 
         const weekProg = getWeekCycleProgress(att.streak);
         attWeekLabel.textContent = `${weekProg} / 7`;
@@ -146,10 +169,10 @@
 
         const checked = isCheckedInToday();
         btnCheckIn.disabled = checked;
-        btnCheckIn.textContent = checked ? '✅ 오늘 출석 완료' : '✨ 오늘 출석하기';
+        btnCheckIn.textContent = checked ? '오늘 출석 완료' : '오늘 출석하기';
         attStatusMsg.textContent = checked
-          ? `누적 출석 ${att.total}일 · 모닝콜로도 출석이 인정됩니다.`
-          : '모닝콜 없이도 여기서 직접 출석할 수 있어요.';
+          ? `누적 출석 ${att.total}일째예요.`
+          : '오늘의 출석 보상을 받을 수 있어요.';
 
         storyList.innerHTML = '';
         ATTENDANCE_STORIES.forEach(story => {
@@ -171,7 +194,8 @@
             btn.textContent = '보기';
             btn.onclick = () => {
               startImageSlideshow(phone, getStoryImages(story), {
-                hintText: `${story.title} — 터치하여 넘기기`,
+                skipText: '×',
+                hintText: `${story.title} - 화면을 터치하면 다음 장으로 넘어가요.`,
               });
             };
             card.appendChild(btn);
@@ -183,14 +207,14 @@
       btnCheckIn.addEventListener('click', () => {
         const res = recordAttendance();
         if (res.alreadyChecked) {
-          showToast('오늘은 이미 출석했어요!', 'info');
+          showToast('오늘은 이미 출석했어요.', 'info');
           return;
         }
-        showToast(`출석 완료! 양털 +${res.woolGained} 🧶`, 'success');
-        if (res.newlyUnlocked.length) {
-          setTimeout(() => showToast(`🎉 「${res.newlyUnlocked[0].title}」 해금!`, 'success'), 500);
-        }
+        getAttendanceRewardMessages(res).forEach((msg, i) => {
+          setTimeout(() => showToast(msg, 'success'), i * 350);
+        });
         renderUI();
+        showUnlocks(res);
       });
 
       renderUI();

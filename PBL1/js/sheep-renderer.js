@@ -35,7 +35,8 @@ export function getSheepSVG(step = 1, pose = SHEEP_POSE.IDLE) {
   if (USE_EXTERNAL_ASSETS) {
     const isSubpage = window.location.pathname.includes('/pages/');
     const basePath = isSubpage ? '../' : '';
-    const imgPath = `${basePath}assets/sheep/step${step}/${pose}.png`;
+    const assetName = pose === SHEEP_POSE.IDLE ? 'growth_idle' : pose;
+    const imgPath = `${basePath}assets/sheep/step${step}/${assetName}.png`;
     // CSS 클래스로 크기를 지정하므로 인라인 스타일 불필요
     return `<img src="${imgPath}" class="sheep-svg ${getSheepAnimClass(pose)}" alt="양 step${step} ${pose}" decoding="async" loading="eager">`;
   }

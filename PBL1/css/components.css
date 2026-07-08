@@ -989,14 +989,17 @@ a.btn.btn-block-link {
 .opening-skip-btn {
   position: absolute;
   top: var(--space-4);
-  left: var(--space-4);
+  right: var(--space-4);
   z-index: 1510;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  line-height: 1;
   font-weight: 700;
   backdrop-filter: var(--glass-blur-sm);
   cursor: pointer;
@@ -1028,4 +1031,3 @@ a.btn.btn-block-link {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.9; }
 }
-

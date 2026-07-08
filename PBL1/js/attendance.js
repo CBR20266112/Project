@@ -73,12 +73,12 @@ export function getStripIllustPath(id) {
 
 export function getSingleIllustTitle(id) {
   const num = id.replace('single_', '');
-  return `출석 일러스트 #${num}`;
+  return '\ucd9c\uc11d \uc77c\ub7ec\uc2a4\ud2b8 #' + num;
 }
 
 export function getStripIllustTitle(id) {
   const num = id.replace('strip_', '');
-  return `4컷 만화 #${num}`;
+  return '4\ucef7 \ub9cc\ud654 #' + num;
 }
 
 function pickRandomId(prefix, count, collected) {
@@ -124,15 +124,15 @@ export function getWeekCycleProgress(streak) {
 export function getNextCycleReward(streak) {
   const day = getCycleDay(streak);
   if (!day) {
-    return { type: 'wool', label: '양털 소량', daysLeft: 1 };
+    return { type: 'wool', label: '\uc591\ud138 \ubcf4\uc0c1', daysLeft: 1 };
   }
   if (day < ATTENDANCE_CYCLE.SINGLE_DAY) {
-    return { type: 'single', label: '단일 일러스트', daysLeft: ATTENDANCE_CYCLE.SINGLE_DAY - day };
+    return { type: 'single', label: '\ub2e8\uc77c \uc77c\ub7ec\uc2a4\ud2b8', daysLeft: ATTENDANCE_CYCLE.SINGLE_DAY - day };
   }
   if (day < ATTENDANCE_CYCLE.STRIP_DAY) {
-    return { type: 'strip', label: '4컷 만화', daysLeft: ATTENDANCE_CYCLE.STRIP_DAY - day };
+    return { type: 'strip', label: '4\ucef7 \ub9cc\ud654', daysLeft: ATTENDANCE_CYCLE.STRIP_DAY - day };
   }
-  return { type: 'wool', label: '양털 소량 (새 주기)', daysLeft: 0 };
+  return { type: 'wool', label: '\uc591\ud138 \ubcf4\uc0c1', daysLeft: 0 };
 }
 
 export function getTodayCycleRewardPreview(streakIfCheckedIn) {
@@ -272,9 +272,9 @@ export function getCollectedStripItems() {
 export function getAttendanceRewardMessages(res) {
   const msgs = [];
   if (!res || res.alreadyChecked) return msgs;
-  if (res.woolGained > 0) msgs.push(`출석 완료! 양털 +${res.woolGained} 🧶`);
-  if (res.newSingle) msgs.push(`🎨 일러스트 획득! ${res.newSingle.title}`);
-  if (res.newStrip) msgs.push(`📜 4컷 만화 획득! ${res.newStrip.title}`);
-  if (!msgs.length) msgs.push('출석 완료! ✨');
+  if (res.woolGained > 0) msgs.push('\ucd9c\uc11d \uc644\ub8cc! \uc591\ud138 +' + res.woolGained);
+  if (res.newSingle) msgs.push('\uc77c\ub7ec\uc2a4\ud2b8 \ud68d\ub4dd! ' + res.newSingle.title);
+  if (res.newStrip) msgs.push('4\ucef7 \ub9cc\ud654 \ud68d\ub4dd! ' + res.newStrip.title);
+  if (!msgs.length) msgs.push('\ucd9c\uc11d \uc644\ub8cc!');
   return msgs;
 }

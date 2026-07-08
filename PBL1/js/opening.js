@@ -1,44 +1,33 @@
 /**
- * opening.js — 오프닝 스토리 관리 (처음 시작 시 노출, 스킵 기능, 설정에서 다시보기)
+ * opening.js - opening story and gallery slideshow helpers
  */
 
 import { getItem, setItem } from './storage.js';
 
-// 파일 경로 접두사 자동 설정 (서브페이지 대응)
-const isSubPage = window.location.href.toLowerCase().includes('/pages/') || window.location.href.toLowerCase().includes('\\pages\\');
+const currentHref = typeof window !== 'undefined' ? window.location.href.toLowerCase() : '';
+const isSubPage = currentHref.includes('/pages/') || currentHref.includes('\\pages\\');
 const pathPrefix = isSubPage ? '../' : '';
 
 const OPENING_IMAGES = Array.from({ length: 14 }, (_, i) => `${pathPrefix}assets/sheep/Opening/opening_${i + 1}.png`);
 const STORAGE_KEY_VIEWED = 'ss_opening_viewed';
 
-/**
- * 첫 실행인지 감지하고 오프닝 스토리를 재생
- * @param {HTMLElement} parentContainer 오버레이를 삽입할 부모 엘리먼트
- * @param {Function} onComplete 오프닝이 끝났거나 스킵된 후 실행할 콜백
- */
 export function checkAndShowOpening(parentContainer, onComplete = null) {
   const viewed = getItem(STORAGE_KEY_VIEWED);
   if (!viewed) {
     startOpening(parentContainer, false, onComplete);
-  } else {
-    if (onComplete) onComplete();
+  } else if (onComplete) {
+    onComplete();
   }
 }
 
-/**
- * 이미지 슬라이드쇼 재생 (오프닝·출석 스토리 공통)
- * @param {HTMLElement} parentContainer
- * @param {string[]} images
- * @param {{ onComplete?: Function, onClose?: Function, skipText?: string, hintText?: string }} options
- */
 export function startImageSlideshow(parentContainer, images, options = {}) {
   if (!parentContainer || !images?.length) return;
 
   const {
     onComplete = null,
     onClose = null,
-    skipText = 'Skip',
-    hintText = '화면을 터치하면 다음으로 넘어갑니다',
+    skipText = '×',
+    hintText = '화면을 터치하면 다음으로 넘어갑니다.',
   } = options;
 
   const existing = parentContainer.querySelector('.opening-overlay');
@@ -125,9 +114,6 @@ export function startImageSlideshow(parentContainer, images, options = {}) {
   });
 }
 
-/**
- * 오프닝 스토리 강제 재생 (다시보기 등)
- */
 export function startOpening(parentContainer, isReplay = false, onComplete = null) {
   if (!parentContainer) return;
   startImageSlideshow(parentContainer, OPENING_IMAGES, {
