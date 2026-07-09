@@ -122,6 +122,7 @@ export function getItems() {
   return {
     owned:    saved.owned    ?? [...DEFAULT_ITEMS.owned],
     equipped: { ...DEFAULT_ITEMS.equipped, ...saved.equipped },
+    placements: { ...(saved.placements || {}) },
   };
 }
 

@@ -87,14 +87,14 @@
         <span class="nav-label">공방</span>
         <span class="nav-dot"></span>
       </div>
-      <div class="nav-item" data-href="gallery.html">
-        <span class="nav-icon">🖼️</span>
-        <span class="nav-label">수집</span>
-        <span class="nav-dot"></span>
-      </div>
       <div class="nav-item" data-href="friends.html">
         <span class="nav-icon">👥</span>
         <span class="nav-label">친구</span>
+        <span class="nav-dot"></span>
+      </div>
+      <div class="nav-item" data-href="gallery.html">
+        <span class="nav-icon">🖼️</span>
+        <span class="nav-label">갤러리</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -127,7 +127,7 @@
       buildCategoryTabsHTML 
     } from '../js/shop.js';
     import { getItems } from '../js/storage.js';
-    import { getItemImagePath } from '../js/decor.js';
+    import { enableWearableDrag, getItemImagePath } from '../js/decor.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       initCommon();
@@ -152,6 +152,9 @@
 
         // 방 렌더링
         renderRoom(roomPreviewContainer, null, undefined, 'idle', '../');
+        enableWearableDrag(roomPreviewContainer, {
+          onSave: () => showToast('아이템 위치를 저장했어요.', 'success'),
+        });
 
         // 카테고리 탭 그리기
         categoryTabs.innerHTML = buildCategoryTabsHTML(currentCategory);
