@@ -58,6 +58,9 @@ export function initSheepStrokePet({
   el.addEventListener('pointerdown', (e) => {
     if (isBlocked()) return;
     if (e.button !== undefined && e.button !== 0) return;
+    
+    // 모바일 기기 스크롤 간섭 및 텍스트 선택 방지
+    e.preventDefault();
 
     tracking = true;
     fired = false;
