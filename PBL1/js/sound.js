@@ -1,4 +1,4 @@
-﻿/**
+/**
  * sound.js - Sleepy Sheep ?ъ슫???쒖뒪?? * Web Audio API瑜??ъ슜???꾨줈?쒖????ъ슫???⑹꽦
  */
 
@@ -1247,7 +1247,6 @@ function _asmrTingleBell() {
 
   _addSoftWind(now, dur, 0.03);
   _scheduleLoop('tingle_bell', dur * 1000);
-}
 }
 
 function _asmrForest() {
