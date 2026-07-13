@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
-<body>
+<body data-page="home">
 
   <!-- 밤하늘 배경 -->
   <div class="background">
@@ -36,7 +36,7 @@
         </button>
         <div>
           <h1 id="sheep-name-header">드리미</h1>
-          <p class="subtitle">나만의 힐링 수면 메이트</p>
+          <p class="subtitle" data-i18n="page.subtitle">나만의 힐링 수면 메이트</p>
         </div>
       </div>
       <div class="header-right">
@@ -222,27 +222,27 @@
     <nav class="bottom-nav">
       <div class="nav-item active" data-href="index.html">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
+        <span class="nav-label" data-i18n="nav.home">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="pages/sleep.html">
         <span class="nav-icon">🌙</span>
-        <span class="nav-label">수면</span>
+        <span class="nav-label" data-i18n="nav.sleep">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="pages/workshop.html">
         <span class="nav-icon">🧶</span>
-        <span class="nav-label">공방</span>
+        <span class="nav-label" data-i18n="nav.workshop">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="pages/friends.html">
         <span class="nav-icon">👥</span>
-        <span class="nav-label">친구</span>
+        <span class="nav-label" data-i18n="nav.friends">친구</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="pages/gallery.html">
         <span class="nav-icon">🖼️</span>
-        <span class="nav-label">갤러리</span>
+        <span class="nav-label" data-i18n="nav.gallery">갤러리</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -304,6 +304,21 @@
 
     <div class="flex flex-col gap-3">
       <button class="btn btn-primary" id="btn-wake-confirm">☀️ 기상 및 수면기록 완료</button>
+    </div>
+  </div>
+
+  <!-- 수면 모달 -->
+  <div class="overlay" id="privacy-overlay"></div>
+  <div class="modal" id="privacy-modal" style="max-width: 92%; width: 360px;">
+    <div class="modal-handle"></div>
+    <h3 class="font-bold text-center" style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">개인정보 보호 및 이용약관</h3>
+    <div class="text-muted" style="font-size: var(--font-size-sm); line-height:1.7; margin-bottom: var(--space-4);">
+      SleepySheep는 이 앱에서 사용하는 모든 데이터를 브라우저 로컬에 안전하게 저장합니다.<br>
+      개인 식별 정보는 수집하지 않으며, 이용 기록은 오직 앱 동작과 설정 보존을 위해 저장됩니다.<br>
+      본 앱을 계속 사용하려면 아래 약관에 동의해 주세요.
+    </div>
+    <div class="flex flex-col gap-3">
+      <button class="btn btn-primary w-full" id="btn-privacy-consent-agree">동의하고 시작하기</button>
     </div>
   </div>
 
@@ -418,7 +433,7 @@
     window.resumeAudio = resumeAudio;
     window.playAsmr = playAsmr;
     import { SHEEP_POSE, NAME_DIALOG_SCRIPT, getRandomQuote } from './js/constants.js';
-    import { saveSheep, setItem, getItem, removeItem, getSettings, getLocalDateKey } from './js/storage.js';
+    import { saveSheep, setItem, getItem, removeItem, getSettings, getLocalDateKey, getPrivacyConsent, setPrivacyConsent } from './js/storage.js';
     import { checkAndShowOpening, startImageSlideshow } from './js/opening.js';
     import { pickMorningAction, MORNING_ACTION, initWakeAlarmScheduler, saveMorningCallSchedule, getSleepTimeDefaults, formatAlarmHint, markMorningCallCompleted } from './js/morningcall.js';
     import { recordAttendance, getAttendanceRewardMessages, getAttendance, isCheckedInToday, getWeekCycleProgress, getNextCycleReward, getTodayCycleRewardPreview, getStoryImages } from './js/attendance.js';
@@ -455,9 +470,6 @@
         if (isBgmEnabled()) startBgm();
       }
 
-      // 첫 로드 시 오프닝 스토리 노출 여부 체크
-      checkAndShowOpening(document.querySelector('.phone'));
-
       const sheepContainer   = document.getElementById('sheep-container');
       const sheepRenderTarget = document.getElementById('sheep-render-target');
       const levelBadge       = document.getElementById('level-badge');
@@ -469,7 +481,17 @@
       const btnAttendance    = document.getElementById('btn-attendance');
       const attendanceOverlay = document.getElementById('attendance-overlay');
       const attendanceModal  = document.getElementById('attendance-modal');
+      const privacyOverlay   = document.getElementById('privacy-overlay');
+      const privacyModal     = document.getElementById('privacy-modal');
+      const btnPrivacyAgree  = document.getElementById('btn-privacy-consent-agree');
       const btnPet           = document.getElementById('btn-pet');
+
+      // 첫 로드 시 오프닝 스토리 노출 여부 체크
+      if (!getPrivacyConsent()) {
+        showPrivacyConsentPrompt();
+      } else {
+        checkAndShowOpening(document.querySelector('.phone'));
+      }
       const btnFeed          = document.getElementById('btn-feed');
       const btnShearGame     = document.getElementById('btn-shear-game');
       const shearHint        = document.getElementById('shear-hint');
@@ -588,6 +610,23 @@
         attendanceOverlay?.classList.add('active');
         attendanceModal?.classList.add('active');
       }
+
+      function showPrivacyConsentPrompt() {
+        privacyOverlay?.classList.add('active');
+        privacyModal?.classList.add('active');
+      }
+
+      function hidePrivacyConsentPrompt() {
+        privacyOverlay?.classList.remove('active');
+        privacyModal?.classList.remove('active');
+      }
+
+      btnPrivacyAgree?.addEventListener('click', () => {
+        setPrivacyConsent(true);
+        hidePrivacyConsentPrompt();
+        checkAndShowOpening(document.querySelector('.phone'));
+        showToast('앱의 개인정보 처리 방침에 동의하셨습니다.', 'success');
+      });
 
       function closeAttendanceModal() {
         attendanceOverlay?.classList.remove('active');

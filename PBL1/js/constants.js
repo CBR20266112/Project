@@ -4,17 +4,19 @@
  */
 
 /** 앱 버전 (설정 화면·배포 기준) */
-export const APP_VERSION = '1.96.0';
+export const APP_VERSION = '1.96.1';
 
 // ─── localStorage 키 ───
 export const STORAGE_KEYS = Object.freeze({
   SHEEP:    'ss_sheep',
   SLEEP:    'ss_sleep',
+  SNORE:    'ss_snore',
   ITEMS:    'ss_items',
   FRIENDS:  'ss_friends',
   SETTINGS: 'ss_settings',
   ROOM:     'ss_room',
   WORRIES:  'ss_worries',
+  PRIVACY_CONSENT: 'ss_privacy_consent',
 });
 
 // ─── 성장 단계 테이블 ───
@@ -125,6 +127,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   notification:      true,
   bgMusic:           false,
   vibration:         true,
+  language:          'ko', // 'ko' | 'en' | 'zh' | 'ja'
   sleepGoal:         480,  // 분 (8시간)
   wakeAlarm:         '07:00',
   bedAlarm:          '22:30',
@@ -258,6 +261,40 @@ export const SHOP_CATEGORIES = [
   { id: 'furniture',  label: '🏡 가구',   icon: '🪑' },
   { id: 'background', label: '🏡 배경',   icon: '🌌' },
 ];
+
+export const FRIEND_DIARIES = {
+  friend_ridajol: {
+    title: '리다졸 님의\n다이어리',
+    imageSrc: '../assets/friends/ridajol_room.jpg',
+    popupImageSrc: '../assets/friends/ridazol_diary.png',
+    body: '',
+    memoRight: '',
+    memoLeft: '',
+  },
+  friend_001: {
+    title: '하주니',
+    imageSrc: '../assets/friends/68436e83-723e-4caf-81b2-6b04d499f88c.png',
+    popupImageSrc: '../assets/friends/68436e83-723e-4caf-81b2-6b04d499f88c.png',
+    private: true,
+    privateMessage: '이 친구는 일기장을 공개하지 않았어요.',
+  },
+  friend_002: {
+    title: '꿈나래 님의\n다이어리',
+    imageSrc: '../assets/friends/3a278dbe-16e9-41fe-96a3-5dd9e58bf8ec.png',
+    popupImageSrc: '../assets/friends/ggoomnarae_diary.png',
+    body: '',
+    memoRight: '',
+    memoLeft: '',
+  },
+  friend_003: {
+    title: '수면왕 님의\n다이어리',
+    imageSrc: '../assets/friends/49f560ba-45d0-44f5-87d7-11db7eea4b23.png',
+    popupImageSrc: '../assets/friends/sumyeonwang_diary.png',
+    body: '',
+    memoRight: '',
+    memoLeft: '',
+  },
+};
 
 export const DUMMY_FRIENDS = [
   {
