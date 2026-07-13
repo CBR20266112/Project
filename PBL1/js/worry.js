@@ -114,6 +114,102 @@ const PRESETS = {
   }
 };
 
+const KEYWORD_RESPONSES = [
+  {
+    keyword: "힘",
+    response: "오늘도 정말 수고했어요. 드리미가 오늘 밤만큼은 당신 곁에서 함께 쉬어드릴게요. 🌙"
+  },
+  {
+    keyword: "피곤",
+    response: "많이 지친 하루였나 봐요. 오늘은 아무 걱정 없이 푹 쉬어가요."
+  },
+  {
+    keyword: "우울",
+    response: "마음이 흐린 날도 있어요. 드리미는 내일은 조금 더 맑아질 거라고 믿고 있어요."
+  },
+  {
+    keyword: "슬",
+    response: "슬픈 마음도 천천히 흘러가요. 오늘은 자신을 조금 더 다정하게 대해주세요."
+  },
+  {
+    keyword: "외로",
+    response: "혼자라고 느껴질 때도 드리미는 항상 당신을 기다리고 있어요."
+  },
+  {
+    keyword: "불안",
+    response: "모든 답을 오늘 찾지 않아도 괜찮아요. 지금은 편안히 쉬는 시간이 가장 중요해요."
+  },
+  {
+    keyword: "걱",
+    response: "걱정은 잠시 드리미에게 맡겨두세요. 오늘 밤은 마음도 함께 쉬어가요."
+  },
+  {
+    keyword: "시험",
+    response: "시험 준비 정말 고생했어요. 푹 자는 것도 좋은 결과를 위한 준비예요."
+  },
+  {
+    keyword: "공부",
+    response: "오늘 배운 것들은 쉬는 동안에도 차곡차곡 정리될 거예요. 잠시 쉬어가요."
+  },
+  {
+    keyword: "과제",
+    response: "과제는 내일의 나도 함께 해결해 줄 거예요. 오늘은 휴식도 중요한 일정이에요."
+  },
+  {
+    keyword: "잠",
+    response: "편안한 잠은 가장 소중한 선물이에요. 드리미가 좋은 밤을 응원할게요."
+  },
+  {
+    keyword: "스트레스",
+    response: "오늘 하루의 무거운 마음은 잠시 내려놓아요. 내일은 조금 더 가벼워질 거예요."
+  },
+  {
+    keyword: "화",
+    response: "속상했던 마음도 천천히 가라앉을 거예요. 오늘은 편안히 쉬어봐요."
+  },
+  {
+    keyword: "짜증",
+    response: "그럴 때도 있어요. 오늘은 아무것도 하지 않아도 괜찮은 밤이에요."
+  },
+  {
+    keyword: "실패",
+    response: "오늘의 실패가 내일의 끝은 아니에요. 드리미는 언제나 다시 시작하는 당신을 응원해요."
+  },
+  {
+    keyword: "실수",
+    response: "실수 하나로 당신의 하루가 결정되지는 않아요. 너무 오래 마음에 담아두지 마세요."
+  },
+  {
+    keyword: "무서",
+    response: "걱정하지 마세요. 오늘 밤은 드리미가 조용히 곁을 지켜드릴게요."
+  },
+  {
+    keyword: "불면",
+    response: "잠이 오지 않아도 괜찮아요. 눈을 감고 천천히 숨을 쉬다 보면 조금씩 편안해질 거예요."
+  },
+  {
+    keyword: "졸",
+    response: "몸이 휴식을 원하고 있나 봐요. 오늘은 조금 일찍 꿈나라로 떠나볼까요?"
+  },
+  {
+    keyword: "행복",
+    response: "행복했던 하루를 드리미도 함께 기억할게요. 내일도 웃을 일이 하나 더 생기길 바라요."
+  }
+];
+
+const DAILY_LIMIT_REPLY = '오늘은 충분히 이야기를 들어드린 것 같아요.\n이제 편안히 쉬어보는 건 어떨까요? 🌙';
+
+function findKeywordResponse(text) {
+  if (!text) return null;
+  const normalized = text.toLowerCase();
+  for (const rule of KEYWORD_RESPONSES) {
+    if (normalized.includes(rule.keyword)) {
+      return rule.response;
+    }
+  }
+  return null;
+}
+
 // ─── 카테고리 판별 헬퍼 ───
 export function getWorryCategory(text) {
   if (!text) return "default";
@@ -132,6 +228,15 @@ export function getLocalWorryReply(text, turnCount = 1, category = "default") {
     return "고민을 빈 칸으로 두면 드리미도 어떤 위로를 전해야 할지 모른다양... 사소한 걱정이라도 적어줘요양, 메에~";
   }
 
+  if (turnCount >= 4) {
+    return DAILY_LIMIT_REPLY;
+  }
+
+  const keywordReply = findKeywordResponse(text);
+  if (keywordReply) {
+    return keywordReply;
+  }
+
   const dataset = PRESETS[category];
 
   if (turnCount === 1) {
@@ -145,9 +250,6 @@ export function getLocalWorryReply(text, turnCount = 1, category = "default") {
   } else {
     // 3턴 (마지막 턴): 마무리 수면 유도 멘트 강제 믹스
     const finishMsg = dataset.turns[1] || "오늘 밤은 푹 잠드는 것에만 뇌의 모든 힘을 보태주세요양, 메에~";
-    const closing = dataset.default?.goodnight
-      ? dataset.default.goodnight[Math.floor(Math.random() * dataset.default.goodnight.length)]
-      : "드리미와 함께 편안한 꿀잠 세계로 넘어가요양. 잘 자요! 💤";
     return `${finishMsg}\n\n이제 서너 마디 대화는 다 마쳤으니, 눈을 붙이고 드리미와 함께 스르르 잘 시간양! 메에~ 🌙`;
   }
 }

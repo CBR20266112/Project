@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>드리미 마음 상담소 | SleepySheep</title>
+  <title data-i18n="page.title">드리미 마음 상담소 | SleepySheep</title>
   
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -280,7 +280,7 @@
     .btn-floating-write {
       position: absolute;
       right: 20px;
-      bottom: 85px;
+      bottom: 200px;
       width: 56px;
       height: 56px;
       border-radius: 50%;
@@ -299,9 +299,71 @@
     .btn-floating-write:hover {
       transform: scale(1.08) rotate(5deg);
     }
+    .btn-floating-delete {
+      position: absolute;
+      left: 20px;
+      bottom: 200px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-glow-purple);
+      border: 1px solid rgba(255,255,255,0.08);
+      cursor: pointer;
+      z-index: 5;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .btn-floating-delete:hover {
+      transform: scale(1.08);
+      background: rgba(255,255,255,0.1);
+    }
+    .delete-modal-content {
+      max-height: min(60vh, 360px);
+      overflow-y: auto;
+      margin-bottom: var(--space-4);
+    }
+    .delete-entry-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-2);
+      background: rgba(255,255,255,0.03);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .delete-entry-item:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-1px);
+    }
+    .delete-entry-item.selected {
+      background: rgba(249,168,212,0.15);
+      border-color: rgba(249,168,212,0.35);
+    }
+    .delete-entry-date {
+      font-size: var(--font-size-2xs);
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .delete-entry-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   </style>
 </head>
-<body>
+<body data-page="worry">
 
   <!-- 밤하늘 배경 -->
   <div class="background">
@@ -313,14 +375,14 @@
     <!-- 헤더 -->
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
+        <button class="btn-back" onclick="location.href='../index.html'" data-i18n-title="site.backButtonTitle">←</button>
         <div>
-          <h1>드리미 마음 상담소</h1>
-          <p class="subtitle">밤을 괴롭히는 걱정 덜어내기 (3턴 제한)</p>
+          <h1 data-i18n="page.heading"></h1>
+          <p class="subtitle" data-i18n="page.subtitle"></p>
         </div>
       </div>
       <div class="header-right">
-        <div class="chip-box" id="wool-display" title="보유 양털">
+        <div class="chip-box" id="wool-display" data-i18n-title="worry.wool.title">
           <span class="icon">🧶</span>
           <span id="wool-count">0</span>
         </div>
@@ -332,36 +394,52 @@
       <!-- 동적 로드됨 -->
     </div>
 
+    <!-- 플로팅 삭제 버튼 -->
+    <button class="btn-floating-delete" id="btn-start-delete-worries" data-i18n-title="worry.deleteButtonTitle">🗑️</button>
+
     <!-- 플로팅 글쓰기 버튼 -->
-    <button class="btn-floating-write" id="btn-open-worry-modal" title="오늘의 걱정 털어놓기">
+    <button class="btn-floating-write" id="btn-open-worry-modal" data-i18n-title="worry.writeButtonTitle">
       💭
     </button>
+
+    <!-- 삭제 모드 모달 -->
+    <div class="overlay" id="worry-delete-overlay"></div>
+    <div class="modal" id="worry-delete-modal" style="max-width: 92%; width: 360px;">
+      <div class="modal-handle"></div>
+      <h3 class="font-bold" style="font-size: var(--font-size-md); margin-bottom: var(--space-2);" data-i18n="worry.deleteMode.title"></h3>
+      <p class="text-muted" style="font-size: var(--font-size-2xs); line-height:1.6; margin-bottom: var(--space-3);" data-i18n="worry.deleteMode.desc"></p>
+      <div class="delete-modal-content" id="worry-delete-list"></div>
+      <div class="flex gap-2">
+        <button type="button" class="btn btn-secondary w-full" id="btn-cancel-delete-worries" data-i18n="worry.deleteMode.cancel"></button>
+        <button type="button" class="btn btn-danger w-full" id="btn-confirm-delete-worries" data-i18n="worry.deleteMode.confirm"></button>
+      </div>
+    </div>
 
     <!-- 하단 네비게이션 -->
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
+        <span class="nav-label" data-i18n="nav.home"></span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
         <span class="nav-icon">🌙</span>
-        <span class="nav-label">수면</span>
+        <span class="nav-label" data-i18n="nav.sleep"></span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="workshop.html">
         <span class="nav-icon">🧶</span>
-        <span class="nav-label">공방</span>
+        <span class="nav-label" data-i18n="nav.workshop"></span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="friends.html">
         <span class="nav-icon">👥</span>
-        <span class="nav-label">친구</span>
+        <span class="nav-label" data-i18n="nav.friends"></span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="gallery.html">
         <span class="nav-icon">🖼️</span>
-        <span class="nav-label">갤러리</span>
+        <span class="nav-label" data-i18n="nav.gallery"></span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -373,42 +451,37 @@
   <!-- 최초 고민 작성 모달 -->
   <div class="modal" id="worry-write-modal">
     <div class="modal-handle"></div>
-    <h3 class="text-center font-bold" style="font-size: var(--font-size-md); margin-bottom: var(--space-1);">💭 오늘 밤을 무겁게 하는 고민</h3>
-    <p class="text-center text-muted" style="font-size: var(--font-size-2xs); margin-bottom: var(--space-4); line-height: 1.5;">
-      취업, 학업, 대인관계 무엇이든 털어놓아 보아요양.<br>드리미가 온 마음을 다해 따뜻한 위로 대화를 나눌게요.
-    </p>
+    <h3 class="text-center font-bold" style="font-size: var(--font-size-md); margin-bottom: var(--space-1);" data-i18n="worry.write.title"></h3>
+    <p class="text-center text-muted" style="font-size: var(--font-size-2xs); margin-bottom: var(--space-4); line-height: 1.5;" data-i18n-html="worry.write.desc"></p>
     
     <div style="margin-bottom: var(--space-4);">
-      <textarea id="textarea-worry-input" class="worry-textarea" placeholder="이곳에 그날의 걱정을 적어보세요. (최소 5자 이상)&#10;예) 면접에서 떨어질까 봐 밤마다 가슴이 두근거려 잠이 잘 오지 않아요..."></textarea>
+      <textarea id="textarea-worry-input" class="worry-textarea" data-i18n-placeholder="worry.write.placeholder"></textarea>
     </div>
 
     <div class="flex gap-3">
-      <button class="btn btn-secondary" id="btn-close-worry-modal" style="flex:1;">닫기</button>
-      <button class="btn btn-primary" id="btn-submit-worry" style="flex:2;">대화 시작하기 🐑</button>
-    </div>
-  </div>
-
-  <!-- 분석 중 로딩 모달 -->
-  <div class="modal" id="worry-loading-modal">
-    <div class="loading-container">
-      <div class="loading-sheep-container">
-        <span class="loading-sheep">🐑</span>
+      <button class="btn btn-secondary" id="btn-close-worry-modal" style="flex:1;" data-i18n="worry.write.close"></button>
+      <button class="btn btn-primary" id="btn-submit-worry" style="flex:2;" data-i18n="worry.write.submit"></button>
         <span class="loading-z">z</span>
         <span class="loading-z">z</span>
         <span class="loading-z">z</span>
       </div>
-      <h3 class="font-bold" style="font-size: var(--font-size-sm); color:#fff; margin-top: 10px;">드리미가 답장을 생각하고 있어요...</h3>
-      <p class="text-muted" style="font-size: var(--font-size-2xs); text-align:center;">
-        당신의 걱정을 덜어낼 힐링 마법을 준비 중양. 메에~ 💤
-      </p>
+      <h3 class="font-bold" style="font-size: var(--font-size-sm); color:#fff; margin-top: 10px;" data-i18n="worry.loading.title"></h3>
+      <p class="text-muted" style="font-size: var(--font-size-2xs); text-align:center;" data-i18n="worry.loading.desc"></p>
     </div>
+  </div>
+
+  <!-- 로딩 모달 -->
+  <div class="modal" id="worry-loading-modal" style="max-width: 92%; width: 360px; display: none;">
+    <div class="modal-handle"></div>
+    <h3 class="font-bold" style="font-size: var(--font-size-md); margin-bottom: var(--space-2);" data-i18n="worry.loading.title"></h3>
+    <p class="text-muted" style="font-size: var(--font-size-2xs); line-height:1.6; margin-bottom: var(--space-3); text-align:center;" data-i18n="worry.loading.desc"></p>
   </div>
 
   <!-- 3턴 제한 대화 모달 -->
   <div class="modal" id="worry-chat-modal" style="background:transparent; border:none; box-shadow:none; padding:0;">
     <div class="chat-container">
       <div class="chat-header">
-        <span>💬 드리미와의 힐링 대화</span>
+        <span data-i18n="worry.chat.title"></span>
         <span class="worry-date" id="chat-date-txt">2026-07-05</span>
       </div>
       
@@ -419,30 +492,25 @@
       
       <!-- 대화 입력창 (3턴 미만일 때만 활성) -->
       <div class="chat-input-area" id="chat-input-container">
-        <input type="text" id="input-chat-message" class="chat-input" placeholder="답장을 보내거나 추가 고민을 적어줘요양..." maxlength="80">
-        <button class="chat-btn-send" id="btn-send-chat">전송</button>
+        <input type="text" id="input-chat-message" class="chat-input" data-i18n-placeholder="worry.chat.input.placeholder" maxlength="80">
+        <button class="chat-btn-send" id="btn-send-chat" data-i18n="worry.chat.send"></button>
       </div>
 
       <!-- 수면 전환 영역 (3턴 종료 또는 수면 선택 시 노출) -->
       <div class="flex flex-col gap-2" id="chat-sleep-container" style="display: none; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; margin-top: 4px;">
-        <div class="text-center text-muted" style="font-size: var(--font-size-2xs); margin-bottom: 4px; color: var(--color-purple-soft); font-weight:800;">
-          💤 오늘 밤의 위로 대화는 마쳤습니다. 이제 푹 잘 시간양!
-        </div>
-        <button class="btn btn-primary w-full" id="btn-confirm-chat-sleep" style="padding: var(--space-3); font-weight:800;">
-          🌙 한결 편안해졌어요. 이제 자러 가기
-        </button>
-        <button class="btn btn-secondary w-full" id="btn-confirm-chat-close" style="padding: var(--space-2.5); border-color: rgba(255,255,255,0.1); color: var(--text-muted);">
-          목록으로 돌아가기
-        </button>
+        <div class="text-center text-muted" style="font-size: var(--font-size-2xs); margin-bottom: 4px; color: var(--color-purple-soft); font-weight:800;" data-i18n="worry.chat.sleep.finished"></div>
+        <button class="btn btn-primary w-full" id="btn-confirm-chat-sleep" style="padding: var(--space-3); font-weight:800;" data-i18n="worry.chat.sleep.button"></button>
+        <button class="btn btn-secondary w-full" id="btn-confirm-chat-close" style="padding: var(--space-2.5); border-color: rgba(255,255,255,0.1); color: var(--text-muted);" data-i18n="worry.chat.back"></button>
       </div>
     </div>
   </div>
 
   <script type="module">
     import { initCommon, showToast, spawnHearts } from '../js/app.js';
-    import { getSheep, saveSheep, getSettings, getWorries, saveWorry, getLocalDateKey } from '../js/storage.js';
-    import { getLocalWorryReply, getGeminiWorryReply, getWorryCategory } from '../js/worry.js';
+    import { getSheep, saveSheep, getSettings, getWorries, saveWorry, deleteWorry, getLocalDateKey } from '../js/storage.js';
+    import { getLocalWorryReply, getWorryCategory } from '../js/worry.js';
     import { resumeAudio } from '../js/sound.js';
+    import { t } from '../js/i18n.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       initCommon();
@@ -459,6 +527,12 @@
       const btnOpenWrite = document.getElementById('btn-open-worry-modal');
       const btnCloseWrite = document.getElementById('btn-close-worry-modal');
       const btnSubmit = document.getElementById('btn-submit-worry');
+      const btnStartDelete = document.getElementById('btn-start-delete-worries');
+      const deleteOverlay = document.getElementById('worry-delete-overlay');
+      const deleteModal = document.getElementById('worry-delete-modal');
+      const deleteList = document.getElementById('worry-delete-list');
+      const btnCancelDelete = document.getElementById('btn-cancel-delete-worries');
+      const btnConfirmDelete = document.getElementById('btn-confirm-delete-worries');
       
       const chatMessagesBox = document.getElementById('chat-messages-box');
       const chatInputContainer = document.getElementById('chat-input-container');
@@ -491,11 +565,9 @@
           timelineContainer.innerHTML = `
             <div class="empty-worry">
               <div class="empty-icon">💭</div>
-              <h3 class="font-bold" style="font-size: var(--font-size-md); color:#fff;">아직 걱정거리를 털어놓지 않았군요양</h3>
+              <h3 class="font-bold" style="font-size: var(--font-size-md); color:#fff;">${t('worry.empty.title')}</h3>
               <p style="font-size: var(--font-size-xs); line-height:1.6;">
-                오늘 밤 나를 괴롭히는 걱정이 있다면<br>
-                우측 하단의 플로팅 버튼을 눌러 드리미에게 털어놓아 봐요양.<br>
-                위로의 대화(최대 3턴 제한)와 수면 보상을 얻을 수 있어요!
+                ${t('worry.empty.desc')}
               </p>
             </div>
           `;
@@ -512,7 +584,7 @@
           card.innerHTML = `
             <div class="worry-header">
               <span class="worry-date">${item.date}</span>
-              <span class="worry-state">대화 완료 🐑</span>
+              <span class="worry-state">${t('worry.timeline.completed')}</span>
             </div>
             <div class="worry-text-preview">${escapeHtml(item.content)}</div>
             <div class="worry-reply-preview">${escapeHtml(item.reply)}</div>
@@ -536,7 +608,7 @@
       }
 
       // ─── 3턴 대화방 열기 ───
-      function openChatRoom(date) {
+      function openChatRoom(date, opts = {}) {
         currentActiveDate = date;
         chatDateTxt.textContent = date;
         
@@ -552,13 +624,19 @@
           ];
         }
 
-        renderChatMessages(worryData.turns);
+        const animateLastReply = opts.animateLastReply && worryData.turns.length > 1;
+        if (animateLastReply) {
+          renderChatMessages(worryData.turns.slice(0, -1));
+          appendTypingModelReply(worryData.turns[worryData.turns.length - 1].content);
+        } else {
+          renderChatMessages(worryData.turns);
+        }
         
         // 사용자가 보낸 메시지 수(턴 수)
         const userTurnsCount = worryData.turns.filter(t => t.role === 'user').length;
 
-        if (userTurnsCount >= 3) {
-          // 3턴 종료 상태
+        if (userTurnsCount >= 4) {
+          // 4번째부터는 하루 제한 메시지로 안내
           chatInputContainer.style.display = 'none';
           chatSleepContainer.style.display = 'flex';
         } else {
@@ -584,7 +662,7 @@
           if (msg.role === 'user') {
             const badge = document.createElement('div');
             badge.className = 'turn-badge';
-            badge.textContent = `대화 ${turnCounter}번째 마디 🐑`;
+            badge.textContent = t('worry.chat.turnBadge', { turn: turnCounter });
             chatMessagesBox.appendChild(badge);
             turnCounter++;
           }
@@ -592,15 +670,50 @@
           const div = document.createElement('div');
           div.className = `bubble bubble-${msg.role}`;
           
-          if (msg.role === 'model') {
+          const modelSpeaker = t('worry.chat.speaker') || 'Dreamy';
+      if (msg.role === 'model') {
             div.innerHTML = `
-              <div class="bubble-model-prefix">드리미</div>
+              <div class="bubble-model-prefix">${modelSpeaker}</div>
               <div>${escapeHtml(msg.content).replace(/\n/g, '<br>')}</div>
             `;
           } else {
             div.textContent = msg.content;
           }
           chatMessagesBox.appendChild(div);
+        });
+      }
+
+      function appendTypingModelReply(text) {
+        return new Promise(resolve => {
+          const modelSpeaker = t('worry.chat.speaker') || 'Dreamy';
+          const bubble = document.createElement('div');
+          bubble.className = 'bubble bubble-model';
+          bubble.innerHTML = `<div class="bubble-model-prefix">${modelSpeaker}</div>`;
+
+          const contentEl = document.createElement('div');
+          bubble.appendChild(contentEl);
+          chatMessagesBox.appendChild(bubble);
+          chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+
+          let idx = 0;
+          let currentTextNode = document.createTextNode('');
+          contentEl.appendChild(currentTextNode);
+
+          const interval = setInterval(() => {
+            const char = text[idx++];
+            if (char === '\n') {
+              contentEl.appendChild(document.createElement('br'));
+              currentTextNode = document.createTextNode('');
+              contentEl.appendChild(currentTextNode);
+            } else {
+              currentTextNode.nodeValue += char;
+            }
+            chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+            if (idx >= text.length) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 25);
         });
       }
 
@@ -614,7 +727,7 @@
         const alreadyDone = worries.find(w => w.date === today);
         
         if (alreadyDone) {
-          showToast('오늘의 위로 대화는 이미 나누셨습니다! 메에~', 'info');
+          showToast(t('worry.toast.alreadyDone'), 'info');
           openChatRoom(alreadyDone.date);
           return;
         }
@@ -625,10 +738,79 @@
         setTimeout(() => worryInput.focus(), 150);
       });
 
+      let selectedDeleteDate = null;
+
+      function renderDeleteList() {
+        const worries = getWorries();
+        deleteList.innerHTML = '';
+        selectedDeleteDate = null;
+        btnConfirmDelete.disabled = true;
+
+        if (worries.length === 0) {
+          deleteList.innerHTML = `<div class="text-center text-muted" style="font-size: var(--font-size-sm); line-height: 1.6;">${t('worry.delete.empty')}</div>`;
+          return;
+        }
+
+        const sorted = [...worries].sort((a, b) => b.date.localeCompare(a.date));
+        sorted.forEach(item => {
+          const entry = document.createElement('button');
+          entry.type = 'button';
+          entry.className = 'delete-entry-item';
+          entry.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; flex:1; text-align:left;">
+              <span class="delete-entry-date">${item.date}</span>
+              <span class="delete-entry-label">${escapeHtml(item.content.slice(0, 70))}</span>
+            </div>
+            <span style="font-size: 0.9rem; color: var(--text-muted);">${t('worry.delete.label')}</span>
+          `;
+
+          entry.addEventListener('click', () => {
+            selectedDeleteDate = selectedDeleteDate === item.date ? null : item.date;
+            btnConfirmDelete.disabled = !selectedDeleteDate;
+            deleteList.querySelectorAll('.delete-entry-item').forEach(el => {
+              el.classList.toggle('selected', el === entry && selectedDeleteDate === item.date);
+            });
+          });
+
+          deleteList.appendChild(entry);
+        });
+      }
+
+      btnConfirmDelete.addEventListener('click', () => {
+        if (!selectedDeleteDate) {
+          showToast(t('worry.toast.selectDelete'), 'error');
+          return;
+        }
+
+        deleteWorry(selectedDeleteDate);
+        deleteModal.classList.remove('active');
+        deleteOverlay.classList.remove('active');
+        showToast(t('worry.toast.deleted'), 'success');
+        refreshUI();
+      });
+
       // 작성 모달 닫기
       btnCloseWrite.addEventListener('click', () => {
         writeModal.classList.remove('active');
         overlay.classList.remove('active');
+      });
+
+      // 삭제 모드 열기
+      btnStartDelete.addEventListener('click', () => {
+        renderDeleteList();
+        deleteOverlay.classList.add('active');
+        deleteModal.classList.add('active');
+        btnConfirmDelete.disabled = true;
+      });
+
+      btnCancelDelete.addEventListener('click', () => {
+        deleteModal.classList.remove('active');
+        deleteOverlay.classList.remove('active');
+      });
+
+      deleteOverlay.addEventListener('click', () => {
+        deleteModal.classList.remove('active');
+        deleteOverlay.classList.remove('active');
       });
 
       // 닫기용 오버레이 클릭
@@ -643,7 +825,7 @@
       btnSubmit.addEventListener('click', async () => {
         const text = worryInput.value.trim();
         if (text.length < 5) {
-          showToast('걱정을 최소 5자 이상 작성해 주세요양.', 'error');
+          showToast(t('worry.toast.minLength'), 'error');
           worryInput.focus();
           return;
         }
@@ -661,20 +843,12 @@
         await new Promise(resolve => setTimeout(resolve, 1200));
 
         try {
-          if (settings.geminiApiKey && settings.geminiApiKey.trim() !== "") {
-            // 온라인 Gemini 호출
-            const initHistory = [{ role: 'user', content: text }];
-            reply = await getGeminiWorryReply(initHistory, settings.geminiApiKey);
-            showToast('🤖 Gemini AI 와 마음 대화를 개시했습니다!', 'success');
-          } else {
-            // 로컬 호출
-            reply = getLocalWorryReply(text, 1, category);
-            showToast('🐑 드리미의 따뜻한 위로 대화가 도착했습니다!', 'success');
-          }
+          reply = getLocalWorryReply(text, 1, category);
+          showToast(t('worry.toast.replyArrived'), 'success');
         } catch (err) {
           console.warn(err);
           reply = getLocalWorryReply(text, 1, category);
-          showToast('🐑 로컬 온기 프리셋 대화로 폴백합니다.', 'info');
+          showToast(t('worry.toast.fallback'), 'info');
         }
 
         // 스토리지 구조화 저장
@@ -714,13 +888,13 @@
         spawnHearts(document.body);
         
         if (leveledUp) {
-          showToast(`🎉 레벨업! 드리미가 Lv.${sheep.level}이(가) 되었습니다!`, 'success');
+          showToast(t('worry.toast.levelUp', { level: sheep.level }), 'success');
         } else {
-          showToast('💡 걱정을 나누고 경험치 10점을 획득했습니다!', 'success');
+          showToast(t('worry.toast.gainedXP'), 'success');
         }
 
         loadingModal.classList.remove('active');
-        openChatRoom(today);
+        openChatRoom(today, { animateLastReply: true });
       });
 
       // 대화 한마디 추가 전송 (멀티턴)
@@ -747,7 +921,7 @@
         tempLoadingDiv.className = 'bubble bubble-model';
         tempLoadingDiv.innerHTML = `
           <div class="bubble-model-prefix">드리미</div>
-          <div style="font-style: italic; opacity: 0.6;">생각하는 중양... 🐑💤</div>
+          <div style="font-style: italic; opacity: 0.6;">${t('worry.chat.loading')}</div>
         `;
         chatMessagesBox.appendChild(tempLoadingDiv);
         chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
@@ -762,11 +936,7 @@
         const settings = getSettings();
 
         try {
-          if (settings.geminiApiKey && settings.geminiApiKey.trim() !== "") {
-            reply = await getGeminiWorryReply(worryData.turns, settings.geminiApiKey);
-          } else {
-            reply = getLocalWorryReply(text, userTurnsCount, worryData.category);
-          }
+          reply = getLocalWorryReply(text, userTurnsCount, worryData.category);
         } catch (err) {
           console.warn(err);
           reply = getLocalWorryReply(text, userTurnsCount, worryData.category);
@@ -781,18 +951,18 @@
         if (idx >= 0) worries[idx] = worryData;
         localStorage.setItem('ss_worries', JSON.stringify(worries));
 
-        renderChatMessages(worryData.turns);
+        await appendTypingModelReply(reply);
         chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
 
         // 입력창 복구 및 3턴 만료 검사
         chatInputField.disabled = false;
         btnSendChat.disabled = false;
 
-        if (userTurnsCount >= 3) {
-          // 3턴 가득 찬 경우 입력 불가화 및 안내 팝업 유도
+        if (userTurnsCount >= 4) {
+          // 4번째까지 허용된 입력 이후에는 추가 입력을 차단
           chatInputContainer.style.display = 'none';
           chatSleepContainer.style.display = 'flex';
-          showToast('수면 안정을 위해 오늘의 대화는 여기까지양! 편안히 잘 시간양 🌙', 'info');
+          showToast(t('worry.toast.tooMuch'), 'info');
         }
         
         refreshUI();
@@ -822,7 +992,7 @@
           bedtime: bedTimeString 
         }));
 
-        showToast('🛌 수면 기록을 시작합니다! 홈 화면으로 이동합니다... 🌙', 'success');
+        showToast(t('worry.toast.sleepStarted'), 'success');
         
         setTimeout(() => {
           location.href = '../index.html';
