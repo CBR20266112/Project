@@ -12,6 +12,7 @@ import {
 } from './storage.js';
 import { addXP, boostHunger } from './sheep.js';
 import { getSheep, saveSheep } from './storage.js';
+import { t } from './i18n.js';
 
 // ─── 수면 규칙성 ───
 
@@ -128,13 +129,28 @@ export function calcDurationMinutes(bedtime, wakeTime) {
 }
 
 /** 분 → 'Xh Ym' 문자열 */
+function getDurationLabels(lang) {
+  switch (lang) {
+    case 'ko':
+      return { zero: '0분', hour: '시간', minute: '분', hours: '시간', minutes: '분' };
+    case 'zh':
+      return { zero: '0分', hour: '小时', minute: '分', hours: '小时', minutes: '分' };
+    case 'ja':
+      return { zero: '0分', hour: '時間', minute: '分', hours: '時間', minutes: '分' };
+    default:
+      return { zero: '0 min', hour: 'h', minute: 'm', hours: 'h', minutes: 'm' };
+  }
+}
+
 export function formatDuration(minutes) {
-  if (!minutes || minutes <= 0) return '0분';
+  const lang = getSettings().language || 'en';
+  const labels = getDurationLabels(lang);
+  if (!minutes || minutes <= 0) return labels.zero;
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  if (h === 0) return `${m}분`;
-  if (m === 0) return `${h}시간`;
-  return `${h}시간 ${m}분`;
+  if (h === 0) return `${m}${labels.minute}`;
+  if (m === 0) return `${h}${labels.hour}`;
+  return `${h}${labels.hour} ${m}${labels.minute}`;
 }
 
 // ─── 통계 ───
@@ -225,8 +241,18 @@ export function drawSleepChart(canvas, mode = 'weekly') {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const key = getLocalDateKey(d);
+    const weekdayLabels = [
+      t('weekday.sun'),
+      t('weekday.mon'),
+      t('weekday.tue'),
+      t('weekday.wed'),
+      t('weekday.thu'),
+      t('weekday.fri'),
+      t('weekday.sat'),
+    ];
+
     labels.push(mode === 'weekly'
-      ? ['일', '월', '화', '수', '목', '금', '토'][d.getDay()]
+      ? weekdayLabels[d.getDay()]
       : `${d.getDate()}`);
     values.push(map[key]?.duration ?? 0);
   }

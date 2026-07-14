@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>갤러리 | SleepySheep</title>
+  <title data-i18n="page.title">Gallery | SleepySheep</title>
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/layout.css">
@@ -21,35 +21,35 @@
   <main class="phone">
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기" data-i18n-title="common.back">←</button>
         <div>
-          <h1>🖼️ 갤러리</h1>
-          <p class="subtitle">모은 이야기와 이미지</p>
+          <h1 data-i18n="page.heading">🖼️ Gallery</h1>
+          <p class="subtitle" data-i18n="page.subtitle">Collected stories and images</p>
         </div>
       </div>
     </header>
 
     <div class="content">
       <section class="glass card" style="padding: var(--space-4);">
-        <p class="text-muted" style="font-size: var(--font-size-sm); line-height: 1.6; margin-bottom: var(--space-3);">
-          해금한 스토리와 오프닝을 다시 감상할 수 있어요.
+        <p class="text-muted" style="font-size: var(--font-size-sm); line-height: 1.6; margin-bottom: var(--space-3);" data-i18n="gallery.intro">
+          Revisit unlocked stories and openings.
         </p>
         <div id="gallery-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-3);"></div>
-        <p id="gallery-empty" class="text-center text-muted hidden" style="font-size:var(--font-size-sm);padding:var(--space-4);">
-          아직 해금한 이미지가 없어요.<br>출석체크로 스토리를 모아보세요!
+        <p id="gallery-empty" class="text-center text-muted hidden" style="font-size:var(--font-size-sm);padding:var(--space-4);" data-i18n-html="gallery.empty">
+          No unlocked images yet.<br>Check in daily to collect stories!
         </p>
       </section>
 
       <section class="glass card" style="padding: var(--space-4); margin-top: var(--space-3);">
         <div class="section-header">
-          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">단일 일러스트 컬렉션</h3>
+          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);" data-i18n="gallery.singlesTitle">Single illustration collection</h3>
         </div>
         <div id="gallery-singles-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-2);"></div>
       </section>
 
       <section class="glass card" style="padding: var(--space-4); margin-top: var(--space-3);">
         <div class="section-header">
-          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">4컷 만화 컬렉션</h3>
+          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);" data-i18n="gallery.stripsTitle">4-panel comic collection</h3>
         </div>
         <div id="gallery-strips-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-2);"></div>
       </section>
@@ -58,27 +58,27 @@
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
+        <span class="nav-label" data-i18n="nav.home">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
         <span class="nav-icon">🌙</span>
-        <span class="nav-label">수면</span>
+        <span class="nav-label" data-i18n="nav.sleep">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="workshop.html">
         <span class="nav-icon">🧶</span>
-        <span class="nav-label">공방</span>
+        <span class="nav-label" data-i18n="nav.workshop">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="friends.html">
         <span class="nav-icon">👥</span>
-        <span class="nav-label">친구</span>
+        <span class="nav-label" data-i18n="nav.friends">친구</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item active" data-href="gallery.html">
         <span class="nav-icon">🖼️</span>
-        <span class="nav-label">갤러리</span>
+        <span class="nav-label" data-i18n="nav.gallery">갤러리</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -86,6 +86,7 @@
 
   <script type="module">
     import { initCommon } from '../js/app.js';
+    import { t } from '../js/i18n.js';
     import { getItem } from '../js/storage.js';
     import { ATTENDANCE_STORIES, ATTENDANCE_SINGLE_COUNT, ATTENDANCE_STRIP_COUNT } from '../js/constants.js';
     import { getAttendance, getStoryImages, getStoryCover, isStoryUnlocked, getAssetPrefix, getCollectedSingleItems, getCollectedStripItems, singleIdFromIndex, stripIdFromIndex, getSingleIllustPath, getStripIllustPath, getSingleIllustTitle, getStripIllustTitle } from '../js/attendance.js';
@@ -105,7 +106,7 @@
       if (openingViewed) {
         items.push({
           id: 'opening',
-          title: '오프닝 스토리',
+          title: t('gallery.openingStory'),
           cover: `${prefix}assets/sheep/Opening/opening_1.png`,
           unlocked: true,
           onView: () => startOpening(phone, true),
@@ -113,7 +114,7 @@
       } else {
         items.push({
           id: 'opening',
-          title: '오프닝 스토리',
+          title: t('gallery.openingStory'),
           cover: `${prefix}assets/sheep/Opening/opening_1.png`,
           unlocked: false,
         });
@@ -121,13 +122,14 @@
 
       ATTENDANCE_STORIES.forEach(story => {
         const unlocked = isStoryUnlocked(story.id);
+        const storyTitle = t(story.titleKey) || story.title;
         items.push({
           id: story.id,
-          title: story.title,
+          title: storyTitle,
           cover: getStoryCover(story),
           unlocked,
           onView: () => startImageSlideshow(phone, getStoryImages(story), {
-            hintText: `${story.title} — 터치하여 넘기기`,
+            hintText: t('gallery.storyTapHint', { title: storyTitle }),
           }),
         });
       });
@@ -181,7 +183,7 @@
               ${item.unlocked ? '' : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🔒</div>'}
             </div>
             <div style="padding:var(--space-2);font-size:var(--font-size-2xs);font-weight:800;line-height:1.3;">
-              ${item.unlocked ? item.title : '출석 보상으로 해금'}
+              ${item.unlocked ? item.title : t('gallery.lockedByAttendance')}
             </div>
           </div>
         `).join('');

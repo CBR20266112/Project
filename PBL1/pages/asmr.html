@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASMR | SleepySheep</title>
+  <title data-i18n="page.title">ASMR | SleepySheep</title>
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/layout.css">
@@ -271,10 +271,10 @@
   <main class="phone">
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">‹</button>
+        <button class="btn-back" onclick="location.href='../index.html'" data-i18n-title="common.back" title="Back">‹</button>
         <div>
-          <h1>🎧 ASMR</h1>
-          <p class="subtitle">잠들기 좋은 사운드 플레이어</p>
+          <h1 data-i18n="page.heading">🎧 ASMR</h1>
+          <p class="subtitle" data-i18n="page.subtitle">잠들기 좋은 사운드 플레이어</p>
         </div>
       </div>
       <div class="header-right">
@@ -290,7 +290,7 @@
         <div class="now-playing-bar idle" id="now-playing-bar">
           <div class="playing-icon" id="playing-icon">🎧</div>
           <div class="playing-info">
-            <div class="playing-name" id="playing-name">재생 중인 사운드 없음</div>
+            <div class="playing-name" id="playing-name" data-i18n="asmr.nowPlaying.empty">No sound playing</div>
             <div class="playing-bars" id="playing-bars">
               <div class="playing-bar-wave paused"></div>
               <div class="playing-bar-wave paused"></div>
@@ -299,22 +299,22 @@
               <div class="playing-bar-wave paused"></div>
             </div>
           </div>
-          <button class="btn-stop-asmr" id="btn-stop-asmr" style="display:none;">정지</button>
+          <button class="btn-stop-asmr" id="btn-stop-asmr" style="display:none;" data-i18n-title="home.asmr.stopButtonTitle" title="Stop">⏹</button>
         </div>
       </section>
 
       <section class="glass card" style="padding: var(--space-4);">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">🔊 볼륨 조절</h3>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);" data-i18n="asmr.volume.header">🔊 볼륨 조절</h3>
         <div style="display:flex; flex-direction:column; gap:var(--space-3);">
           <div class="volume-section">
             <span class="volume-icon">🎧</span>
-            <span class="volume-label">ASMR</span>
+            <span class="volume-label" data-i18n="asmr.volume.asmr">ASMR</span>
             <input type="range" class="asmr-slider" id="slider-asmr-vol" min="0" max="1" step="0.05" value="0.6">
             <span class="volume-val" id="asmr-vol-val">60%</span>
           </div>
           <div class="volume-section">
             <span class="volume-icon">✨</span>
-            <span class="volume-label">효과음</span>
+            <span class="volume-label" data-i18n="asmr.volume.effects">효과음</span>
             <input type="range" class="asmr-slider" id="slider-sfx-vol" min="0" max="1" step="0.05" value="0.9">
             <span class="volume-val" id="sfx-vol-val">90%</span>
           </div>
@@ -324,8 +324,8 @@
 
         <div class="sfx-row">
           <div class="sfx-row-info">
-            <span class="sfx-row-title">상호작용 효과음</span>
-            <span class="sfx-row-desc">쓰다듬기, 먹이주기, 버튼 소리를 켜고 끕니다.</span>
+            <span class="sfx-row-title" data-i18n="asmr.interactionSounds.title">상호작용 효과음</span>
+            <span class="sfx-row-desc" data-i18n="asmr.interactionSounds.desc">쓰다듬기, 먹이주기, 버튼 소리를 켜고 끕니다.</span>
           </div>
           <label class="switch">
             <input type="checkbox" id="switch-sfx" checked>
@@ -335,16 +335,16 @@
       </section>
 
       <section class="glass card" style="padding: var(--space-4);">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">⏱ 슬립 타이머</h3>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);" data-i18n="asmr.sleepTimer.title">⏱ 슬립 타이머</h3>
         <div id="asmr-timer-section">
           <div class="asmr-timer-row" data-asmr-timer-row></div>
-          <p class="asmr-timer-label" data-asmr-timer-label>타이머가 끝나면 ASMR과 바이노럴 비트가 함께 정지됩니다.</p>
+          <p class="asmr-timer-label" data-i18n="asmr.sleepTimer.desc">타이머가 끝나면 ASMR과 바이노럴 비트가 함께 정지됩니다.</p>
         </div>
         <div class="divider" style="margin: var(--space-3) 0;"></div>
         <div class="sfx-row">
           <div class="sfx-row-info">
-            <span class="sfx-row-title">잠자기 중 ASMR 자동 재생</span>
-            <span class="sfx-row-desc">수면을 시작하면 마지막으로 선택한 소리가 재생됩니다.</span>
+            <span class="sfx-row-title" data-i18n="asmr.autoPlay.title">잠자기 중 ASMR 자동 재생</span>
+            <span class="sfx-row-desc" data-i18n="asmr.autoPlay.desc">수면을 시작하면 마지막으로 선택한 소리가 재생됩니다.</span>
           </div>
           <label class="switch">
             <input type="checkbox" id="switch-asmr-autoplay" checked>
@@ -354,18 +354,18 @@
       </section>
 
       <section class="glass card" style="padding: var(--space-4);">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-2); color: var(--text-secondary);">〰️ 바이노럴 비트</h3>
-        <p class="asmr-header-desc" style="margin-bottom: var(--space-3);">ASMR 아래에 은은하게 깔리는 집중·수면 보조음입니다. 이어폰 착용을 권장해요.</p>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-2); color: var(--text-secondary);" data-i18n="asmr.binaural.title">〰️ 바이노럴 비트</h3>
+        <p class="asmr-header-desc" style="margin-bottom: var(--space-3);" data-i18n="asmr.binaural.desc">ASMR 아래에 은은하게 깔리는 집중·수면 보조음입니다. 이어폰 착용을 권장해요.</p>
         <div class="now-playing-bar idle binaural-now-bar" id="binaural-now-bar">
           <div class="playing-icon">〰️</div>
           <div class="playing-info">
-            <div class="playing-name" id="binaural-now-label">바이노럴 비트 꺼짐</div>
+            <div class="playing-name" id="binaural-now-label" data-i18n="asmr.binaural.off">Binaural beats off</div>
           </div>
-          <button class="btn-stop-asmr" id="btn-stop-binaural" style="display:none;">정지</button>
+          <button class="btn-stop-asmr" id="btn-stop-binaural" style="display:none;" data-i18n-title="home.asmr.stopButtonTitle">⏹</button>
         </div>
         <div class="volume-section" style="margin: var(--space-3) 0;">
           <span class="volume-icon">🔉</span>
-          <span class="volume-label">비트</span>
+          <span class="volume-label" data-i18n="asmr.volume.binaural">비트</span>
           <input type="range" class="asmr-slider" id="slider-binaural-vol" min="1" max="100" step="1" value="15">
           <span class="volume-val" id="binaural-vol-val">15</span>
         </div>
@@ -373,7 +373,7 @@
       </section>
 
       <section class="glass card" style="padding: var(--space-4);">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">🎵 사운드 선택</h3>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);" data-i18n="asmr.soundSelection.title">🎵 사운드 선택</h3>
         <div class="asmr-cat-tabs" id="asmr-category-tabs"></div>
         <div class="asmr-grid" id="asmr-grid"></div>
       </section>
@@ -382,27 +382,27 @@
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
+        <span class="nav-label" data-i18n="nav.home">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
         <span class="nav-icon">🌙</span>
-        <span class="nav-label">수면</span>
+        <span class="nav-label" data-i18n="nav.sleep">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="workshop.html">
         <span class="nav-icon">🧶</span>
-        <span class="nav-label">공방</span>
+        <span class="nav-label" data-i18n="nav.workshop">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="friends.html">
         <span class="nav-icon">👥</span>
-        <span class="nav-label">친구</span>
+        <span class="nav-label" data-i18n="nav.friends">친구</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="gallery.html">
         <span class="nav-icon">🖼️</span>
-        <span class="nav-label">갤러리</span>
+        <span class="nav-label" data-i18n="nav.gallery">갤러리</span>
         <span class="nav-dot"></span>
       </div>
     </nav>

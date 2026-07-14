@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>친구 방문 | SleepySheep</title>
+  <title data-i18n="page.title">친구 방문 | SleepySheep</title>
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/layout.css">
@@ -20,10 +20,10 @@
   <main class="phone">
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">‹</button>
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기" data-i18n-title="common.back">‹</button>
         <div>
-          <h1>👥 친구 목록</h1>
-          <p class="subtitle">수면 메이트들의 방을 방문해요</p>
+          <h1 data-i18n="page.heading">👥 친구 목록</h1>
+          <p class="subtitle" data-i18n="page.subtitle">수면 메이트들의 방을 방문해요</p>
         </div>
       </div>
       <div class="header-right">
@@ -37,24 +37,24 @@
     <div class="content">
       <section id="friend-room-visit" class="hidden" style="margin-bottom: var(--space-4);">
         <div class="section-header">
-          <span class="section-title">🏠 친구 방에 방문 중</span>
-          <button type="button" class="section-more" id="btn-close-visit" style="background:none;border:0;">돌아가기</button>
+          <span class="section-title" data-i18n="friends.visitHeading">🏠 친구 방에 방문 중</span>
+          <button type="button" class="section-more" id="btn-close-visit" style="background:none;border:0;" data-i18n="friends.visitBack">돌아가기</button>
         </div>
         <div id="friend-room-container"></div>
       </section>
 
       <section class="glass card" style="padding: var(--space-4);" id="friend-list-section">
         <div class="section-header" style="margin-bottom: var(--space-3);">
-          <span class="section-title">👥 친구 목록</span>
+          <span class="section-title" data-i18n="friends.listTitle">👥 친구 목록</span>
         </div>
         <div class="flex flex-col gap-3" id="friends-list-container"></div>
       </section>
 
       <section class="glass card" style="padding: var(--space-4);">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">➕ 친구 추가</h3>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);" data-i18n="friends.addTitle">➕ 친구 추가</h3>
         <div class="flex gap-2">
-          <input type="text" id="input-friend-code" class="glass" style="flex:1; border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-2) var(--space-3); color:#fff; font-size:var(--font-size-sm);" placeholder="친구 이름 또는 코드를 입력하세요">
-          <button class="btn btn-primary" id="btn-add-friend" style="padding:var(--space-2) var(--space-4);">검색</button>
+          <input type="text" id="input-friend-code" class="glass" style="flex:1; border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-2) var(--space-3); color:#fff; font-size:var(--font-size-sm);" data-i18n-placeholder="friends.inputPlaceholder" placeholder="Enter a friend name or code">
+          <button class="btn btn-primary" id="btn-add-friend" style="padding:var(--space-2) var(--space-4);" data-i18n="friends.searchButton">Search</button>
         </div>
       </section>
     </div>
@@ -62,27 +62,27 @@
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
+        <span class="nav-label" data-i18n="nav.home">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
         <span class="nav-icon">🌙</span>
-        <span class="nav-label">수면</span>
+        <span class="nav-label" data-i18n="nav.sleep">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="workshop.html">
         <span class="nav-icon">🧶</span>
-        <span class="nav-label">공방</span>
+        <span class="nav-label" data-i18n="nav.workshop">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item active" data-href="friends.html">
         <span class="nav-icon">👥</span>
-        <span class="nav-label">친구</span>
+        <span class="nav-label" data-i18n="nav.friends">친구</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="gallery.html">
         <span class="nav-icon">🖼️</span>
-        <span class="nav-label">갤러리</span>
+        <span class="nav-label" data-i18n="nav.gallery">갤러리</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -90,6 +90,7 @@
 
   <script type="module">
     import { initCommon, showToast } from '../js/app.js';
+    import { t } from '../js/i18n.js';
     import { getSheep } from '../js/storage.js';
     import { getFriends, getFriendById, buildFriendCardHTML, buildFriendRoomHTML } from '../js/friends.js';
 
@@ -112,7 +113,7 @@
           friendsListContainer.innerHTML = `
             <div class="empty-state">
               <span class="empty-icon">👥</span>
-              <p>추가된 친구가 없어요.</p>
+              <p>${t('friends.emptyState')}</p>
             </div>`;
           return;
         }
@@ -130,7 +131,7 @@
         friendRoomVisit.classList.remove('hidden');
         friendRoomVisit.style.animation = 'slideDown 0.35s ease forwards';
         document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
-        showToast(`${friend.name}의 방에 방문했어요.`, 'success');
+        showToast(t('friends.visitToast', { friendName: friend.name }), 'success');
       }
 
       btnCloseVisit.addEventListener('click', () => {
@@ -140,10 +141,10 @@
       btnAddFriend.addEventListener('click', () => {
         const code = inputFriendCode.value.trim();
         if (!code) {
-          showToast('친구 이름 또는 코드를 입력하세요.', 'error');
+          showToast(t('friends.toast.enterCode'), 'error');
           return;
         }
-        showToast('친구 코드 추가는 다음 버전에서 연결할 예정이에요.', 'info');
+        showToast(t('friends.toast.comingSoon'), 'info');
         inputFriendCode.value = '';
       });
 

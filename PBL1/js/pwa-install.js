@@ -2,6 +2,8 @@
  * pwa-install.js — 앱 바로가기(PWA) 설치 유도
  */
 
+import { t } from './i18n.js';
+
 const DISMISS_KEY = 'ss_pwa_install_dismiss';
 const SHOW_DELAY_MS = 2800;
 
@@ -65,19 +67,19 @@ function buildInstallUI() {
         style="border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); object-fit: contain;">
     </div>
     <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-2);">
-      📲 앱 바로가기를 추가할래?
+      ${t('pwaInstall.title')}
     </h3>
     <p id="pwa-install-desc" class="text-center text-muted"
       style="font-size: var(--font-size-sm); line-height: 1.65; margin-bottom: var(--space-4);"></p>
     <div id="pwa-install-ios-steps" class="hidden" style="font-size: var(--font-size-sm); line-height: 1.7;
       background: rgba(167,139,250,0.12); border-radius: var(--radius-md); padding: var(--space-3);
       margin-bottom: var(--space-4); text-align: left;">
-      <div style="margin-bottom: 6px;">① 하단 <strong>공유</strong> 버튼 <span style="font-size:1.1em;">□↑</span> 탭</div>
-      <div>② <strong>홈 화면에 추가</strong> 선택</div>
+      <div style="margin-bottom: 6px;">${t('pwaInstall.iosSteps.step1')}</div>
+      <div>${t('pwaInstall.iosSteps.step2')}</div>
     </div>
     <div class="flex flex-col gap-2">
-      <button class="btn btn-primary" id="btn-pwa-install-confirm">추가하기</button>
-      <button class="btn btn-secondary" id="btn-pwa-install-later">나중에</button>
+      <button class="btn btn-primary" id="btn-pwa-install-confirm">${t('pwaInstall.button.add')}</button>
+      <button class="btn btn-secondary" id="btn-pwa-install-later">${t('pwaInstall.button.later')}</button>
     </div>
   `;
 
@@ -104,19 +106,19 @@ function setInstallMode({ ios = false, manual = false } = {}) {
   const btnConfirm = modalEl.querySelector('#btn-pwa-install-confirm');
 
   if (ios) {
-    desc.textContent = '홈 화면에 추가하면 모닝콜 알림을 더 편하게 받을 수 있어요.';
+    desc.textContent = t('pwaInstall.description.ios');
     iosSteps?.classList.remove('hidden');
-    btnConfirm.textContent = '알겠어요';
+    btnConfirm.textContent = t('pwaInstall.button.ok');
   } else if (deferredPrompt) {
-    desc.textContent = '홈 화면에 추가하면 앱처럼 바로 열고, 모닝콜도 더 안정적으로 받을 수 있어요.';
+    desc.textContent = t('pwaInstall.description.deferred');
     iosSteps?.classList.add('hidden');
-    btnConfirm.textContent = '추가하기';
+    btnConfirm.textContent = t('pwaInstall.button.add');
   } else {
     desc.textContent = manual
-      ? '브라우저 메뉴(⋮)에서 「앱 설치」 또는 「홈 화면에 추가」를 선택해 주세요.'
-      : '이 브라우저에서는 자동 설치를 지원하지 않아요. 메뉴에서 홈 화면에 추가해 주세요.';
+      ? t('pwaInstall.description.manual')
+      : t('pwaInstall.description.manualUnsupported');
     iosSteps?.classList.add('hidden');
-    btnConfirm.textContent = '알겠어요';
+    btnConfirm.textContent = t('pwaInstall.button.ok');
   }
 }
 
@@ -139,7 +141,7 @@ export function hideInstallUI() {
  */
 export async function promptInstall({ showToast } = {}) {
   if (isAppInstalled()) {
-    showToast?.('이미 앱 바로가기로 실행 중이에요!', 'info');
+    showToast?.(t('pwaInstall.toast.installed'), 'info');
     return { status: 'installed' };
   }
 
@@ -171,14 +173,14 @@ async function onConfirmInstall({ showToast } = {}) {
 
     if (outcome === 'accepted') {
       localStorage.setItem(DISMISS_KEY, 'never');
-      showToast?.('앱 바로가기가 추가됐어요! 메에~ 🐑', 'success');
+      showToast?.(t('pwaInstall.toast.installed'), 'success');
     } else {
       dismissLater();
     }
   } catch (e) {
     console.warn('[pwa-install]', e);
     hideInstallUI();
-    showToast?.('설치 창을 열지 못했어요. 브라우저 메뉴에서 추가해 주세요.', 'error');
+    showToast?.(t('pwaInstall.toast.installFailed'), 'error');
   }
 }
 
@@ -209,6 +211,6 @@ export function initPwaInstallPrompt({ showToast } = {}) {
     deferredPrompt = null;
     localStorage.setItem(DISMISS_KEY, 'never');
     hideInstallUI();
-    showToast?.('Sleepy Sheep이 홈 화면에 추가됐어요! 🎉', 'success');
+    showToast?.(t('pwaInstall.toast.installed'), 'success');
   });
 }

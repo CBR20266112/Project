@@ -2,7 +2,7 @@
  * asmr.js - ASMR shared UI bindings
  */
 import { getSettings } from './storage.js';
-import { t } from './i18n.js';
+import { t, DEFAULT_LANGUAGE } from './i18n.js';
 import {
   resumeAudio,
   getAsmrList,
@@ -27,20 +27,20 @@ import {
 } from './sound.js';
 
 export const ASMR_CATEGORIES = [
-  { id: 'all',    label: '전체' },
-  { id: 'preset', label: '추천 믹스' },
-  { id: 'nature', label: '자연' },
-  { id: 'cozy',   label: '포근함' },
-  { id: 'music',  label: '테마 음악' },
-  { id: 'texture', label: '사각사각' },
-  { id: 'focus',  label: '집중·수면' },
+  { id: 'all',    labelKey: 'asmr.category.all' },
+  { id: 'preset', labelKey: 'asmr.category.preset' },
+  { id: 'nature', labelKey: 'asmr.category.nature' },
+  { id: 'cozy',   labelKey: 'asmr.category.cozy' },
+  { id: 'music',  labelKey: 'asmr.category.music' },
+  { id: 'texture', labelKey: 'asmr.category.texture' },
+  { id: 'focus',  labelKey: 'asmr.category.focus' },
 ];
 
 export const ASMR_TIMER_OPTIONS = [
-  { min: 15, label: '15분' },
-  { min: 30, label: '30분' },
-  { min: 60, label: '60분' },
-  { min: 0,  label: '끄기' },
+  { min: 15, labelKey: 'asmr.timer.option.15' },
+  { min: 30, labelKey: 'asmr.timer.option.30' },
+  { min: 60, labelKey: 'asmr.timer.option.60' },
+  { min: 0,  labelKey: 'asmr.timer.option.0' },
 ];
 
 function filterAsmrList(category) {
@@ -57,7 +57,7 @@ export function createAsmrCard(item) {
     <div class="asmr-emoji">${item.emoji}</div>
     <div class="asmr-name">${item.name}</div>
     <div class="asmr-desc">${item.desc}</div>
-    <div class="asmr-badge">재생 중</div>
+    <div class="asmr-badge">${t('asmr.playingBadge')}</div>
   `;
   card.addEventListener('click', () => {
     resumeAudio();
@@ -117,7 +117,7 @@ export function updateNowPlayingBar(item) {
   } else {
     bar.classList.add('idle');
     if (icon) icon.textContent = '🎧';
-    if (name) name.textContent = '재생 중인 사운드 없음';
+    if (name) name.textContent = t('asmr.nowPlaying.empty');
     bars?.forEach(b => b.classList.add('paused'));
     if (btnStop) btnStop.style.display = 'none';
   }
@@ -145,7 +145,7 @@ export function createBinauralCard(item) {
     <div class="asmr-emoji">${item.emoji}</div>
     <div class="asmr-name">${item.name}</div>
     <div class="asmr-desc">${item.desc}</div>
-    <div class="asmr-badge">재생 중</div>
+    <div class="asmr-badge">${t('asmr.playingBadge')}</div>
   `;
   card.addEventListener('click', () => {
     resumeAudio();
@@ -197,7 +197,7 @@ export function updateBinauralNowBar(item) {
     if (btnStop) btnStop.style.display = '';
   } else {
     bar.classList.add('idle');
-    if (label) label.textContent = '바이노럴 비트 꺼짐';
+    if (label) label.textContent = t('asmr.binaural.off');
     if (btnStop) btnStop.style.display = 'none';
   }
 }
@@ -270,7 +270,7 @@ export function bindAsmrCategoryTabs(tabsEl, gridEl) {
     tab.type = 'button';
     tab.className = 'asmr-cat-tab' + (cat.id === active ? ' active' : '');
     tab.dataset.category = cat.id;
-    tab.textContent = cat.label;
+    tab.textContent = t(cat.labelKey) || cat.id;
     tab.addEventListener('click', () => {
       active = cat.id;
       tabsEl.querySelectorAll('.asmr-cat-tab').forEach(t => {
@@ -302,10 +302,12 @@ function refreshTimerLabel() {
   const left = getAsmrTimerMinutesLeft();
   const set = getAsmrSleepTimerMinutes();
   if (!set) {
-    _timerLabelEl.textContent = '타이머 꺼짐';
+    _timerLabelEl.textContent = t('asmr.timer.off');
     return;
   }
-  _timerLabelEl.textContent = left > 0 ? `${left}분 후 자동 정지` : '곧 정지...';
+  _timerLabelEl.textContent = left > 0
+    ? t('asmr.timer.left', { minutes: left })
+    : t('asmr.timer.expiring');
 }
 
 export function bindAsmrTimer(container) {
@@ -321,7 +323,7 @@ export function bindAsmrTimer(container) {
     btn.type = 'button';
     btn.className = 'asmr-timer-btn';
     btn.dataset.min = String(opt.min);
-    btn.textContent = opt.label;
+    btn.textContent = t(opt.labelKey) || (opt.min === 0 ? 'Off' : `${opt.min} min`);
     if (opt.min === getAsmrSleepTimerMinutes()) btn.classList.add('active');
     btn.addEventListener('click', () => {
       resumeAudio();
@@ -399,11 +401,11 @@ export function initHomeAsmrSection() {
     if (!nowLabel) return;
     if (playing) {
       nowEl?.classList.remove('idle');
-      nowLabel.textContent = `${playing.emoji} ${playing.name} 켜짐`;
+      nowLabel.textContent = `${playing.emoji} ${playing.name} ${t('asmr.status.on')}`;
       if (btnStop) btnStop.style.display = '';
     } else {
       nowEl?.classList.add('idle');
-      nowLabel.textContent = '꺼짐';
+      nowLabel.textContent = t('asmr.status.off');
       if (btnStop) btnStop.style.display = 'none';
     }
   }
@@ -433,7 +435,7 @@ export function initHomeAsmrSection() {
       if (btnStop) btnStop.style.display = '';
     } else {
       bar.classList.add('idle');
-      label.textContent = '바이노럴 비트 끄기';
+      if (label) label.textContent = t('home.asmr.binauralOffLabel');
       if (btnStop) btnStop.style.display = 'none';
     }
   }
@@ -466,7 +468,7 @@ export function initSleepAsmrMini() {
   presets.forEach(item => presetsEl.appendChild(createAsmrChip(item, { compact: false })));
 
   function updateMini() {
-    const lang = getSettings().language || 'ko';
+    const lang = getSettings().language || DEFAULT_LANGUAGE;
     const cur = getCurrentAsmrId();
     const item = cur ? getAsmrItem(cur) : null;
     syncAsmrPlayingState(presetsEl.parentElement);

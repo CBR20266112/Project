@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>양털 공방 | SleepySheep</title>
+  <title data-i18n="page.title">양털 공방 | SleepySheep</title>
   
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
@@ -24,10 +24,10 @@
     <!-- 헤더 -->
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">←</button>
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기" data-i18n-title="common.back">←</button>
         <div>
-          <h1>🧶 양털 공방</h1>
-          <p class="subtitle">모은 양털로 방 꾸미기 요소를 획득해요</p>
+          <h1 data-i18n="page.heading">🧶 양털 공방</h1>
+          <p class="subtitle" data-i18n="page.subtitle">모은 양털로 방 꾸미기 요소를 획득해요</p>
         </div>
       </div>
       <div class="header-right">
@@ -43,7 +43,7 @@
 
       <!-- 방 미리보기 영역 -->
       <section class="section-header" style="margin-bottom: var(--space-2);">
-        <span class="section-title">🏡 나의 아늑한 방 프리뷰</span>
+        <span class="section-title" data-i18n="workshop.previewTitle">🏡 나의 아늑한 방 프리뷰</span>
       </section>
       <section id="room-preview-container" style="margin-bottom: var(--space-3);">
         <!-- room.js를 통해 방 꾸미기 요소가 렌더링됨 -->
@@ -52,7 +52,7 @@
       <!-- 상점 아이템 리스트 영역 -->
       <section class="glass card" style="padding: var(--space-4);">
         <div class="section-header">
-          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);">🛒 상점 카테고리</h3>
+          <h3 class="font-bold" style="font-size: var(--font-size-sm); color: var(--text-secondary);" data-i18n="workshop.categoryTitle">🛒 상점 카테고리</h3>
         </div>
 
         <!-- 카테고리 탭 (가로 스크롤 가능하도록 CSS 처리) -->
@@ -74,27 +74,27 @@
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
+        <span class="nav-label" data-i18n="nav.home">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
         <span class="nav-icon">🌙</span>
-        <span class="nav-label">수면</span>
+        <span class="nav-label" data-i18n="nav.sleep">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item active" data-href="workshop.html">
         <span class="nav-icon">🧶</span>
-        <span class="nav-label">공방</span>
+        <span class="nav-label" data-i18n="nav.workshop">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="friends.html">
         <span class="nav-icon">👥</span>
-        <span class="nav-label">친구</span>
+        <span class="nav-label" data-i18n="nav.friends">친구</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="gallery.html">
         <span class="nav-icon">🖼️</span>
-        <span class="nav-label">갤러리</span>
+        <span class="nav-label" data-i18n="nav.gallery">갤러리</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -104,18 +104,19 @@
   <div class="overlay" id="shop-overlay"></div>
   <div class="modal" id="purchase-modal">
     <div class="modal-handle"></div>
-    <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-3);" id="purchase-title">아이템 구매</h3>
-    <p class="text-center text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--space-5);" id="purchase-desc">
-      이 아이템을 구매하시겠습니까?
+    <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-3);" id="purchase-title" data-i18n="workshop.modal.purchaseTitle">아이템 구매</h3>
+    <p class="text-center text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--space-5);" id="purchase-desc" data-i18n="workshop.modal.purchaseDesc">
+      Purchase this item?
     </p>
     <div class="flex flex-col gap-3">
-      <button class="btn btn-primary" id="btn-purchase-confirm">구매 완료</button>
-      <button class="btn btn-secondary" id="btn-close-purchase-modal">취소</button>
+      <button class="btn btn-primary" id="btn-purchase-confirm" data-i18n="shop.button.purchaseConfirm">구매 완료</button>
+      <button class="btn btn-secondary" id="btn-close-purchase-modal" data-i18n="shop.button.cancel">취소</button>
     </div>
   </div>
 
   <script type="module">
     import { initCommon, showToast } from '../js/app.js';
+    import { t } from '../js/i18n.js';
     import { getSheep } from '../js/storage.js';
     import { renderRoom } from '../js/room.js';
     import { 
@@ -153,7 +154,7 @@
         // 방 렌더링
         renderRoom(roomPreviewContainer, null, undefined, 'idle', '../');
         enableWearableDrag(roomPreviewContainer, {
-          onSave: () => showToast('아이템 위치를 저장했어요.', 'success'),
+          onSave: () => showToast(t('shop.toast.positionSaved'), 'success'),
         });
 
         // 카테고리 탭 그리기
@@ -175,7 +176,7 @@
           shopItemsGrid.innerHTML = `
             <div class="empty-state w-full" style="grid-column: span 3;">
               <span class="empty-icon">🛍️</span>
-              <p>해당 카테고리의 아이템이 없습니다.</p>
+              <p>${t('shop.emptyState.noItems')}</p>
             </div>`;
           return;
         }
@@ -213,15 +214,15 @@
           // 미소유면 구매 팝업
           const sheep = getSheep();
           if (sheep.wool < item.price) {
-            showToast(`양털이 부족합니다! 🧶 ${item.price}개가 필요해요.`, 'error');
+            showToast(t('shop.toast.notEnoughWool', { missing: item.price }), 'error');
             return;
           }
 
           pendingPurchaseItemId = itemId;
-          purchaseTitle.innerHTML = `방 꾸미기 아이템 구매 🛒`;
+          purchaseTitle.innerHTML = t('workshop.modal.purchaseTitle');
           purchaseDesc.innerHTML = `
-            <img src="${getItemImagePath(item.id, '../')}" alt="" style="width:88px;height:88px;object-fit:contain;margin:0 auto 8px;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));" onerror="this.outerHTML='<span style=\\'font-size:1.8rem;display:block;margin-bottom:8px\\'>${item.icon}</span>'">
-            <strong>${item.name}</strong>을(를) <strong>🧶 ${item.price}</strong> 양털로 구매하시겠습니까?`;
+            <img src="${getItemImagePath(item.id, '../')}" alt="" style="width:88px;height:88px;object-fit:contain;margin:0 auto 8px;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));" onerror="this.outerHTML='<span style=\'font-size:1.8rem;display:block;margin-bottom:8px\'>${item.icon}</span>'">
+            ${t('workshop.modal.purchaseDesc', { itemName: item.name, price: item.price })}`;
           
           shopOverlay.classList.add('active');
           purchaseModal.classList.add('active');
@@ -290,7 +291,8 @@
               let tracking = false;
               const initialPos = { left: temp.style.left, top: temp.style.top };
               let restoreTimer = null;
-              function onPointerDown(e) {
+
+              function onPointerDown(e) {
                 e.preventDefault();
                 tracking = true;
                 temp.style.cursor = 'grabbing';
@@ -324,7 +326,7 @@
                     const relLeft = ((e.clientX - wrect.left) / wrect.width) * 100;
                     const relTop = ((e.clientY - wrect.top) / wrect.height) * 100;
                     saveWearablePlacement(item.id, relLeft, relTop);
-                    showToast(`${item.name}을(를) 양에게 달았어요!`, 'success');
+                    showToast(t('shop.toast.itemPlacedOnSheep', { itemName: item.name }), 'success');
                     hideGuide();
                     temp.remove();
                     refreshUI();
@@ -341,7 +343,7 @@
                   hideGuide();
                   // 약간의 시간 후에 원상복구 (시각 효과)
                   setTimeout(() => { temp.style.transform = ''; }, 340);
-                  showToast('양 위로 드래그해서 놓아야 장착됩니다. 잠시 후에 다시 선택해 보세요.', 'info');
+                  showToast(t('shop.toast.dragEquipFail'), 'info');
                   // 유지 후 자동 제거 (3초)
                   restoreTimer = setTimeout(() => {
                     try { temp.remove(); } catch (_) {}
@@ -355,7 +357,7 @@
               temp.addEventListener('pointerup', onPointerUp);
               temp.addEventListener('pointercancel', onPointerUp);
             }
-            showToast('아이템을 드래그해서 양에게 달아주세요.', 'info');
+            showToast(t('shop.toast.dragEquipPrompt'), 'info');
           } else {
             // 배경/가구 등은 자동으로 장착 처리 (즉시 적용)
             toggleEquip(itemId);

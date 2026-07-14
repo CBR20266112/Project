@@ -5,6 +5,7 @@
 import { SHOP_CATALOG, SHOP_CATEGORIES } from './constants.js';
 import { getSheep, saveSheep, getItems, saveItems } from './storage.js';
 import { showToast } from './app.js';
+import { t } from './i18n.js';
 import { getItemImagePath } from './decor.js';
 
 // ─── 조회 ───
@@ -20,6 +21,16 @@ export function findItem(id) {
   return SHOP_CATALOG.find(i => i.id === id) ?? null;
 }
 
+function resolveItemName(item) {
+  if (!item) return '';
+  return t(`shop.item.${item.id}`) || item.name || '';
+}
+
+function resolveCategoryLabel(cat) {
+  if (!cat) return '';
+  return t(`shop.category.${cat.id}`) || cat.label || '';
+}
+
 // ─── 구매 ───
 
 /**
@@ -29,16 +40,16 @@ export function findItem(id) {
  */
 export function purchaseItem(itemId) {
   const item  = findItem(itemId);
-  if (!item) return { success: false, msg: '존재하지 않는 아이템이에요.' };
+  if (!item) return { success: false, msg: t('shop.error.itemNotFound') };
 
   const items = getItems();
   if (items.owned.includes(itemId)) {
-    return { success: false, msg: '이미 보유한 아이템이에요.' };
+    return { success: false, msg: t('shop.error.itemOwned') };
   }
 
   const sheep = getSheep();
   if (sheep.wool < item.price) {
-    return { success: false, msg: `양털이 부족해요! (${item.price - sheep.wool}개 더 필요)` };
+    return { success: false, msg: t('shop.error.insufficientWool', { missing: item.price - sheep.wool }) };
   }
 
   // 차감 & 저장
@@ -48,7 +59,7 @@ export function purchaseItem(itemId) {
   saveSheep(sheep);
   saveItems(items);
 
-  return { success: true, msg: `${item.name}을(를) 구매했어요! 🎉`, woolLeft: sheep.wool };
+  return { success: true, msg: t('shop.success.purchased', { itemName: resolveItemName(item) }), woolLeft: sheep.wool };
 }
 
 // ─── 장착 ───
@@ -60,13 +71,13 @@ export function purchaseItem(itemId) {
  */
 export function toggleEquip(itemId) {
   const item  = findItem(itemId);
-  if (!item) return { success: false, msg: '존재하지 않는 아이템이에요.' };
+  if (!item) return { success: false, msg: t('shop.error.itemNotFound') };
 
   const items = getItems();
 
   // 미보유 아이템은 장착 불가 (무료 아이템 예외)
   if (item.price > 0 && !items.owned.includes(itemId)) {
-    return { success: false, msg: '먼저 구매해야 장착할 수 있어요.' };
+    return { success: false, msg: t('shop.error.mustPurchaseFirst') };
   }
 
   const slot      = item.slot;
@@ -76,7 +87,9 @@ export function toggleEquip(itemId) {
   items.equipped[slot] = isEquipped ? null : itemId;
   saveItems(items);
 
-  const msg = isEquipped ? `${item.name} 해제됐어요.` : `${item.name} 장착했어요! ✨`;
+  const msg = isEquipped
+    ? t('shop.success.unequipped', { itemName: resolveItemName(item) })
+    : t('shop.success.equipped', { itemName: resolveItemName(item) });
   return { success: true, msg, equipped: items.equipped };
 }
 
@@ -93,32 +106,33 @@ export function buildShopItemHTML(item, owned, equipped) {
   const isOwned    = owned.includes(item.id);
   const isEquipped = Object.values(equipped).includes(item.id);
 
+  const itemName = resolveItemName(item);
   let badgeHTML = '';
-  if (isEquipped)       badgeHTML = `<span class="shop-item-badge" style="background:var(--color-success);color:#000">착용중</span>`;
-  else if (isOwned)     badgeHTML = `<span class="shop-item-badge" style="background:rgba(134,239,172,0.3);color:var(--color-success)">보유</span>`;
+  if (isEquipped)       badgeHTML = `<span class="shop-item-badge" style="background:var(--color-success);color:#000">${t('shop.badge.equipped')}</span>`;
+  else if (isOwned)     badgeHTML = `<span class="shop-item-badge" style="background:rgba(134,239,172,0.3);color:var(--color-success)">${t('shop.badge.owned')}</span>`;
 
   const priceHTML = item.price === 0
-    ? `<span class="shop-item-price" style="color:var(--color-success)">무료</span>`
+    ? `<span class="shop-item-price" style="color:var(--color-success)">${t('shop.price.free')}</span>`
     : `<span class="shop-item-price">🧶 ${item.price}</span>`;
 
   const iconHTML = `<img class="shop-item-thumb" src="${getItemImagePath(item.id)}" alt="" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="shop-item-icon" style="display:none">${item.icon}</span>`;
 
   const isWearable = ['hat', 'ribbon', 'glasses', 'scarf'].includes(item.slot);
   const typeLabel = isWearable
-    ? `<span style="font-size:0.6rem; color:var(--color-purple-soft); display:block; margin-bottom:2px; font-weight:800;">🐑 양 꾸미기</span>`
-    : `<span style="font-size:0.6rem; color:var(--color-secondary); display:block; margin-bottom:2px; font-weight:800;">🏡 방 꾸미기</span>`;
+    ? `<span style="font-size:0.6rem; color:var(--color-purple-soft); display:block; margin-bottom:2px; font-weight:800;">${t('shop.type.wearable')}</span>`
+    : `<span style="font-size:0.6rem; color:var(--color-secondary); display:block; margin-bottom:2px; font-weight:800;">${t('shop.type.decor')}</span>`;
 
   return `
 <div class="shop-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}"
      data-item-id="${item.id}"
      role="button"
      tabindex="0"
-     aria-label="${item.name} ${item.price}양털">
+     aria-label="${itemName} ${item.price}${t('shop.aria.wool')}">
   ${badgeHTML}
   <div class="shop-item-icon-wrap">${iconHTML}</div>
   <div class="shop-item-name" style="margin-top: 4px;">
     ${typeLabel}
-    ${item.name}
+    ${itemName}
   </div>
   ${priceHTML}
 </div>`;
@@ -133,6 +147,6 @@ export function buildCategoryTabsHTML(activeCategory = 'all') {
   return SHOP_CATEGORIES.map(cat => `
 <button class="tab-item ${cat.id === activeCategory ? 'active' : ''}"
         data-category="${cat.id}">
-  ${cat.icon} ${cat.label}
+  ${cat.icon} ${resolveCategoryLabel(cat)}
 </button>`).join('');
 }

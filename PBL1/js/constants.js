@@ -127,7 +127,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   notification:      true,
   bgMusic:           false,
   vibration:         true,
-  language:          'ko', // 'ko' | 'en' | 'zh' | 'ja'
+  language:          'en', // 'ko' | 'en' | 'zh' | 'ja'
   sleepGoal:         480,  // 분 (8시간)
   wakeAlarm:         '07:00',
   bedAlarm:          '22:30',
@@ -157,9 +157,9 @@ export const DAILY_ATTENDANCE_WOOL = ATTENDANCE_CYCLE.WOOL_SMALL;
 
 /** 연속 출석 스토리 해금 (7 / 14 / 21일) — 오프닝 슬라이드 */
 export const ATTENDANCE_STORIES = Object.freeze([
-  { id: 'story_7',  days: 7,  title: '7일째, 꿈이 열리다',     from: 1,  to: 5  },
-  { id: 'story_14', days: 14, title: '14일째, 별의 약속',      from: 6,  to: 10 },
-  { id: 'story_21', days: 21, title: '21일째, 영원한 밤하늘',  from: 11, to: 14 },
+  { id: 'story_7',  days: 7,  titleKey: 'attendance.story_7.title',  title: '7th day, dream opens',      from: 1,  to: 5  },
+  { id: 'story_14', days: 14, titleKey: 'attendance.story_14.title', title: '14th day, promise of stars', from: 6,  to: 10 },
+  { id: 'story_21', days: 21, titleKey: 'attendance.story_21.title', title: '21st day, eternal night sky', from: 11, to: 14 },
 ]);
 
 // ─── 아이템 초기값 ───
@@ -183,83 +183,83 @@ export const DEFAULT_ITEMS = Object.freeze({
 // ─── 상점 아이템 카탈로그 ───
 export const SHOP_CATALOG = [
   // 리본
-  { id: 'ribbon_red',    category: 'ribbon',    name: '빨간 리본',   price: 30,  icon: '🎀', slot: 'ribbon' },
-  { id: 'ribbon_pink',   category: 'ribbon',    name: '핑크 리본',   price: 30,  icon: '🩷', slot: 'ribbon' },
-  { id: 'ribbon_purple', category: 'ribbon',    name: '보라 리본',   price: 40,  icon: '💜', slot: 'ribbon' },
-  { id: 'ribbon',        category: 'ribbon',    name: '민트 리본',   price: 20,  icon: '🎀', slot: 'ribbon' },
+  { id: 'ribbon_red',    nameKey: 'shop.item.ribbon_red', category: 'ribbon',    name: '빨간 리본',   price: 30,  icon: '🎀', slot: 'ribbon' },
+  { id: 'ribbon_pink',   nameKey: 'shop.item.ribbon_pink', category: 'ribbon',    name: '핑크 리본',   price: 30,  icon: '🩷', slot: 'ribbon' },
+  { id: 'ribbon_purple', nameKey: 'shop.item.ribbon_purple', category: 'ribbon',    name: '보라 리본',   price: 40,  icon: '💜', slot: 'ribbon' },
+  { id: 'ribbon',        nameKey: 'shop.item.ribbon', category: 'ribbon',    name: '민트 리본',   price: 20,  icon: '🎀', slot: 'ribbon' },
   // 모자
-  { id: 'hat_star',      category: 'hat',       name: '별 모자',     price: 50,  icon: '⭐', slot: 'hat' },
-  { id: 'hat_sleep',     category: 'hat',       name: '수면 모자',   price: 60,  icon: '🌙', slot: 'hat' },
-  { id: 'hat_flower',    category: 'hat',       name: '꽃 머리띠',   price: 45,  icon: '🌸', slot: 'hat' },
-  { id: 'pajamaHat',     category: 'hat',       name: '파자마 모자', price: 45,  icon: '🤠', slot: 'hat' },
-  { id: 'headphones_lavender', category: 'hat',  name: '라벤더 헤드폰', price: 60, icon: '🎧', slot: 'hat' },
+  { id: 'hat_star',      nameKey: 'shop.item.hat_star', category: 'hat',       name: '별 모자',     price: 50,  icon: '⭐', slot: 'hat' },
+  { id: 'hat_sleep',     nameKey: 'shop.item.hat_sleep', category: 'hat',       name: '수면 모자',   price: 60,  icon: '🌙', slot: 'hat' },
+  { id: 'hat_flower',    nameKey: 'shop.item.hat_flower', category: 'hat',       name: '꽃 머리띠',   price: 45,  icon: '🌸', slot: 'hat' },
+  { id: 'pajamaHat',     nameKey: 'shop.item.pajamaHat', category: 'hat',       name: '파자마 모자', price: 45,  icon: '🤠', slot: 'hat' },
+  { id: 'headphones_lavender', nameKey: 'shop.item.headphones_lavender', category: 'hat',  name: '라벤더 헤드폰', price: 60, icon: '🎧', slot: 'hat' },
   // 안경
-  { id: 'glasses_gold',        category: 'glasses',  name: '금테 안경',     price: 50, icon: '👓', slot: 'glasses' },
-  { id: 'glasses_round_brown', category: 'glasses',  name: '둥근 갈색 안경', price: 40, icon: '👓', slot: 'glasses' },
+  { id: 'glasses_gold',        nameKey: 'shop.item.glasses_gold', category: 'glasses',  name: '금테 안경',     price: 50, icon: '👓', slot: 'glasses' },
+  { id: 'glasses_round_brown', nameKey: 'shop.item.glasses_round_brown', category: 'glasses',  name: '둥근 갈색 안경', price: 40, icon: '👓', slot: 'glasses' },
   // 목도리
-  { id: 'scarf_mint',    category: 'scarf',     name: '민트 목도리', price: 40,  icon: '🟩', slot: 'scarf' },
-  { id: 'scarf_red',     category: 'scarf',     name: '빨간 목도리', price: 40,  icon: '🟥', slot: 'scarf' },
-  { id: 'scarf_red_knit',category: 'scarf',     name: '빨간 니트 목도리', price: 45, icon: '🧣', slot: 'scarf' },
+  { id: 'scarf_mint',    nameKey: 'shop.item.scarf_mint', category: 'scarf',     name: '민트 목도리', price: 40,  icon: '🟩', slot: 'scarf' },
+  { id: 'scarf_red',     nameKey: 'shop.item.scarf_red', category: 'scarf',     name: '빨간 목도리', price: 40,  icon: '🟥', slot: 'scarf' },
+  { id: 'scarf_red_knit',nameKey: 'shop.item.scarf_red_knit', category: 'scarf',     name: '빨간 니트 목도리', price: 45, icon: '🧣', slot: 'scarf' },
   // 방석
-  { id: 'cushion_moon',  category: 'cushion',   name: '달 방석',     price: 80,  icon: '🌙', slot: 'cushion' },
-  { id: 'cushion_star',  category: 'cushion',   name: '별 방석',     price: 80,  icon: '⭐', slot: 'cushion' },
-  { id: 'cushion_cloud', category: 'cushion',   name: '구름 방석',   price: 100, icon: '☁️', slot: 'cushion' },
+  { id: 'cushion_moon',  nameKey: 'shop.item.cushion_moon', category: 'cushion',   name: '달 방석',     price: 80,  icon: '🌙', slot: 'cushion' },
+  { id: 'cushion_star',  nameKey: 'shop.item.cushion_star', category: 'cushion',   name: '별 방석',     price: 80,  icon: '⭐', slot: 'cushion' },
+  { id: 'cushion_cloud', nameKey: 'shop.item.cushion_cloud', category: 'cushion',   name: '구름 방석',   price: 100, icon: '☁️', slot: 'cushion' },
   // 카페트
-  { id: 'carpet_purple', category: 'carpet',    name: '보라 카페트', price: 120, icon: '🟣', slot: 'carpet' },
-  { id: 'carpet_pink',   category: 'carpet',    name: '핑크 카페트', price: 120, icon: '🩷', slot: 'carpet' },
+  { id: 'carpet_purple', nameKey: 'shop.item.carpet_purple', category: 'carpet',    name: '보라 카페트', price: 120, icon: '🟣', slot: 'carpet' },
+  { id: 'carpet_pink',   nameKey: 'shop.item.carpet_pink', category: 'carpet',    name: '핑크 카페트', price: 120, icon: '🩷', slot: 'carpet' },
   // 조명
-  { id: 'light_moon',    category: 'light',     name: '달 조명',     price: 90,  icon: '🌕', slot: 'light' },
-  { id: 'light_star',    category: 'light',     name: '별 조명',     price: 90,  icon: '💫', slot: 'light' },
+  { id: 'light_moon',    nameKey: 'shop.item.light_moon', category: 'light',     name: '달 조명',     price: 90,  icon: '🌕', slot: 'light' },
+  { id: 'light_star',    nameKey: 'shop.item.light_star', category: 'light',     name: '별 조명',     price: 90,  icon: '💫', slot: 'light' },
   // 창문
-  { id: 'window_night',  category: 'window',    name: '밤하늘 창문', price: 150, icon: '🌃', slot: 'window' },
-  { id: 'window_moon',   category: 'window',    name: '달빛 창문',   price: 160, icon: '🌙', slot: 'window' },
+  { id: 'window_night',  nameKey: 'shop.item.window_night', category: 'window',    name: '밤하늘 창문', price: 150, icon: '🌃', slot: 'window' },
+  { id: 'window_moon',   nameKey: 'shop.item.window_moon', category: 'window',    name: '달빛 창문',   price: 160, icon: '🌙', slot: 'window' },
   // 벽지
-  { id: 'wall_lavender', category: 'wallpaper', name: '라벤더 벽지', price: 200, icon: '💜', slot: 'wallpaper' },
-  { id: 'wall_star',     category: 'wallpaper', name: '별빛 벽지',   price: 220, icon: '✨', slot: 'wallpaper' },
+  { id: 'wall_lavender', nameKey: 'shop.item.wall_lavender', category: 'wallpaper', name: '라벤더 벽지', price: 200, icon: '💜', slot: 'wallpaper' },
+  { id: 'wall_star',     nameKey: 'shop.item.wall_star', category: 'wallpaper', name: '별빛 벽지',   price: 220, icon: '✨', slot: 'wallpaper' },
   // 가구
-  { id: 'furn_bookshelf',category: 'furniture', name: '책장',        price: 180, icon: '📚', slot: 'furniture' },
-  { id: 'furn_plant',    category: 'furniture', name: '식물',        price: 100, icon: '🪴', slot: 'furniture' },
-  { id: 'furn_mug',      category: 'furniture', name: '머그컵',      price: 60,  icon: '☕', slot: 'furniture' },
-  { id: 'ballOfYarn',    category: 'furniture', name: '뜨개질 실타래', price: 30,  icon: '🧶', slot: 'furniture' },
-  { id: 'star_yellow',   category: 'furniture', name: '노란 별 장식', price: 30,  icon: '⭐', slot: 'furniture' },
+  { id: 'furn_bookshelf',nameKey: 'shop.item.furn_bookshelf', category: 'furniture', name: '책장',        price: 180, icon: '📚', slot: 'furniture' },
+  { id: 'furn_plant',    nameKey: 'shop.item.furn_plant', category: 'furniture', name: '식물',        price: 100, icon: '🪴', slot: 'furniture' },
+  { id: 'furn_mug',      nameKey: 'shop.item.furn_mug', category: 'furniture', name: '머그컵',      price: 60,  icon: '☕', slot: 'furniture' },
+  { id: 'ballOfYarn',    nameKey: 'shop.item.ballOfYarn', category: 'furniture', name: '뜨개질 실타래', price: 30,  icon: '🧶', slot: 'furniture' },
+  { id: 'star_yellow',   nameKey: 'shop.item.star_yellow', category: 'furniture', name: '노란 별 장식', price: 30,  icon: '⭐', slot: 'furniture' },
   // 배경
-  { id: 'bg_night_default',  category: 'background', name: '기본 밤하늘', price: 0,   icon: '🌌', slot: 'background' },
-  { id: 'bg_purple_dream',   category: 'background', name: '보라빛 꿈',   price: 250, icon: '🔮', slot: 'background' },
-  { id: 'bg_cozy_room',      category: 'background', name: '아늑한 방',   price: 300, icon: '🏡', slot: 'background' },
+  { id: 'bg_night_default',  nameKey: 'shop.item.bg_night_default', category: 'background', name: '기본 밤하늘', price: 0,   icon: '🌌', slot: 'background' },
+  { id: 'bg_purple_dream',   nameKey: 'shop.item.bg_purple_dream', category: 'background', name: '보라빛 꿈',   price: 250, icon: '🔮', slot: 'background' },
+  { id: 'bg_cozy_room',      nameKey: 'shop.item.bg_cozy_room', category: 'background', name: '아늑한 방',   price: 300, icon: '🏡', slot: 'background' },
   // UUID 추가 아이템
-  { id: '113c0738-c598-46e2-989c-04778c25b149', category: 'furniture', name: '밤하늘 오르골', price: 90,  icon: '🎵', slot: 'furniture' },
-  { id: '45aabd94-d613-4313-994f-80891b8d68ce', category: 'hat',       name: '하트 귀마개',   price: 50,  icon: '🎧', slot: 'hat' },
-  { id: '555c3576-6e51-4704-be93-c8bed2f49d8b', category: 'light',     name: '은하수 램프',   price: 110, icon: '💡', slot: 'light' },
-  { id: '60bd81ff-64f7-4d76-be69-60e4903c0397', category: 'furniture', name: '드리미 화분',   price: 80,  icon: '🪴', slot: 'furniture' },
-  { id: '75f23173-3ac7-4ee3-89d3-7af518dea47e', category: 'furniture', name: '포근한 흔들의자', price: 170, icon: '🪑', slot: 'furniture' },
-  { id: '9630dee1-be39-407a-a664-860ee31715d9', category: 'window',    name: '하늘하늘 커튼', price: 140, icon: '🪟', slot: 'window' },
-  { id: '9d77bdcc-4661-4686-9407-74ed3134156e', category: 'carpet',    name: '구름 카펫',     price: 130, icon: '☁️', slot: 'carpet' },
-  { id: '9eda2542-5e86-43c7-8355-4ac34a96bdc8', category: 'wallpaper', name: '새벽안개 벽지', price: 210, icon: '🌫️', slot: 'wallpaper' },
-  { id: 'a1477997-f37a-4f62-99a4-107b65794907', category: 'ribbon',    name: '리본 머리핀',   price: 35,  icon: '🎀', slot: 'ribbon' },
-  { id: 'a599ed4c-f831-4c89-991e-949fe55ddb9e', category: 'light',     name: '별빛 스탠드',   price: 95,  icon: '✨', slot: 'light' },
-  { id: 'ab8259db-fc22-45a1-85f4-f73221b852ce', category: 'carpet',    name: '보랏빛 양탄자', price: 115, icon: '🟣', slot: 'carpet' },
-  { id: 'bf9fd0a0-40d3-48c1-a5d2-b0414161d07a', category: 'furniture', name: '꿈의 방 테이블', price: 150, icon: '🧱', slot: 'furniture' },
-  { id: 'd8cb290f-8f7d-41aa-8376-7c72d13bd58d', category: 'furniture', name: '코지 침대',     price: 220, icon: '🛏️', slot: 'furniture' },
-  { id: 'e1b62159-b949-4647-9107-fdf2659f6e2a', category: 'window',    name: '달빛 창가',     price: 145, icon: '🌕', slot: 'window' },
-  { id: 'e2f378bc-a702-4e93-b2e3-8744e5054bea', category: 'wallpaper', name: '구름 위 벽지',   price: 230, icon: '☁️', slot: 'wallpaper' },
-  { id: 'e310d3fe-b7a7-4b0c-a596-dae928640212', category: 'background', name: '꿈의 성운 배경', price: 280, icon: '🌌', slot: 'background' },
-  { id: 'eb76945e-c7b0-49f0-b9c5-40eee2b58fae', category: 'furniture', name: '무지개 구름 모빌', price: 85,  icon: '🌈', slot: 'furniture' },
+  { id: '113c0738-c598-46e2-989c-04778c25b149', nameKey: 'shop.item.113c0738-c598-46e2-989c-04778c25b149', category: 'furniture', name: '밤하늘 오르골', price: 90,  icon: '🎵', slot: 'furniture' },
+  { id: '45aabd94-d613-4313-994f-80891b8d68ce', nameKey: 'shop.item.45aabd94-d613-4313-994f-80891b8d68ce', category: 'hat',       name: '하트 귀마개',   price: 50,  icon: '🎧', slot: 'hat' },
+  { id: '555c3576-6e51-4704-be93-c8bed2f49d8b', nameKey: 'shop.item.555c3576-6e51-4704-be93-c8bed2f49d8b', category: 'light',     name: '은하수 램프',   price: 110, icon: '💡', slot: 'light' },
+  { id: '60bd81ff-64f7-4d76-be69-60e4903c0397', nameKey: 'shop.item.60bd81ff-64f7-4d76-be69-60e4903c0397', category: 'furniture', name: '드리미 화분',   price: 80,  icon: '🪴', slot: 'furniture' },
+  { id: '75f23173-3ac7-4ee3-89d3-7af518dea47e', nameKey: 'shop.item.75f23173-3ac7-4ee3-89d3-7af518dea47e', category: 'furniture', name: '포근한 흔들의자', price: 170, icon: '🪑', slot: 'furniture' },
+  { id: '9630dee1-be39-407a-a664-860ee31715d9', nameKey: 'shop.item.9630dee1-be39-407a-a664-860ee31715d9', category: 'window',    name: '하늘하늘 커튼', price: 140, icon: '🪟', slot: 'window' },
+  { id: '9d77bdcc-4661-4686-9407-74ed3134156e', nameKey: 'shop.item.9d77bdcc-4661-4686-9407-74ed3134156e', category: 'carpet',    name: '구름 카펫',     price: 130, icon: '☁️', slot: 'carpet' },
+  { id: '9eda2542-5e86-43c7-8355-4ac34a96bdc8', nameKey: 'shop.item.9eda2542-5e86-43c7-8355-4ac34a96bdc8', category: 'wallpaper', name: '새벽안개 벽지', price: 210, icon: '🌫️', slot: 'wallpaper' },
+  { id: 'a1477997-f37a-4f62-99a4-107b65794907', nameKey: 'shop.item.a1477997-f37a-4f62-99a4-107b65794907', category: 'ribbon',    name: '리본 머리핀',   price: 35,  icon: '🎀', slot: 'ribbon' },
+  { id: 'a599ed4c-f831-4c89-991e-949fe55ddb9e', nameKey: 'shop.item.a599ed4c-f831-4c89-991e-949fe55ddb9e', category: 'light',     name: '별빛 스탠드',   price: 95,  icon: '✨', slot: 'light' },
+  { id: 'ab8259db-fc22-45a1-85f4-f73221b852ce', nameKey: 'shop.item.ab8259db-fc22-45a1-85f4-f73221b852ce', category: 'carpet',    name: '보랏빛 양탄자', price: 115, icon: '🟣', slot: 'carpet' },
+  { id: 'bf9fd0a0-40d3-48c1-a5d2-b0414161d07a', nameKey: 'shop.item.bf9fd0a0-40d3-48c1-a5d2-b0414161d07a', category: 'furniture', name: '꿈의 방 테이블', price: 150, icon: '🧱', slot: 'furniture' },
+  { id: 'd8cb290f-8f7d-41aa-8376-7c72d13bd58d', nameKey: 'shop.item.d8cb290f-8f7d-41aa-8376-7c72d13bd58d', category: 'furniture', name: '코지 침대',     price: 220, icon: '🛏️', slot: 'furniture' },
+  { id: 'e1b62159-b949-4647-9107-fdf2659f6e2a', nameKey: 'shop.item.e1b62159-b949-4647-9107-fdf2659f6e2a', category: 'window',    name: '달빛 창가',     price: 145, icon: '🌕', slot: 'window' },
+  { id: 'e2f378bc-a702-4e93-b2e3-8744e5054bea', nameKey: 'shop.item.e2f378bc-a702-4e93-b2e3-8744e5054bea', category: 'wallpaper', name: '구름 위 벽지',   price: 230, icon: '☁️', slot: 'wallpaper' },
+  { id: 'e310d3fe-b7a7-4b0c-a596-dae928640212', nameKey: 'shop.item.e310d3fe-b7a7-4b0c-a596-dae928640212', category: 'background', name: '꿈의 성운 배경', price: 280, icon: '🌌', slot: 'background' },
+  { id: 'eb76945e-c7b0-49f0-b9c5-40eee2b58fae', nameKey: 'shop.item.eb76945e-c7b0-49f0-b9c5-40eee2b58fae', category: 'furniture', name: '무지개 구름 모빌', price: 85,  icon: '🌈', slot: 'furniture' },
 ];
 
 // ─── 카테고리 목록 ───
 export const SHOP_CATEGORIES = [
-  { id: 'all',        label: '전체',   icon: '✨' },
-  { id: 'ribbon',     label: '🐑 리본',   icon: '🎀' },
-  { id: 'hat',        label: '🐑 모자',   icon: '🎩' },
-  { id: 'glasses',    label: '🐑 안경',   icon: '👓' },
-  { id: 'scarf',      label: '🐑 목도리', icon: '🧣' },
-  { id: 'cushion',    label: '🏡 방석',   icon: '🛋️' },
-  { id: 'carpet',     label: '🏡 카펫',   icon: '🟪' },
-  { id: 'light',      label: '🏡 조명',   icon: '💡' },
-  { id: 'window',     label: '🏡 창문',   icon: '🪟' },
-  { id: 'wallpaper',  label: '🏡 벽지',   icon: '🖼️' },
-  { id: 'furniture',  label: '🏡 가구',   icon: '🪑' },
-  { id: 'background', label: '🏡 배경',   icon: '🌌' },
+  { id: 'all',        labelKey: 'shop.category.all', label: '전체',   icon: '✨' },
+  { id: 'ribbon',     labelKey: 'shop.category.ribbon', label: '🐑 리본',   icon: '🎀' },
+  { id: 'hat',        labelKey: 'shop.category.hat', label: '🐑 모자',   icon: '🎩' },
+  { id: 'glasses',    labelKey: 'shop.category.glasses', label: '🐑 안경',   icon: '👓' },
+  { id: 'scarf',      labelKey: 'shop.category.scarf', label: '🐑 목도리', icon: '🧣' },
+  { id: 'cushion',    labelKey: 'shop.category.cushion', label: '🏡 방석',   icon: '🛋️' },
+  { id: 'carpet',     labelKey: 'shop.category.carpet', label: '🏡 카펫',   icon: '🟪' },
+  { id: 'light',      labelKey: 'shop.category.light', label: '🏡 조명',   icon: '💡' },
+  { id: 'window',     labelKey: 'shop.category.window', label: '🏡 창문',   icon: '🪟' },
+  { id: 'wallpaper',  labelKey: 'shop.category.wallpaper', label: '🏡 벽지',   icon: '🖼️' },
+  { id: 'furniture',  labelKey: 'shop.category.furniture', label: '🏡 가구',   icon: '🪑' },
+  { id: 'background', labelKey: 'shop.category.background', label: '🏡 배경',   icon: '🌌' },
 ];
 
 export const FRIEND_DIARIES = {

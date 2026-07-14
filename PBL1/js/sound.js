@@ -3,7 +3,7 @@
  */
 
 import { getSettings } from './storage.js';
-import { t } from './i18n.js';
+import { t, DEFAULT_LANGUAGE } from './i18n.js';
 
 let _ctx = null;
 let _masterGain = null;
@@ -927,7 +927,7 @@ export function setAsmrSleepAutoplay(v) {
 }
 
 export function getAsmrList() {
-  const lang = getSettings().language || 'ko';
+  const lang = getSettings().language || DEFAULT_LANGUAGE;
   return ASMR_LIST.map(item => ({
     ...item,
     name: t(`asmr.${item.id}.name`, {}, lang) || item.name,

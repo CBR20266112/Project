@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>출석체크 | SleepySheep</title>
+  <title data-i18n="page.title">Attendance | SleepySheep</title>
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/layout.css">
@@ -20,10 +20,10 @@
   <main class="phone">
     <header class="header">
       <div class="header-left">
-        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기">‹</button>
+        <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기" data-i18n-title="common.back">‹</button>
         <div>
-          <h1>📅 출석체크</h1>
-          <p class="subtitle">매일 출석하고 스토리를 모아요</p>
+          <h1 data-i18n="page.heading">📅 Attendance</h1>
+          <p class="subtitle" data-i18n="page.subtitle">Check in daily and collect stories</p>
         </div>
       </div>
       <div class="header-right">
@@ -39,13 +39,13 @@
         <div class="streak-banner">
           <span class="streak-number" id="att-streak">0</span>
           <div class="streak-text">
-            <div class="font-bold" style="color:#fff;">일 연속 출석 중</div>
-            <div id="att-next-milestone">다음 스토리까지 계산 중</div>
+            <div class="font-bold" style="color:#fff;" data-i18n="attendance.streak.current">days in a row</div>
+            <div id="att-next-milestone" data-i18n="attendance.milestone.loading">Calculating next story…</div>
           </div>
         </div>
         <div style="margin-top: var(--space-3);">
           <div class="flex justify-between" style="font-size: var(--font-size-xs); color: var(--text-muted); margin-bottom: 6px;">
-            <span>이번 주기 출석</span>
+            <span data-i18n="attendance.weeklyTitle">This cycle</span>
             <span id="att-week-label">0 / 7</span>
           </div>
           <div class="flex gap-2" id="att-week-dots" style="justify-content:center;"></div>
@@ -53,48 +53,48 @@
       </section>
 
       <section class="glass card" style="padding: var(--space-4); text-align:center;">
-        <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); line-height: 1.6;">
-          매일 출석하면 양털, 일러스트, 4컷 만화를 받을 수 있어요.<br>
-          7일·14일·21일 연속 출석 시 스토리가 해금됩니다.
+        <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); line-height: 1.6;" data-i18n-html="attendance.description">
+          Check in daily to earn wool, illustrations, and 4-panel comics.<br>
+          A 7-, 14-, and 21-day streak unlocks stories.
         </p>
-        <button class="btn btn-primary w-full" id="btn-check-in">오늘 출석하기</button>
+        <button class="btn btn-primary w-full" id="btn-check-in" data-i18n="attendance.checkIn">Check in today</button>
         <p id="att-status-msg" class="text-muted" style="font-size: var(--font-size-xs); margin-top: var(--space-2);"></p>
       </section>
 
       <section class="glass card" style="padding: var(--space-4);">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);">📖 출석 스토리</h3>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);" data-i18n="attendance.storySectionTitle">📖 Attendance stories</h3>
         <div id="story-list" class="flex flex-col gap-2"></div>
       </section>
 
       <section style="margin-top: var(--space-2);">
-        <a href="gallery.html" class="btn btn-secondary btn-block-link">갤러리에서 모아보기</a>
+        <a href="gallery.html" class="btn btn-secondary btn-block-link" data-i18n="attendance.galleryLink">View in gallery</a>
       </section>
     </div>
 
     <nav class="bottom-nav">
       <div class="nav-item" data-href="../index.html">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">홈</span>
+        <span class="nav-label" data-i18n="nav.home">홈</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="sleep.html">
         <span class="nav-icon">🌙</span>
-        <span class="nav-label">수면</span>
+        <span class="nav-label" data-i18n="nav.sleep">수면</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="workshop.html">
         <span class="nav-icon">🧶</span>
-        <span class="nav-label">공방</span>
+        <span class="nav-label" data-i18n="nav.workshop">공방</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="friends.html">
         <span class="nav-icon">👥</span>
-        <span class="nav-label">친구</span>
+        <span class="nav-label" data-i18n="nav.friends">친구</span>
         <span class="nav-dot"></span>
       </div>
       <div class="nav-item" data-href="gallery.html">
         <span class="nav-icon">🖼️</span>
-        <span class="nav-label">갤러리</span>
+        <span class="nav-label" data-i18n="nav.gallery">갤러리</span>
         <span class="nav-dot"></span>
       </div>
     </nav>
@@ -111,6 +111,7 @@
       getAttendanceRewardMessages,
     } from '../js/attendance.js';
     import { startImageSlideshow } from '../js/opening.js';
+    import { t } from '../js/i18n.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       initCommon();
@@ -129,13 +130,13 @@
         if (!phone || !res || res.alreadyChecked) return;
         const queue = [];
         if (res.newSingle) {
-          queue.push({ images: [res.newSingle.path], hintText: `${res.newSingle.title} 해금! × 버튼으로 닫을 수 있어요.` });
+          queue.push({ images: [res.newSingle.path], hintText: t('attendance.unlockHint.single', { title: res.newSingle.title }) });
         }
         if (res.newStrip) {
-          queue.push({ images: [res.newStrip.path], hintText: `${res.newStrip.title} 해금! × 버튼으로 닫을 수 있어요.` });
+          queue.push({ images: [res.newStrip.path], hintText: t('attendance.unlockHint.single', { title: res.newStrip.title }) });
         }
         (res.newlyUnlocked || []).forEach(story => {
-          queue.push({ images: getStoryImages(story), hintText: `${story.title} 해금! 화면을 터치하면 다음 장으로 넘어가요.` });
+          queue.push({ images: getStoryImages(story), hintText: t('attendance.unlockHint.story', { title: t(story.titleKey) || story.title }) });
         });
 
         const showNext = () => {
@@ -159,8 +160,8 @@
 
         const next = getNextMilestone(att.streak);
         attNext.textContent = next
-          ? `다음 스토리 "${next.title}"까지 ${next.days - att.streak}일`
-          : '모든 출석 스토리를 해금했어요';
+          ? t('attendance.nextMilestone', { title: t(next.titleKey) || next.title, daysLeft: next.days - att.streak })
+          : t('attendance.allUnlocked');
 
         const weekProg = getWeekCycleProgress(att.streak);
         attWeekLabel.textContent = `${weekProg} / 7`;
@@ -174,33 +175,34 @@
 
         const checked = isCheckedInToday();
         btnCheckIn.disabled = checked;
-        btnCheckIn.textContent = checked ? '오늘 출석 완료' : '오늘 출석하기';
+        btnCheckIn.textContent = checked ? t('attendance.checkInComplete') : t('attendance.checkIn');
         attStatusMsg.textContent = checked
-          ? `누적 출석 ${att.total}일째예요.`
-          : '오늘의 출석 보상을 받을 수 있어요.';
+          ? t('attendance.status.checked', { total: att.total })
+          : t('attendance.status.unchecked');
 
         storyList.innerHTML = '';
         ATTENDANCE_STORIES.forEach(story => {
           const unlocked = isStoryUnlocked(story.id);
+          const storyTitle = t(story.titleKey) || story.title;
           const card = document.createElement('div');
           card.className = 'glass';
           card.style.cssText = 'display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border-radius:var(--radius-md);opacity:' + (unlocked ? '1' : '0.55') + ';';
           card.innerHTML = `
             <div style="font-size:1.8rem;">${unlocked ? '📖' : '🔒'}</div>
             <div style="flex:1;">
-              <div class="font-bold" style="font-size:var(--font-size-sm);">${story.title}</div>
-              <div class="text-muted" style="font-size:var(--font-size-2xs);">연속 ${story.days}일 출석</div>
+              <div class="font-bold" style="font-size:var(--font-size-sm);">${storyTitle}</div>
+              <div class="text-muted" style="font-size:var(--font-size-2xs);">${t('attendance.storyStreak', { days: story.days })}</div>
             </div>
           `;
           if (unlocked) {
             const btn = document.createElement('button');
             btn.className = 'btn btn-secondary';
             btn.style.cssText = 'font-size:var(--font-size-2xs);padding:var(--space-1) var(--space-2);';
-            btn.textContent = '보기';
+            btn.textContent = t('attendance.storyView');
             btn.onclick = () => {
               startImageSlideshow(phone, getStoryImages(story), {
                 skipText: '×',
-                hintText: `${story.title} - 화면을 터치하면 다음 장으로 넘어가요.`,
+                hintText: t('attendance.storyTapHint', { title: storyTitle }),
               });
             };
             card.appendChild(btn);
@@ -212,7 +214,7 @@
       btnCheckIn.addEventListener('click', () => {
         const res = recordAttendance();
         if (res.alreadyChecked) {
-          showToast('오늘은 이미 출석했어요.', 'info');
+          showToast(t('attendance.toast.alreadyChecked'), 'info');
           return;
         }
         getAttendanceRewardMessages(res).forEach((msg, i) => {

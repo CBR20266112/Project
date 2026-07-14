@@ -30,7 +30,7 @@
     <!-- 헤더 -->
     <header class="header">
       <div class="header-left">
-        <button type="button" class="btn-attendance" id="btn-attendance" data-i18n-title="home.attendanceButtonTitle" title="출석체크" aria-label="출석체크">
+        <button type="button" class="btn-attendance" id="btn-attendance" data-i18n-title="home.attendanceButtonTitle" data-i18n-aria-label="home.attendanceButtonTitle" title="Attendance check" aria-label="Attendance check">
           <span aria-hidden="true">📅</span>
           <span class="att-badge" id="attendance-header-badge">0</span>
         </button>
@@ -40,12 +40,12 @@
         </div>
       </div>
       <div class="header-right">
-        <div class="chip-box" id="wool-display" data-i18n-title="home.wool.title" title="보유 양털">
+        <div class="chip-box" id="wool-display" data-i18n-title="home.wool.title" data-i18n-aria-label="home.wool.title" title="Wool owned" aria-label="Wool owned">
           <span class="icon">🧶</span>
           <span id="wool-count">0</span>
         </div>
-        <button class="btn-back" onclick="location.href='pages/settings.html'" style="font-size: 1rem;" data-i18n-title="site.settingsButtonTitle" title="설정">⚙️</button>
-        <button class="btn-back" id="btn-bgm-toggle" style="font-size: 1rem;" data-i18n-title="home.bgmButtonTitle" title="배경음악 온/오프">🎵</button>
+        <button class="btn-back" onclick="location.href='pages/settings.html'" style="font-size: 1rem;" data-i18n-title="site.settingsButtonTitle" data-i18n-aria-label="site.settingsButtonTitle" title="Settings" aria-label="Settings">⚙️</button>
+        <button class="btn-back" id="btn-bgm-toggle" style="font-size: 1rem;" data-i18n-title="home.bgmButtonTitle" data-i18n-aria-label="home.bgmButtonTitle" title="Toggle background music" aria-label="Toggle background music">🎵</button>
       </div>
     </header>
 
@@ -70,7 +70,7 @@
         <div id="home-asmr-now-legacy" class="home-asmr-now idle">
           <span>🎵</span>
           <span id="home-asmr-now-label-legacy" data-i18n="home.asmr.chooseSound">재생할 소리를 골라 보세요</span>
-          <button type="button" class="home-asmr-stop" id="btn-home-asmr-stop-legacy" style="display:none;" data-i18n-title="home.asmr.stopButtonTitle" title="정지">⏹</button>
+          <button type="button" class="home-asmr-stop" id="btn-home-asmr-stop-legacy" style="display:none;" data-i18n-title="home.asmr.stopButtonTitle" data-i18n-aria-label="home.asmr.stopButtonTitle" title="Stop" aria-label="Stop">⏹</button>
         </div>
         <p class="home-asmr-subtitle" data-i18n="home.asmr.recommendedMix">✨ 추천 믹스</p>
         <div class="home-asmr-scroll home-asmr-presets" id="home-asmr-presets-legacy"></div>
@@ -91,7 +91,7 @@
         <div id="home-binaural-now-legacy" class="home-asmr-now home-binaural-now idle">
           <span>🎧</span>
           <span id="home-binaural-now-label-legacy" data-i18n="home.asmr.binauralOffLabel">바이노럴 비트 끄기</span>
-          <button type="button" class="home-asmr-stop" id="btn-home-binaural-stop-legacy" style="display:none;" data-i18n-title="home.asmr.stopButtonTitle" title="정지">⏹</button>
+          <button type="button" class="home-asmr-stop" id="btn-home-binaural-stop-legacy" style="display:none;" data-i18n-title="home.asmr.stopButtonTitle" data-i18n-aria-label="home.asmr.stopButtonTitle" title="Stop" aria-label="Stop">⏹</button>
         </div>
         <div class="home-asmr-scroll" id="home-binaural-chips-legacy"></div>
         <div class="binaural-vol-row">
@@ -391,32 +391,32 @@
   <div class="overlay" id="attendance-overlay"></div>
   <div class="modal" id="attendance-modal">
     <div class="modal-handle"></div>
-    <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);" data-i18n="home.attendanceModal.title">📅 출석체크</h3>
+    <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);" data-i18n="home.attendanceModal.title">📅 Attendance check</h3>
 
     <div class="att-dual-streak">
       <div class="att-streak-card">
         <div class="num" id="modal-att-streak">0</div>
-        <div class="lbl" data-i18n="home.attendanceModal.streakLabel">일 연속 출석</div>
+        <div class="lbl" data-i18n="home.attendanceModal.streakLabel">days in a row</div>
       </div>
       <div class="att-streak-card">
         <div class="num" id="modal-sleep-streak">0</div>
-        <div class="lbl" data-i18n="home.attendanceModal.sleepStreakLabel">일 연속 수면 목표</div>
+        <div class="lbl" data-i18n="home.attendanceModal.sleepStreakLabel">sleep goal streak</div>
       </div>
     </div>
 
     <div style="margin-bottom: var(--space-4);">
       <div class="flex justify-between" style="font-size: var(--font-size-xs); color: var(--text-muted); margin-bottom: 6px;">
-        <span data-i18n="home.attendanceModal.rewardTitle">이번 주기 보상</span>
+        <span data-i18n="home.attendanceModal.rewardTitle">This cycle reward</span>
         <span id="modal-att-cycle-label">1 / 7</span>
       </div>
       <div class="flex gap-2" id="modal-att-cycle-dots" style="justify-content: center; font-size: 1rem;"></div>
       <p id="modal-att-reward-hint" class="text-center text-muted" style="font-size: var(--font-size-2xs); margin-top: var(--space-2); line-height: 1.5;"></p>
     </div>
 
-    <button class="btn btn-primary w-full" id="btn-modal-check-in" style="margin-bottom: var(--space-2);" data-i18n="home.attendanceModal.checkInButton">✨ 오늘 출석하기</button>
+    <button class="btn btn-primary w-full" id="btn-modal-check-in" style="margin-bottom: var(--space-2);" data-i18n="home.attendanceModal.checkInButton">✨ Check in today</button>
     <p id="modal-att-status" class="text-center text-muted" style="font-size: var(--font-size-2xs); margin-bottom: var(--space-3);"></p>
-    <a href="pages/attendance.html" class="home-link" style="display:block; text-align:center;" data-i18n="home.attendanceModal.detailLink">출석·스토리 자세히 보기 ›</a>
-    <button type="button" class="btn btn-secondary w-full" id="btn-close-attendance" style="margin-top: var(--space-3);" data-i18n="home.attendanceModal.closeButton">닫기</button>
+    <a href="pages/attendance.html" class="home-link" style="display:block; text-align:center;" data-i18n="home.attendanceModal.detailLink">View attendance and stories ›</a>
+    <button type="button" class="btn btn-secondary w-full" id="btn-close-attendance" style="margin-top: var(--space-3);" data-i18n="home.attendanceModal.closeButton">Close</button>
   </div>
 
 
@@ -662,7 +662,7 @@
         (res.newlyUnlocked || []).forEach(story => {
           queue.push({
             images: getStoryImages(story),
-            hintText: t('home.attendance.unlockHint', { title: story.title }),
+            hintText: t('home.attendance.unlockHint', { title: t(story.titleKey) || story.title }),
           });
         });
 
@@ -700,7 +700,8 @@
           setTimeout(() => showToast(msg, 'success'), i * 400);
         });
         if (res.newlyUnlocked?.length) {
-          setTimeout(() => showToast(t('home.attendance.toast.unlocked', { title: res.newlyUnlocked[0].title }), 'success'), 500);
+          const unlockedTitle = t(res.newlyUnlocked[0].titleKey) || res.newlyUnlocked[0].title;
+          setTimeout(() => showToast(t('home.attendance.toast.unlocked', { title: unlockedTitle }), 'success'), 500);
         }
         refreshUI();
         renderAttendanceModal();
@@ -1268,7 +1269,7 @@
           });
         }
         if (attResult?.newlyUnlocked?.length) {
-          const title = attResult.newlyUnlocked[0].title;
+          const title = t(attResult.newlyUnlocked[0].titleKey) || attResult.newlyUnlocked[0].title;
           setTimeout(() => showToast(t('home.attendance.toast.unlocked', { title }), 'success'), 600);
         }
 

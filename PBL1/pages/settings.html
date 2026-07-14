@@ -344,7 +344,7 @@
       </section>
 
       <div class="dev-trigger-wrap">
-        <button type="button" id="btn-dev-trigger" class="dev-trigger-btn" data-i18n-title="dev.triggerTitle" title="개발자 옵션" aria-label="개발자 옵션">
+        <button type="button" id="btn-dev-trigger" class="dev-trigger-btn" data-i18n-title="dev.triggerTitle" data-i18n-aria-label="dev.triggerTitle" title="Developer Options" aria-label="Developer Options">
           <img src="../assets/icon/dev.jpg" alt="">
         </button>
       </div>
@@ -466,7 +466,7 @@
           }
         }
         if (selectLanguage) {
-          selectLanguage.value = settings.language || 'ko';
+          selectLanguage.value = settings.language || 'en';
         }
 
         // BGM 볼륨 슬라이더 설정

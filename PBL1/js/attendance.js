@@ -8,6 +8,7 @@ import {
   ATTENDANCE_SINGLE_COUNT,
   ATTENDANCE_STRIP_COUNT,
 } from './constants.js';
+import { t } from './i18n.js';
 import { getItem, setItem, getLocalDateKey } from './storage.js';
 import { getSheep, saveSheep } from './storage.js';
 
@@ -73,12 +74,12 @@ export function getStripIllustPath(id) {
 
 export function getSingleIllustTitle(id) {
   const num = id.replace('single_', '');
-  return '\ucd9c\uc11d \uc77c\ub7ec\uc2a4\ud2b8 #' + num;
+  return t('attendance.singleIllustrationTitle', { number: num }) || `Illustration #${num}`;
 }
 
 export function getStripIllustTitle(id) {
   const num = id.replace('strip_', '');
-  return '4\ucef7 \ub9cc\ud654 #' + num;
+  return t('attendance.stripComicTitle', { number: num }) || `4-panel comic #${num}`;
 }
 
 function pickRandomId(prefix, count, collected) {
@@ -124,15 +125,15 @@ export function getWeekCycleProgress(streak) {
 export function getNextCycleReward(streak) {
   const day = getCycleDay(streak);
   if (!day) {
-    return { type: 'wool', label: '\uc591\ud138 \ubcf4\uc0c1', daysLeft: 1 };
+    return { type: 'wool', label: t('attendance.rewardLabel.wool'), daysLeft: 1 };
   }
   if (day < ATTENDANCE_CYCLE.SINGLE_DAY) {
-    return { type: 'single', label: '\ub2e8\uc77c \uc77c\ub7ec\uc2a4\ud2b8', daysLeft: ATTENDANCE_CYCLE.SINGLE_DAY - day };
+    return { type: 'single', label: t('attendance.rewardLabel.single'), daysLeft: ATTENDANCE_CYCLE.SINGLE_DAY - day };
   }
   if (day < ATTENDANCE_CYCLE.STRIP_DAY) {
-    return { type: 'strip', label: '4\ucef7 \ub9cc\ud654', daysLeft: ATTENDANCE_CYCLE.STRIP_DAY - day };
+    return { type: 'strip', label: t('attendance.rewardLabel.strip'), daysLeft: ATTENDANCE_CYCLE.STRIP_DAY - day };
   }
-  return { type: 'wool', label: '\uc591\ud138 \ubcf4\uc0c1', daysLeft: 0 };
+  return { type: 'wool', label: t('attendance.rewardLabel.wool'), daysLeft: 0 };
 }
 
 export function getTodayCycleRewardPreview(streakIfCheckedIn) {
@@ -272,9 +273,9 @@ export function getCollectedStripItems() {
 export function getAttendanceRewardMessages(res) {
   const msgs = [];
   if (!res || res.alreadyChecked) return msgs;
-  if (res.woolGained > 0) msgs.push('\ucd9c\uc11d \uc644\ub8cc! \uc591\ud138 +' + res.woolGained);
-  if (res.newSingle) msgs.push('\uc77c\ub7ec\uc2a4\ud2b8 \ud68d\ub4dd! ' + res.newSingle.title);
-  if (res.newStrip) msgs.push('4\ucef7 \ub9cc\ud654 \ud68d\ub4dd! ' + res.newStrip.title);
-  if (!msgs.length) msgs.push('\ucd9c\uc11d \uc644\ub8cc!');
+  if (res.woolGained > 0) msgs.push(t('attendance.toast.rewardWool', { wool: res.woolGained }));
+  if (res.newSingle) msgs.push(t('attendance.toast.rewardSingle', { title: res.newSingle.title }));
+  if (res.newStrip) msgs.push(t('attendance.toast.rewardStrip', { title: res.newStrip.title }));
+  if (!msgs.length) msgs.push(t('attendance.toast.rewardDefault'));
   return msgs;
 }
