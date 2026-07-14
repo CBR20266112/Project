@@ -406,6 +406,154 @@ export const DAILY_QUOTES = [
   '드리미는 언제나 네 편이야.',
 ];
 
+const DAILY_QUOTES_EN = [
+  'Did you come to rest deeply today?',
+  'It’s okay to take a short break.',
+  'I’m cheering for your day again.',
+  'Meee~ Was today a good day?',
+  'Dreamy is always here.',
+  'A little rest and you’ll feel better.',
+  'How many hours can you sleep today?',
+  'It’s okay to take it slow.',
+  'Don’t push yourself too hard.',
+  'Breathe deeply, slowly.',
+  'Sleep is the best medicine.',
+  'You worked hard today.',
+  'Resting well is also a skill.',
+  'Want to play with Dreamy for a bit?',
+  'Your wool is growing little by little!',
+  'Dreamy is wagging its tail.',
+  'Meee! Nice to see you!',
+  'What kind of dream will you have today?',
+  'Sleep is tomorrow’s experience points.',
+  'If you rest enough, your wool will grow too!',
+  'Growing a little at a time is enough.',
+  'Let’s collect sleep experience!',
+  'Dreamy has been waiting for you.',
+  'Hope your night is cozy tonight.',
+  'I’ll add a star just for you!',
+  'Your wool is getting fluffier.',
+  'Dreamy looks sleepy too...',
+  'When your eyes close, it’s time for sleep.',
+  'A quiet night has arrived.',
+  'Before you sleep, let go of your worries.',
+  'Tomorrow will be a little better than today.',
+  'Meee~ let’s be together again today.',
+  'When your wool’s full, it’s time for a trim!',
+  'Dreamy says it’s ticklish.',
+  'It’s becoming a fluffy day.',
+  'Rest time is precious time too.',
+  'You can go at your own pace.',
+  'I hope you have peaceful dreams tonight.',
+  'Dreamy is always on your side.',
+  'Sleep well and wake up refreshed.',
+  'You’re doing a great job just being you.',
+  'A gentle night is waiting for you.',
+  'Every calm breath helps you relax.',
+  'Dreamy loves spending this quiet time with you.',
+];
+
+const DAILY_QUOTES_ZH = [
+  '今天也来好好休息了吗?',
+  '稍作休息也没关系。',
+  '我会为你今天的日子加油。',
+  '咩~ 今天是愉快的一天吗？',
+  'Dreamy一直在这里。',
+  '稍微休息一下就会有精神。',
+  '今天你能睡几个小时呢？',
+  '慢慢来也没关系。',
+  '不要太勉强自己。',
+  '深呼吸，慢慢来。',
+  '睡眠是最好的恢复药。',
+  '今天也辛苦了。',
+  '好好休息也是一种能力。',
+  '要不要和Dreamy玩一会儿？',
+  '羊毛正在一点点长大！',
+  'Dreamy在摇尾巴。',
+  '咩！好高兴见到你！',
+  '今天会做什么梦呢？',
+  '睡眠是明天的经验值。',
+  '休息够了，羊毛也会长得更好！',
+  '慢慢成长就好了。',
+  '来收集睡眠经验值吧！',
+  'Dreamy一直在等你。',
+  '希望今晚是个温暖的夜晚。',
+  '我为你加一颗星星！',
+  '羊毛变得越来越蓬松了。',
+  'Dreamy看起来也有点困...',
+  '闭上眼睛就是睡觉的时间。',
+  '安静的夜晚来了。',
+  '睡前先把烦恼放下吧。',
+  '明天会比今天好一点。',
+  '咩~ 今天也一起吧。',
+  '羊毛长满了就要剪了！',
+  'Dreamy觉得痒痒。',
+  '变成了一个蓬松的一天。',
+  '休息的时间也是珍贵的时间。',
+  '你可以按自己的节奏走。',
+  '希望你今晚梦得安稳。',
+  'Dreamy永远在你这边。',
+  '好好睡觉，醒来会更舒服。',
+  '你只是做你自己就很棒了。',
+  '温柔的夜晚在等着你。',
+  '每一次平静的呼吸都在帮助你放松。',
+  'Dreamy喜欢和你一起静静地待着。',
+];
+
+const DAILY_QUOTES_JA = [
+  '今日もゆっくり休みに来た？',
+  'ちょっと休憩しても大丈夫だよ。',
+  '今日もあなたの一日を応援してるよ。',
+  'メェ〜今日もいい日だった？',
+  'ドリーミーはいつでもここにいるよ。',
+  '少し休めばまた元気になるよ。',
+  '今日は何時間眠れるかな？',
+  'ゆっくりでいいんだよ。',
+  '無理しすぎないでね。',
+  '深く息を吸って、ゆっくり。',
+  '眠りは最高の回復薬だよ。',
+  '今日もよくがんばったね。',
+  'よく休むことも能力のひとつだよ。',
+  'ドリーミーと少し遊ぶ？',
+  'ふわふわの毛が少しずつ伸びてるよ！',
+  'ドリーミーがしっぽを振ってるよ。',
+  'メェ！会えてうれしいよ！',
+  '今日はどんな夢を見るかな？',
+  '眠りは明日の経験値だよ。',
+  '十分休めば毛も育つよ！',
+  '少しずつ成長すればいいんだよ。',
+  '睡眠経験値を集めよう！',
+  'ドリーミーはずっと待ってたよ。',
+  '今夜もあたたかい夜になりますように。',
+  'あなたのために星をひとつ追加するよ！',
+  '毛がふわふわになってきたよ。',
+  'ドリーミーも眠そうだね…',
+  '目を閉じたら眠る時間だよ。',
+  '静かな夜がやってきたよ。',
+  '寝る前に心配ごとを少し置いていこう。',
+  '明日は今日より少し良くなるよ。',
+  'メェ〜今日もいっしょにいようね。',
+  '毛が全部伸びたらカットしてね！',
+  'ドリーミーがくすぐったいって。',
+  'ふわふわな一日になってるよ。',
+  '休む時間も大切な時間だよ。',
+  'あなたのペースでいいんだよ。',
+  '今夜はやさしい夢を見られますように。',
+  'ドリーミーはいつでもあなたの味方だよ。',
+  'よく眠って、すっきり起きてね。',
+  'そのままのあなたで十分すごいよ。',
+  'やさしい夜が待ってるよ。',
+  '静かな呼吸がゆっくりを助けるよ。',
+  'ドリーミーはこの静かな時間が大好きだよ。',
+];
+
+const DAILY_QUOTES_BY_LANG = Object.freeze({
+  ko: DAILY_QUOTES,
+  en: DAILY_QUOTES_EN,
+  zh: DAILY_QUOTES_ZH,
+  ja: DAILY_QUOTES_JA,
+});
+
 // ─── 희귀 멘트 (약 1~2% 확률) ───
 export const RARE_QUOTES = [
   '메에... 사실 나도 졸려.',
@@ -420,6 +568,52 @@ export const RARE_QUOTES = [
   '잠은 저장하고 이어하기가 안 되니까.',
 ];
 
+const RARE_QUOTES_EN = [
+  'Meee... I’m actually sleepy too.',
+  'My wool has grown so much I can’t see ahead!',
+  'Is today a petting bonus day?',
+  'Please be gentle with the clippers...',
+  'Wool grows back, but sleep debt doesn’t...',
+  'Dreamy secretly picked up a star.',
+  'Today’s goal: yawn ten times.',
+  'Taking care of your wool is important, but so is your rest.',
+  'Meee! I’m feeling amazing today!',
+  'Sleep can’t be saved and resumed later.',
+];
+
+const RARE_QUOTES_ZH = [
+  '咩...其实我也有点困。',
+  '绒毛长得太多，前面都看不见了！',
+  '今天是摸摸奖励日吗？',
+  '剃毛的时候...请轻轻来...',
+  '绒毛会再长，但睡眠不足不会...',
+  'Dreamy悄悄捡到了一颗星。',
+  '今天的目标：打哈欠10次。',
+  '绒毛护理也重要，你也得休息。',
+  '咩！今天心情超好！',
+  '睡眠不能存档也不能继续。',
+];
+
+const RARE_QUOTES_JA = [
+  'メェ…実は私も眠いんだ。',
+  '毛が伸びすぎて前が見えないよ！',
+  '今日はなでなでボーナスデー？',
+  'バリカンだけは…やさしくしてね…',
+  '毛はまた伸びるけど、睡眠不足は伸びないよ…',
+  'ドリーミーがこっそり星をひとつ拾ったよ。',
+  '今日の目標：あくびを10回すること。',
+  '毛のお手入れも大事だけど、あなたも休んでね。',
+  'メェ！今日は気分最高！',
+  '睡眠は保存も続きもできないからね。',
+];
+
+const RARE_QUOTES_BY_LANG = Object.freeze({
+  ko: RARE_QUOTES,
+  en: RARE_QUOTES_EN,
+  zh: RARE_QUOTES_ZH,
+  ja: RARE_QUOTES_JA,
+});
+
 // ─── 이름 짓기 대화 스크립트 ───
 export const NAME_DIALOG_SCRIPT = [
   { text: '저기... 혹시 내 이름, 지어줄래?',          type: 'next'   },
@@ -427,15 +621,27 @@ export const NAME_DIALOG_SCRIPT = [
   { text: '괜찮다면.. 부탁할게.',                     type: 'choice' },
 ];
 
+export function getNameDialogScript(lang = 'en') {
+  return NAME_DIALOG_SCRIPT;
+}
+
 // ─── 랜덤 멘트 반환 함수 ───
 /**
  * 일반 멘트(98~99%)와 희귀 멘트(1~2%) 중 하나를 랜덤 반환
  * @returns {string}
  */
-export function getRandomQuote() {
+export function getRandomQuote(lang = 'en') {
   const roll = Math.random();
+  const dailyQuotes = DAILY_QUOTES_BY_LANG[lang] || DAILY_QUOTES_BY_LANG.en;
+  const rareQuotes = RARE_QUOTES_BY_LANG[lang] || RARE_QUOTES_BY_LANG.en;
   if (roll < 0.015) {
-    return RARE_QUOTES[Math.floor(Math.random() * RARE_QUOTES.length)];
+    return rareQuotes[Math.floor(Math.random() * rareQuotes.length)];
   }
-  return DAILY_QUOTES[Math.floor(Math.random() * DAILY_QUOTES.length)];
+  return dailyQuotes[Math.floor(Math.random() * dailyQuotes.length)];
+}
+
+export function getLocalizedDailyQuote(lang = 'en') {
+  const day = new Date().getDate();
+  const dailyQuotes = DAILY_QUOTES_BY_LANG[lang] || DAILY_QUOTES_BY_LANG.en;
+  return dailyQuotes[day % dailyQuotes.length];
 }

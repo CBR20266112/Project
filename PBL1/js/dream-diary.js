@@ -5,6 +5,7 @@
 import { getDayEntry, formatDateLabel, moodEmoji } from './calendar.js';
 import { formatDuration } from './sleep.js';
 import { getSleepRecords, getWorries } from './storage.js';
+import { t } from './i18n.js';
 
 function collectDates() {
   const dates = new Set();
@@ -37,6 +38,7 @@ export function getDreamDiaryEntries(limit = 40) {
         wakeTime: entry.sleep?.wakeTime,
         hasSleep: entry.hasSleep,
         hasWorry: entry.hasWorry,
+        snoring: entry.sleep?.snoring ?? false,
         thread,
         worryPreview: lastUser?.content?.slice(0, 120) || entry.worry?.content?.slice(0, 120) || '',
         replyPreview: lastModel?.content?.slice(0, 140) || entry.worry?.reply?.slice(0, 140) || '',
@@ -49,9 +51,10 @@ export function getDreamDiaryEntries(limit = 40) {
 export function formatDiarySummary(entry) {
   const parts = [];
   if (entry.hasSleep && entry.sleepDuration) {
-    parts.push(`수면 ${formatDuration(entry.sleepDuration)}`);
+    parts.push(`${t('sleep.diary.sleepLabel')} ${formatDuration(entry.sleepDuration)}`);
   }
+  if (entry.snoring) parts.push(t('sleep.diary.snoringBadge'));
   if (entry.moodEmoji) parts.push(entry.moodEmoji);
-  if (entry.hasWorry) parts.push('대화 있음');
-  return parts.join(' · ') || '기록';
+  if (entry.hasWorry) parts.push(t('sleep.diary.conversationLabel'));
+  return parts.join(' · ') || t('sleep.diary.defaultLabel');
 }

@@ -199,10 +199,11 @@ const KEYWORD_RESPONSES = [
 
 const DAILY_LIMIT_REPLY = '오늘은 충분히 이야기를 들어드린 것 같아요.\n이제 편안히 쉬어보는 건 어떨까요? 🌙';
 
-function findKeywordResponse(text) {
+function findKeywordResponse(text, lang) {
   if (!text) return null;
   const normalized = text.toLowerCase();
-  for (const rule of KEYWORD_RESPONSES) {
+  const responses = getKeywordResponses(lang);
+  for (const rule of responses) {
     if (normalized.includes(rule.keyword)) {
       return rule.response;
     }
@@ -212,45 +213,51 @@ function findKeywordResponse(text) {
 
 // ─── 카테고리 판별 헬퍼 ───
 export function getWorryCategory(text) {
-  if (!text) return "default";
+  if (!text) return 'default';
+  const lang = getCurrentWorryLocale();
   const normalized = text.toLowerCase();
-  if (/(취업|직장|회사|면접|스펙|진로|졸업|미래|백수|일자리|이력서|합격)/.test(normalized)) return "future";
-  if (/(공부|시험|성적|자격증|과제|학업|학점|공시|토익|대학원)/.test(normalized)) return "study";
-  if (/(인간관계|사람|친구|가족|부모|연애|사랑|싸움|이별|싸웠|눈치|뒷담)/.test(normalized)) return "relation";
-  if (/(아프|병원|건강|피곤|체력|몸|질병|독감|두통|통증)/.test(normalized)) return "health";
-  if (/(돈|대출|월세|생활비|알바|적금|거지|빚|금전)/.test(normalized)) return "money";
-  return "default";
+  const patterns = getCategoryPatterns(lang);
+
+  for (const [category, pattern] of Object.entries(patterns)) {
+    if (pattern.test(normalized)) {
+      return category;
+    }
+  }
+  return 'default';
 }
 
 // ─── 오프라인 텍스트 분석 로직 (3턴 턴제한 대응) ───
-export function getLocalWorryReply(text, turnCount = 1, category = "default") {
-  if (!text || text.trim() === "") {
-    return "고민을 빈 칸으로 두면 드리미도 어떤 위로를 전해야 할지 모른다양... 사소한 걱정이라도 적어줘요양, 메에~";
+export function getLocalWorryReply(text, turnCount = 1, category = 'default') {
+  const lang = getCurrentWorryLocale();
+  if (!text || text.trim() === '') {
+    return EMPTY_INPUT_REPLY[lang];
   }
 
   if (turnCount >= 4) {
-    return DAILY_LIMIT_REPLY;
+    return DAILY_LIMIT_REPLY[lang];
   }
 
-  const keywordReply = findKeywordResponse(text);
+  const keywordReply = findKeywordResponse(text, lang);
   if (keywordReply) {
     return keywordReply;
   }
 
-  const dataset = PRESETS[category];
-
+  const dataset = getWorryDataset(category, lang);
   if (turnCount === 1) {
-    // 1턴: 인사말 + 기본 위로 조합
     const greeting = dataset.greetings[Math.floor(Math.random() * dataset.greetings.length)];
-    const comfort  = dataset.comforts[Math.floor(Math.random() * dataset.comforts.length)];
+    const comfort = dataset.comforts[Math.floor(Math.random() * dataset.comforts.length)];
     return `${greeting}\n\n${comfort}`;
   } else if (turnCount === 2) {
-    // 2턴: 2턴 전용 심화 위로
-    return dataset.turns[0] || "마음을 편하게 먹는 것이 최고의 시작이에요양. 걱정한다고 풀릴 일들이 아니니, 오늘 밤은 이 꼬여있는 생각 실타래를 드리미에게 가만히 맡겨두세요양, 메에~";
+    return dataset.turns[0] || (lang === 'ko'
+      ? '마음을 편하게 먹는 것이 최고의 시작이에요양. 걱정한다고 풀릴 일들이 아니니, 오늘 밤은 이 꼬여있는 생각 실타래를 드리미에게 가만히 맡겨두세요양, 메에~'
+      : 'Taking a gentler approach is the best start. Worrying won’t fix everything tonight, so let Dreamy hold these tangled thoughts for a while, meeh~');
   } else {
-    // 3턴 (마지막 턴): 마무리 수면 유도 멘트 강제 믹스
-    const finishMsg = dataset.turns[1] || "오늘 밤은 푹 잠드는 것에만 뇌의 모든 힘을 보태주세요양, 메에~";
-    return `${finishMsg}\n\n이제 서너 마디 대화는 다 마쳤으니, 눈을 붙이고 드리미와 함께 스르르 잘 시간양! 메에~ 🌙`;
+    const finishMsg = dataset.turns[1] || (lang === 'ko'
+      ? '오늘 밤은 푹 잠드는 것에만 뇌의 모든 힘을 보태주세요양, 메에~'
+      : 'Tonight, focus all your energy on sleeping well, meeh~');
+    return `${finishMsg}\n\n${lang === 'ko'
+      ? '이제 서너 마디 대화는 다 마쳤으니, 눈을 붙이고 드리미와 함께 스르르 잘 시간양! 메에~ 🌙'
+      : 'We’ve said enough for now. Close your eyes and drift off with Dreamy, meeh~ 🌙'}`;
   }
 }
 

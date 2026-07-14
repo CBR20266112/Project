@@ -2,8 +2,8 @@
  * sheep.js — 양 상태 관리, XP, 레벨업, 상호작용
  */
 
-import { GROWTH_TABLE, SHEEP_POSE, DAILY_QUOTES, NAME_REJECT_HAPPINESS_DELTA, INTERACTION_XP } from './constants.js';
-import { getSheep, saveSheep } from './storage.js';
+import { GROWTH_TABLE, SHEEP_POSE, NAME_REJECT_HAPPINESS_DELTA, INTERACTION_XP, getLocalizedDailyQuote } from './constants.js';
+import { getSheep, saveSheep, getSettings } from './storage.js';
 import { getSheepSVG, getSheepAnimClass } from './sheep-renderer.js';
 import { buildWearableOverlays } from './decor.js';
 import { showToast } from './app.js';
@@ -269,8 +269,7 @@ export function updateStatBar(el, value) {
 }
 
 export function getDailyQuote() {
-  const day = new Date().getDate();
-  return DAILY_QUOTES[day % DAILY_QUOTES.length];
+  return getLocalizedDailyQuote(getSettings().language || 'en');
 }
 
 export function playSheepAnim(container, animClass, ms = 800) {

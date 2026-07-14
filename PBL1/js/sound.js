@@ -1868,11 +1868,11 @@ function createBrownNoise(duration) {
 // --- 諛붿씠?몃윺 鍮꾪듃 (ASMR怨??숈떆 ?ъ깮 媛?? ---
 
 export const BINARURAL_LIST = [
-  { id: 'delta_2',  emoji: '🌙', name: '깊은 수면',   desc: '2Hz 델타, 깊은 수면 유도', carrier: 200, beat: 2 },
-  { id: 'delta_1',  emoji: '🌌', name: '초저속 델타', desc: '1Hz 델타, 아주 느린 뇌파', carrier: 180, beat: 1 },
-  { id: 'theta_6',  emoji: '🫧', name: '이완',        desc: '6Hz 세타, 몸과 마음 풀기', carrier: 220, beat: 6 },
-  { id: 'theta_4',  emoji: '🧘', name: '명상',        desc: '4Hz 세타, 잔잔한 집중', carrier: 210, beat: 4 },
-  { id: 'alpha_10', emoji: '🌤️', name: '안정',       desc: '10Hz 알파, 긴장 완화', carrier: 240, beat: 10 },
+  { id: 'delta_2',  emoji: '🌙', nameKey: 'asmr.binaural.delta2.name', descKey: 'asmr.binaural.delta2.desc', carrier: 200, beat: 2 },
+  { id: 'delta_1',  emoji: '🌌', nameKey: 'asmr.binaural.delta1.name', descKey: 'asmr.binaural.delta1.desc', carrier: 180, beat: 1 },
+  { id: 'theta_6',  emoji: '🫧', nameKey: 'asmr.binaural.theta6.name', descKey: 'asmr.binaural.theta6.desc', carrier: 220, beat: 6 },
+  { id: 'theta_4',  emoji: '🧘', nameKey: 'asmr.binaural.theta4.name', descKey: 'asmr.binaural.theta4.desc', carrier: 210, beat: 4 },
+  { id: 'alpha_10', emoji: '🌤️', nameKey: 'asmr.binaural.alpha10.name', descKey: 'asmr.binaural.alpha10.desc', carrier: 240, beat: 10 },
 ];
 
 let _binauralOscL = null;
@@ -1890,10 +1890,17 @@ function _applyBinauralGain() {
   _binauralGain.gain.value = _currentBinauralId ? _binauralTargetGain() : 0;
 }
 
-export function getBinauralList() { return BINARURAL_LIST; }
+export function getBinauralList() {
+  const lang = getSettings().language || DEFAULT_LANGUAGE;
+  return BINARURAL_LIST.map(item => ({
+    ...item,
+    name: t(item.nameKey, {}, lang) || item.name || item.nameKey,
+    desc: t(item.descKey, {}, lang) || item.desc || item.descKey,
+  }));
+}
 
 export function getBinauralItem(id) {
-  return BINARURAL_LIST.find(i => i.id === id) ?? null;
+  return getBinauralList().find(i => i.id === id) ?? null;
 }
 
 export function getBinauralVolume() {

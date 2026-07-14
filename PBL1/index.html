@@ -208,11 +208,11 @@
           <button type="button" class="home-asmr-toggle" id="btn-home-asmr-toggle" aria-pressed="false">
             <span class="home-asmr-toggle-icon">♪</span>
             <span>
-              <strong data-i18n="home.asmr.compact.title">수면 ASMR</strong>
-              <small id="home-asmr-now-label" data-i18n="home.asmr.compact.status">꺼짐</small>
+              <strong data-i18n="home.asmr.compact.title">Sleep ASMR</strong>
+              <small id="home-asmr-now-label" data-i18n="home.asmr.compact.status">Off</small>
             </span>
           </button>
-          <a href="pages/asmr.html" class="home-link home-asmr-detail-link" data-i18n="home.asmr.compact.detailLink">상세 설정 ›</a>
+          <a href="pages/asmr.html" class="home-link home-asmr-detail-link" data-i18n="home.asmr.compact.detailLink">View settings ›</a>
         </div>
       </section>
 
@@ -424,18 +424,19 @@
     import { initCommon, showToast } from './js/app.js';
     import { t as i18nT } from './js/i18n.js';
     import { readSheep, renderSheepTo, updateXPBar, updateStatBar, petSheep, feedSheep, decaySheepStats, playSheepAnim, addXP, touchSheep, rejectNaming } from './js/sheep.js';
-    const t = i18nT;
-        import { enableWearableDrag } from './js/decor.js';
+    import { enableWearableDrag } from './js/decor.js';
     import { initSound, resumeAudio, playSoundFeed, playSoundSleep, playSoundClick, playSoundXP, playSoundEar, playSoundHead, playSoundFace, playSoundBelly, playSoundBack, startBgm, stopBgm, isBgmPlaying, setBgmEnabled, isBgmEnabled, playMorningCallAlarm, stopMorningCallAlarm, playAsmr, getLastAsmrId, isAsmrSleepAutoplay } from './js/sound.js';
     import { initHomeAsmrSection } from './js/asmr.js';
     import { runPetInteraction, spawnPetEffects } from './js/pet-effects.js';
     import { initSheepStrokePet, getLastStrokeTravel } from './js/sheep-stroke.js';
     import { recordSleep, getStreak, getSleepRegularity, applyDailyRegularityBonus } from './js/sleep.js';
+    import { SHEEP_POSE, getNameDialogScript, getRandomQuote } from './js/constants.js';
+    import { saveSheep, setItem, getItem, removeItem, getSettings, getLocalDateKey, getPrivacyConsent, setPrivacyConsent } from './js/storage.js';
+    const t = i18nT;
+    const NAME_DIALOG_SCRIPT = getNameDialogScript(getSettings().language || 'en');
     // Expose sound helpers to window for automation/testing (temporary)
     window.resumeAudio = resumeAudio;
     window.playAsmr = playAsmr;
-    import { SHEEP_POSE, NAME_DIALOG_SCRIPT, getRandomQuote } from './js/constants.js';
-    import { saveSheep, setItem, getItem, removeItem, getSettings, getLocalDateKey, getPrivacyConsent, setPrivacyConsent } from './js/storage.js';
     import { checkAndShowOpening, startImageSlideshow } from './js/opening.js';
     import { pickMorningAction, MORNING_ACTION, initWakeAlarmScheduler, saveMorningCallSchedule, getSleepTimeDefaults, formatAlarmHint, markMorningCallCompleted } from './js/morningcall.js';
     import { recordAttendance, getAttendanceRewardMessages, getAttendance, isCheckedInToday, getWeekCycleProgress, getNextCycleReward, getTodayCycleRewardPreview, getStoryImages } from './js/attendance.js';
@@ -781,7 +782,7 @@
           return;
         }
 
-        const quote = getRandomQuote();
+        const quote = getRandomQuote(getSettings().language || 'en');
         speechBubble.textContent = `"${quote}"`;
         speechBubble.style.animation = 'none';
         speechBubble.offsetHeight;
@@ -1427,7 +1428,7 @@
       initHomeAsmrSection();
       refreshUI();
       showAttendancePromptOnFirstVisit();
-      speechBubble.textContent = `"${getRandomQuote()}"`;
+      speechBubble.textContent = `"${getRandomQuote(getSettings().language || 'en')}"`;
       setTimeout(startAutoTimers, 1500);
 
       // 화면 어느 곳이든 최초 터치/클릭 시 오디오를 활성화하고 BGM을 자동 재생

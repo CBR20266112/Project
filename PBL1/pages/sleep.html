@@ -136,6 +136,10 @@
           <span class="text-muted">💤 <span id="today-bedtime">-</span></span>
           <span class="text-muted">☀️ <span id="today-waketime">-</span></span>
         </div>
+        <div class="flex justify-between text-small" style="font-size: var(--font-size-xs); margin-top: var(--space-2);">
+          <span class="text-muted"><span data-i18n="sleep.today.snoringLabel">🫁 코골이</span> <span id="today-snoring">-</span></span>
+          <span class="text-muted"><span data-i18n="sleep.today.snoringStatsLabel">📈 최근 기록</span> <span id="today-snoring-stats">-</span></span>
+        </div>
       </section>
 
       <section class="glass card" style="padding: var(--space-4); margin-bottom: var(--space-3);">
@@ -161,6 +165,13 @@
             <button type="button" class="mood-btn" data-mood="5">🥰</button>
           </div>
         </div>
+        <label class="switch-label" style="padding:0; margin-bottom: var(--space-3);">
+          <span class="switch-text" data-i18n="sleep.record.snoringLabel">🫁 코골이 있었어요</span>
+          <span class="switch">
+            <input type="checkbox" id="input-snoring" aria-label="Snoring">
+            <span class="switch-slider"></span>
+          </span>
+        </label>
         <button class="btn btn-primary w-full" id="btn-save-manual-sleep" data-i18n="sleep.record.saveButton">수면 기록 저장</button>
       </section>
 
@@ -179,6 +190,11 @@
             <span class="chip-icon">🎯</span>
             <span class="chip-value" id="stat-goal-attain">0 / 7회</span>
             <span class="chip-label" data-i18n="sleep.stats.goalAchieved">목표 달성</span>
+          </div>
+          <div class="stat-chip">
+            <span class="chip-icon">🫁</span>
+            <span class="chip-value" id="stat-snoring-days">0 / 7일</span>
+            <span class="chip-label" data-i18n="sleep.stats.snoringRecords">코골이 기록</span>
           </div>
         </div>
         <div class="chart-area">
@@ -241,8 +257,8 @@
     import { getSheep, getSettings } from '../js/storage.js';
     import { t } from '../js/i18n.js';
     import {
-      recordSleep, formatDuration, getTodaySleep, getWeeklyAvg,
-      getMonthlySuccess, getRecentRecords, drawSleepChart,
+      recordSleep, formatDuration, formatClockTime, getTodaySleep, getWeeklyAvg,
+      getMonthlySuccess, getRecentRecords, drawSleepChart, getSnoringStats,
     } from '../js/sleep.js';
     import { saveMorningCallSchedule, getSleepTimeDefaults, formatAlarmHint } from '../js/morningcall.js';
     import { getDreamDiaryEntries, formatDiarySummary } from '../js/dream-diary.js';
@@ -272,18 +288,25 @@
         const settings = getSettings();
         const durEl = document.getElementById('today-sleep-duration');
         const commentEl = document.getElementById('today-sleep-comment');
+        const snoringEl = document.getElementById('today-snoring');
+        const snoringStatsEl = document.getElementById('today-snoring-stats');
+        const snoringSummary = getSnoringStats(7);
+        snoringStatsEl.textContent = t('sleep.today.snoringStatsValue', { count: snoringSummary.count, total: snoringSummary.total });
         if (today) {
+          const lang = getSettings().language || 'en';
           durEl.textContent = formatDuration(today.duration);
           commentEl.textContent = today.duration >= settings.sleepGoal
             ? t('sleep.today.goalMet')
             : t('sleep.today.goalMiss');
-          document.getElementById('today-bedtime').textContent = today.bedtime;
-          document.getElementById('today-waketime').textContent = today.wakeTime;
+          document.getElementById('today-bedtime').textContent = formatClockTime(today.bedtime, lang);
+          document.getElementById('today-waketime').textContent = formatClockTime(today.wakeTime, lang);
+          snoringEl.textContent = today.snoring ? t('sleep.today.snoringYes') : t('sleep.today.snoringNo');
         } else {
           durEl.textContent = t('sleep.today.noRecords');
           commentEl.textContent = t('sleep.today.noRecordsDesc');
           document.getElementById('today-bedtime').textContent = '-';
           document.getElementById('today-waketime').textContent = '-';
+          snoringEl.textContent = '-';
         }
         refreshChart();
         renderDiary();
@@ -293,6 +316,8 @@
         const settings = getSettings();
         document.getElementById('stat-weekly-avg').textContent = formatDuration(getWeeklyAvg());
         const canvas = document.getElementById('sleep-chart');
+        const snoringSummary = getSnoringStats(sleepChartTab === 'weekly' ? 7 : 30);
+        document.getElementById('stat-snoring-days').textContent = t('sleep.stats.snoringStatsValue', { count: snoringSummary.count, total: snoringSummary.total });
         if (sleepChartTab === 'weekly') {
           const weekly = getRecentRecords(7);
           const success = weekly.filter(r => r.duration >= (settings.sleepGoal || 480)).length;
@@ -340,7 +365,8 @@
           sleepEl.innerHTML = `
             <div class="text-muted" style="font-size:var(--font-size-xs);margin-bottom:4px;">${t('sleep.diary.detailSleepTitle')}</div>
             <div><strong>${formatDuration(entry.sleepDuration)}</strong> · ${entry.moodEmoji || moodEmoji(entry.mood)}
-            ${entry.bedtime ? ` · ${entry.bedtime} → ${entry.wakeTime}` : ''}</div>
+            ${entry.bedtime ? ` · ${formatClockTime(entry.bedtime, getSettings().language || 'en')} → ${formatClockTime(entry.wakeTime, getSettings().language || 'en')}` : ''}</div>
+            ${entry.snoring ? `<div style="margin-top:8px;font-size:var(--font-size-xs);color:var(--color-purple-soft);">🫁 ${t('sleep.diary.snoringMessage')}</div>` : ''}
             ${entry.sleepNote ? `<p style="margin-top:8px;font-size:var(--font-size-xs);line-height:1.5;">${escapeHtml(entry.sleepNote)}</p>` : ''}
           `;
         } else {
@@ -373,6 +399,7 @@
       const { bedtime, wakeTime } = getSleepTimeDefaults();
       const bedInput = document.getElementById('input-bedtime');
       const wakeInput = document.getElementById('input-waketime');
+      const snoringInput = document.getElementById('input-snoring');
       bedInput.value = bedtime;
       wakeInput.value = wakeTime;
       const alarmHint = document.getElementById('alarm-hint');
@@ -392,12 +419,22 @@
         });
       });
 
+      const existingToday = getTodaySleep();
+      if (existingToday) {
+        snoringInput.checked = Boolean(existingToday.snoring);
+        manualMood = existingToday.mood ?? 3;
+        document.querySelectorAll('#manual-mood-row .mood-btn').forEach(btn => {
+          btn.classList.toggle('selected', parseInt(btn.dataset.mood, 10) === manualMood);
+        });
+      }
+
       document.getElementById('btn-save-manual-sleep').addEventListener('click', () => {
         const res = recordSleep({
           bedtime: bedInput.value,
           wakeTime: wakeInput.value,
           mood: manualMood,
           note: '',
+          snoring: snoringInput.checked,
         });
         syncAlarm();
         let msg = t('sleep.toast.saved', { xpGained: res.xpGained });

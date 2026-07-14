@@ -34,7 +34,7 @@ function stdDev(values) {
 export function getSleepRegularity(days = 14) {
   const recs = getRecentRecords(days).filter(r => r.bedtime && r.wakeTime);
   if (recs.length < 2) {
-    return { score: 0, label: '기록 부족', days: recs.length };
+    return { score: 0, label: t('sleep.regularity.insufficient'), days: recs.length };
   }
 
   const bedStd  = stdDev(recs.map(r => timeToMinutes(r.bedtime)));
@@ -42,10 +42,10 @@ export function getSleepRegularity(days = 14) {
   const spread  = bedStd + wakeStd;
   const score   = Math.max(0, Math.min(1, 1 - spread / 120));
 
-  let label = '불규칙';
-  if (score >= 0.8) label = '아주 규칙적';
-  else if (score >= 0.55) label = '규칙적';
-  else if (score >= 0.3) label = '보통';
+  let label = t('sleep.regularity.irregular');
+  if (score >= 0.8) label = t('sleep.regularity.veryRegular');
+  else if (score >= 0.55) label = t('sleep.regularity.regular');
+  else if (score >= 0.3) label = t('sleep.regularity.average');
 
   return { score, label, days: recs.length };
 }
@@ -77,7 +77,7 @@ export function applyDailyRegularityBonus() {
  * @param {string} params.note     메모
  * @returns {{ record: object, xpGained: number, regularityBonus: number, regularityLabel: string }}
  */
-export function recordSleep({ bedtime, wakeTime, mood = 3, note = '' }) {
+export function recordSleep({ bedtime, wakeTime, mood = 3, note = '', snoring = false }) {
   const duration   = calcDurationMinutes(bedtime, wakeTime);
   const settings   = getSettings();
   const { xp } = calcSleepReward(duration, settings.sleepGoal);
@@ -90,6 +90,7 @@ export function recordSleep({ bedtime, wakeTime, mood = 3, note = '' }) {
     duration,
     mood,
     note,
+    snoring: Boolean(snoring),
     xpGained:    xp,
     recordedAt:  new Date().toISOString(),
   };
@@ -153,6 +154,26 @@ export function formatDuration(minutes) {
   return `${h}${labels.hour} ${m}${labels.minute}`;
 }
 
+export function formatClockTime(time, lang = getSettings().language || 'en') {
+  if (!time || typeof time !== 'string') return '';
+  const [hours, minutes] = time.split(':').map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return time;
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  const options = { hour: 'numeric', minute: '2-digit' };
+  if (typeof lang === 'string' && lang.startsWith('en')) {
+    options.hour12 = true;
+  }
+  // Ensure a concrete locale string for English to avoid environment-specific
+  // AM/PM localization (force English AM/PM instead of localized strings).
+  const locale = (typeof lang === 'string' && lang.startsWith('en')) ? 'en-US' : lang;
+  try {
+    return new Intl.DateTimeFormat(locale, options).format(date);
+  } catch (err) {
+    return time;
+  }
+}
+
 // ─── 통계 ───
 
 /**
@@ -166,6 +187,13 @@ export function getRecentRecords(days = 7) {
   return records
     .filter(r => new Date(r.date) >= cutoff)
     .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/** 최근 N일 중 코골이 기록 수 */
+export function getSnoringStats(days = 7) {
+  const recs = getRecentRecords(days);
+  const count = recs.filter(r => Boolean(r.snoring)).length;
+  return { count, total: days };
 }
 
 /** 주간 평균 수면 (분) */
