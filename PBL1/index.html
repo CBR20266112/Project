@@ -32,7 +32,7 @@
       <div class="onboarding-splash-content">
         <div class="onboarding-logo">SleepySheep</div>
         <div class="onboarding-subtitle" data-i18n="onboarding.splashSubtitle">나만의 수면 웰니스 루틴을 시작하세요</div>
-        <div class="onboarding-start" id="onboarding-start" data-i18n="onboarding.splashStart">터치하여 시작</div>
+        <div class="onboarding-start" id="onboarding-start" data-i18n="onboarding.splashStart">Touch to Start</div>
       </div>
     </div>
 
@@ -590,6 +590,12 @@
         onboardingSplash.classList.remove('active');
       }
 
+      let splashHasBeenDismissed = false;
+      function shouldShowSplash() {
+        const onboardingConsent = getOnboardingConsent();
+        return !splashHasBeenDismissed && (!onboardingConsent || !onboardingConsent.onboardingCompleted);
+      }
+
       function showOnboardingModal() {
         onboardingOverlay.classList.add('active');
         onboardingModal.classList.add('active');
@@ -628,11 +634,13 @@
       }
 
       onboardingStart?.addEventListener('click', () => {
+        splashHasBeenDismissed = true;
         hideOnboardingSplash();
         showOnboardingModal();
       });
 
       onboardingSplash?.addEventListener('click', () => {
+        splashHasBeenDismissed = true;
         hideOnboardingSplash();
         showOnboardingModal();
       });
@@ -683,7 +691,7 @@
       });
 
       // 첫 로드 시 오프닝 스토리 노출 여부 체크
-      if (!onboardingConsent || !onboardingConsent.onboardingCompleted) {
+      if (shouldShowSplash()) {
         showOnboardingSplash();
       } else if (!getPrivacyConsent()) {
         showPrivacyConsentPrompt();
