@@ -27,13 +27,10 @@ import {
 } from './sound.js';
 
 export const ASMR_CATEGORIES = [
-  { id: 'all',    labelKey: 'asmr.category.all' },
-  { id: 'preset', labelKey: 'asmr.category.preset' },
+  { id: 'all', labelKey: 'asmr.category.all' },
+  { id: 'signature', labelKey: 'asmr.category.signature' },
+  { id: 'cozy', labelKey: 'asmr.category.cozy' },
   { id: 'nature', labelKey: 'asmr.category.nature' },
-  { id: 'cozy',   labelKey: 'asmr.category.cozy' },
-  { id: 'music',  labelKey: 'asmr.category.music' },
-  { id: 'texture', labelKey: 'asmr.category.texture' },
-  { id: 'focus',  labelKey: 'asmr.category.focus' },
 ];
 
 export const ASMR_TIMER_OPTIONS = [

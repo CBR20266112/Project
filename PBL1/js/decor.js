@@ -14,7 +14,9 @@ export function getDecorAssetPrefix() {
 /** 아이템 PNG 경로 */
 export function getItemImagePath(itemId, prefix = null) {
   const p = prefix ?? getDecorAssetPrefix();
-  return `${p}assets/item/${itemId}.png`;
+  const catalogItem = typeof itemId === 'string' ? findCatalogItem(itemId) : itemId;
+  const resolvedId = catalogItem?.imageId || catalogItem?.id || itemId;
+  return `${p}assets/item/${resolvedId}.png`;
 }
 
 /** 카탈로그 항목 조회 */
