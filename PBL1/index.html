@@ -590,10 +590,19 @@
         onboardingSplash.classList.remove('active');
       }
 
-      let splashHasBeenDismissed = false;
+      const SPLASH_COOLDOWN_MS = 30 * 60 * 1000;
+      const SPLASH_LAST_SEEN_KEY = 'ss_splash_last_seen';
+
       function shouldShowSplash() {
         const onboardingConsent = getOnboardingConsent();
-        return !splashHasBeenDismissed && (!onboardingConsent || !onboardingConsent.onboardingCompleted);
+        if (!onboardingConsent || !onboardingConsent.onboardingCompleted) {
+          const lastSeen = Number(localStorage.getItem(SPLASH_LAST_SEEN_KEY) || 0);
+          if (lastSeen && Date.now() - lastSeen < SPLASH_COOLDOWN_MS) {
+            return false;
+          }
+          return true;
+        }
+        return false;
       }
 
       function showOnboardingModal() {
@@ -633,14 +642,18 @@
         checkAndShowOpening(document.querySelector('.phone'));
       }
 
+      function markSplashSeen() {
+        localStorage.setItem(SPLASH_LAST_SEEN_KEY, String(Date.now()));
+      }
+
       onboardingStart?.addEventListener('click', () => {
-        splashHasBeenDismissed = true;
+        markSplashSeen();
         hideOnboardingSplash();
         showOnboardingModal();
       });
 
       onboardingSplash?.addEventListener('click', () => {
-        splashHasBeenDismissed = true;
+        markSplashSeen();
         hideOnboardingSplash();
         showOnboardingModal();
       });

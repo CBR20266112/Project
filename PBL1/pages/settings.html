@@ -157,6 +157,17 @@
               <span class="switch-slider"></span>
             </label>
           </div>
+          <div class="setting-item" style="border-bottom:none; padding:0; margin-top: var(--space-3);">
+            <div class="setting-info">
+              <span class="setting-title" data-i18n="morningCallPreset.title">🎵 모닝콜 사운드</span>
+              <span class="setting-desc" data-i18n="morningCallPreset.desc">부드럽고 따뜻한 아침 인사를 고를 수 있어요.</span>
+            </div>
+            <select id="select-morningcall-preset" class="glass" style="border-radius: var(--radius-sm); border:1px solid var(--glass-border); padding:var(--space-2) var(--space-3); color:#fff; font-size:var(--font-size-sm); background: rgba(0,0,0,0.3);">
+              <option value="dreamy" data-i18n="morningCallPreset.option.dreamy">Dreamy Morning</option>
+              <option value="gentle" data-i18n="morningCallPreset.option.gentle">Gentle Bell</option>
+              <option value="cozy" data-i18n="morningCallPreset.option.cozy">Cozy Morning</option>
+            </select>
+          </div>
           <div class="flex gap-2" style="margin-top: var(--space-3);">
             <button type="button" class="btn btn-secondary w-full" id="btn-test-morningcall-now" data-i18n="morningCall.now">지금 테스트</button>
             <button type="button" class="btn btn-secondary w-full" id="btn-test-morningcall-minute" data-i18n="morningCall.minute">1분 뒤 테스트</button>
@@ -421,6 +432,7 @@
       const switchBgMusic = document.getElementById('switch-bgmusic');
       const switchVibrate = document.getElementById('switch-vibrate');
       const switchMorningCallSimple = document.getElementById('switch-morningcall-simple');
+      const selectMorningCallPreset = document.getElementById('select-morningcall-preset');
       const selectIconMode = document.getElementById('select-icon-mode');
       const selectLanguage = document.getElementById('select-language');
       const iconModeDesc = document.getElementById('icon-mode-desc');
@@ -458,6 +470,9 @@
         switchBgMusic.checked = isBgmEnabled();
         switchVibrate.checked = settings.vibration;
         switchMorningCallSimple.checked = settings.morningCallSimple === true;
+        if (selectMorningCallPreset) {
+          selectMorningCallPreset.value = settings.morningCallPreset || 'dreamy';
+        }
         if (selectIconMode) {
           selectIconMode.value = settings.iconMode === 'daily' ? 'daily' : 'time';
           if (iconModeDesc) {
@@ -570,8 +585,12 @@
         promptInstall({ showToast }).then(() => refreshUI());
       });
 
-      switchMorningCallSimple.addEventListener('change', () => {
+      switchMorningCallSimple?.addEventListener('change', () => {
         updateSetting('morningCallSimple', switchMorningCallSimple.checked);
+      });
+
+      selectMorningCallPreset?.addEventListener('change', () => {
+        updateSetting('morningCallPreset', selectMorningCallPreset.value);
       });
 
       let morningCallMinuteTestTimer = null;

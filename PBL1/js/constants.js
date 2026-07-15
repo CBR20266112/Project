@@ -132,6 +132,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   wakeAlarm:         '07:00',
   bedAlarm:          '22:30',
   morningCallSimple: false, // true면 상호작용 없이 알람 끄기 버튼만
+  morningCallPreset: 'dreamy', // dreamy | gentle | cozy
   iconMode:          'time', // 'time' | 'daily' — 앱 아이콘 변경 방식
   geminiApiKey:      '',
 });
