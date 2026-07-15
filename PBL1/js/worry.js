@@ -2,6 +2,9 @@
  * worry.js — 드리미 마음 상담소 AI 및 템플릿 분석 엔진 (3턴 제한 멀티턴 대응)
  */
 
+import { DEFAULT_LANGUAGE } from './i18n.js';
+import { getSettings } from './storage.js';
+
 // ─── 오프라인용 대화 턴별 프리셋 위로 리스트 ───
 const PRESETS = {
   // 1) 취업 / 미래 / 진로
@@ -197,7 +200,428 @@ const KEYWORD_RESPONSES = [
   }
 ];
 
-const DAILY_LIMIT_REPLY = '오늘은 충분히 이야기를 들어드린 것 같아요.\n이제 편안히 쉬어보는 건 어떨까요? 🌙';
+const EMPTY_INPUT_REPLY = {
+  ko: '조금 더 이야기를 들려주세요양. 드리미가 당신의 마음을 더 잘 들어줄 수 있게, 오늘 밤의 걱정을 조금 더 적어주세요. 💛',
+  en: 'Please tell Dreamy a little more about what is on your mind tonight. 💛',
+  zh: '再多说一点今晚困扰你的心事吧，Dreamy 会更好地陪你。💛',
+  ja: '今夜の気持ちをもう少し教えてください。Dreamy がよりよく寄り添えます。💛'
+};
+
+const DAILY_LIMIT_REPLY = {
+  ko: '오늘은 충분히 이야기를 들어드린 것 같아요.\n이제 편안히 쉬어보는 건 어떨까요? 🌙',
+  en: 'You have shared enough for tonight.\nIt may be time to rest and let your mind soften. 🌙',
+  zh: '今天已经聊得够多了。\n现在可以先好好休息，让心情慢慢放轻松。🌙',
+  ja: '今日は十分お話しできました。\n今はゆっくり休んで、気持ちを落ち着けてください。🌙'
+};
+
+function getCurrentWorryLocale() {
+  try {
+    const settings = getSettings();
+    const requested = settings?.language || DEFAULT_LANGUAGE;
+    return ['ko', 'en', 'zh', 'ja'].includes(requested) ? requested : 'ko';
+  } catch (error) {
+    return 'ko';
+  }
+}
+
+function getKeywordResponses(lang = 'ko') {
+  switch (lang) {
+    case 'en':
+      return [
+        { keyword: 'tired', response: 'You have had a very tiring day. Dreamy will stay beside you tonight and help your mind soften. 🌙' },
+        { keyword: 'anxious', response: 'You do not need to solve everything tonight. Let yourself breathe and rest for now.' },
+        { keyword: 'sad', response: 'Even heavy feelings can be carried gently. Tonight, be kind to yourself.' },
+        { keyword: 'lonely', response: 'Dreamy is right here with you, quietly keeping you company.' },
+        { keyword: 'exam', response: 'You have done enough for today. Rest is part of doing well tomorrow.' },
+        { keyword: 'study', response: 'Your mind can rest too. Let your learning settle while you sleep.' },
+        { keyword: 'money', response: 'Worries about money can feel heavy at night. Let them rest for now and take a breath.' },
+        { keyword: 'sleep', response: 'A calm night of sleep is a precious gift. Dreamy will help you find it.' }
+      ];
+    case 'zh':
+      return [
+        { keyword: '累', response: '今天真的辛苦了。今晚就让Dreamy陪你，把心放轻一点。🌙' },
+        { keyword: '烦', response: '今晚不用急着把所有答案都想出来。先把心情放松下来吧。' },
+        { keyword: '孤', response: '即使一个人，也有Dreamy陪你安静地度过这一夜。' },
+        { keyword: '考试', response: '今天已经努力过了，休息也是为明天准备的。' },
+        { keyword: '钱', response: '金钱上的担心会让夜晚更沉重。先把它们暂时放下吧。' }
+      ];
+    case 'ja':
+      return [
+        { keyword: '疲', response: '今日は本当にお疲れさまです。今夜はDreamyがそばでゆっくりお手伝いします。🌙' },
+        { keyword: '不安', response: '今夜は全てを解決しなくて大丈夫です。まずは呼吸を整えて休みましょう。' },
+        { keyword: '寂', response: 'ひとりに感じても、Dreamyが静かにそばにいます。' },
+        { keyword: '試験', response: '今日の努力は十分です。眠ることも明日の力になります。' },
+        { keyword: 'お金', response: 'お金の心配は夜に重くなりやすいです。今は少し置いておきましょう。' }
+      ];
+    default:
+      return KEYWORD_RESPONSES;
+  }
+}
+
+function getCategoryPatterns(lang = 'ko') {
+  switch (lang) {
+    case 'en':
+      return {
+        future: /(job|career|future|interview|work|hire|salary|dream)/i,
+        study: /(exam|study|school|assignment|grade|class|homework|lesson)/i,
+        relation: /(relationship|friend|love|lonely|conflict|fight|breakup|person)/i,
+        health: /(body|pain|tired|sick|health|sleep|fatigue|ill)/i,
+        money: /(money|budget|cost|income|debt|finance|bill)/i,
+        default: /.*/i
+      };
+    case 'zh':
+      return {
+        future: /(工作|未来|职业|面试|求职|薪水|发展)/i,
+        study: /(考试|学习|学业|作业|成绩|课程|功课)/i,
+        relation: /(关系|朋友|恋爱|孤独|冲突|吵架|分手|人际)/i,
+        health: /(身体|疼|累|生病|健康|睡眠|疲惫)/i,
+        money: /(钱|预算|花费|收入|债务|经济|账单)/i,
+        default: /.*/i
+      };
+    case 'ja':
+      return {
+        future: /(就職|進路|未来|仕事|面接|転職|収入)/i,
+        study: /(試験|勉強|学業|課題|成績|授業|宿題)/i,
+        relation: /(人間関係|友達|恋愛|孤独|喧嘩|別れ|関係)/i,
+        health: /(体|痛い|疲れ|病気|健康|睡眠|体調)/i,
+        money: /(お金|予算|費用|収入|借金|経済|請求)/i,
+        default: /.*/i
+      };
+    default:
+      return {
+        future: /(취업|진로|미래|직장|커리어|취직|해고|퇴사|일자리)/i,
+        study: /(시험|공부|학업|과제|성적|수업|과목|공부법)/i,
+        relation: /(관계|친구|연애|외로|갈등|싸움|이별|사람)/i,
+        health: /(몸|아프|피곤|병|통증|체력|건강|잠|수면)/i,
+        money: /(돈|지출|월급|경제|비용|대출|계좌)/i,
+        default: /.*/i
+      };
+  }
+}
+
+function getWorryDataset(category = 'default', lang = 'ko') {
+  const normalizedCategory = category || 'default';
+  const normalizedLang = ['ko', 'en', 'zh', 'ja'].includes(lang) ? lang : 'ko';
+
+  const datasets = {
+    ko: {
+      future: PRESETS.future,
+      study: PRESETS.study,
+      relation: PRESETS.relation,
+      health: PRESETS.health,
+      money: PRESETS.money,
+      default: PRESETS.default
+    },
+    en: {
+      future: {
+        greetings: [
+          'Your future feels uncertain tonight, and your mind feels heavy with worry.',
+          'It feels hard to see what comes next, and the night seems long.',
+          'The pressure of work and the future has made your heart feel restless.'
+        ],
+        comforts: [
+          'You do not need to solve every future question tonight. Small steps are enough for one evening.',
+          'The uncertainty you feel is part of growing, and it does not erase your worth.',
+          'Dreamy believes your efforts are not in vain, and the right moment will come in time.'
+        ],
+        turns: [
+          'Even this anxious feeling is proof that you care about your life and your growth.',
+          'Tonight, let this worry rest beside you while you sleep.'
+        ]
+      },
+      study: {
+        greetings: [
+          'The pressure of exams and study has made your mind feel crowded tonight.',
+          'You have been carrying a lot of effort and attention all day.',
+          'Your thoughts keep circling back to schoolwork and performance.'
+        ],
+        comforts: [
+          'Your brain is still learning even while you sleep, so rest is part of your study.',
+          'One hard day does not define your future or your ability.',
+          'A calm mind is a strength, so let yourself soften tonight.'
+        ],
+        turns: [
+          'You have done enough for today; let your body and mind recover now.',
+          'Tonight is for rest, not pressure.'
+        ]
+      },
+      relation: {
+        greetings: [
+          'A hurtful word or a confusing relationship has made the night feel heavy.',
+          'The loneliness and conflict around you are hard to carry alone.',
+          'Your heart feels tender because you care deeply.'
+        ],
+        comforts: [
+          'You do not need to earn love from every person. Your worth is not decided by others.',
+          'Dreamy will stay beside you as a quiet comfort tonight.',
+          'Even in a lonely moment, you are still worthy of warmth and care.'
+        ],
+        turns: [
+          'You do not need to carry the weight of other people’s moods tonight.',
+          'Let this softness be enough for one night.'
+        ]
+      },
+      health: {
+        greetings: [
+          'Your body feels tired and your mind feels worn out tonight.',
+          'Pain or fatigue has made it hard to settle down.',
+          'You have been carrying too much for too long.'
+        ],
+        comforts: [
+          'When your body is tired, rest is not laziness; it is healing.',
+          'You do not need to force strength tonight. Let your body soften.',
+          'Dreamy will guard the quiet of your sleep tonight.'
+        ],
+        turns: [
+          'You have carried enough for one day. Let your body recover in peace.',
+          'Tonight, let your body be held by comfort and sleep.'
+        ]
+      },
+      money: {
+        greetings: [
+          'Financial worries have made the night feel heavier than usual.',
+          'Your mind keeps circling back to costs and uncertainty.',
+          'The pressure of money has become hard to set down.'
+        ],
+        comforts: [
+          'One difficult night does not mean tomorrow will be the same.',
+          'You can take small steps, one at a time. Tonight is for calm.',
+          'Your effort matters even when the answer is not clear yet.'
+        ],
+        turns: [
+          'Let the numbers rest for tonight. Your mind deserves quiet.',
+          'Sleep can help you wake up with clearer thoughts tomorrow.'
+        ]
+      },
+      default: {
+        greetings: [
+          'It feels hard to settle your mind tonight, and many thoughts keep coming.',
+          'Your heart feels restless and your body needs a gentler evening.',
+          'You have carried a lot today, and now your mind is asking for rest.'
+        ],
+        comforts: [
+          'Let the thoughts drift for a while. You do not need to hold every worry tonight.',
+          'Take one slow breath and let your body soften into the quiet.',
+          'You have done enough for today, and rest is a worthy choice.'
+        ],
+        goodnight: [
+          'Let Dreamy stay with you as you drift into sleep.',
+          'Close your eyes and let the night become gentle.'
+        ],
+        turns: [
+          'The night can be softer than your thoughts. Let Dreamy hold that for you.',
+          'Tonight is for peace, not pressure.'
+        ]
+      }
+    },
+    zh: {
+      future: {
+        greetings: [
+          '今晚你对未来有些茫然，心里像压着一块石头。',
+          '前路看不清，夜晚显得格外漫长。',
+          '关于工作和未来的担心让你难以放松。'
+        ],
+        comforts: [
+          '今晚不用把所有问题都想明白，先把心情放松一点就好。',
+          '你此刻的迷茫不是你的失败，而是成长的一部分。',
+          'Dreamy相信你一直在努力，合适的时机会慢慢到来。'
+        ],
+        turns: [
+          '即使有些焦虑，也说明你在认真面对生活。',
+          '今晚把这些担心先交给睡眠吧。'
+        ]
+      },
+      study: {
+        greetings: [
+          '考试和学习上的压力让你今晚有点难以安静下来。',
+          '今天你已经很努力地把注意力放在学习上了。',
+          '脑子里一直在反复想起作业和成绩。'
+        ],
+        comforts: [
+          '睡觉的时候大脑也会整理你学过的内容，所以好好休息也很重要。',
+          '一天的压力不会定义你的全部。',
+          '今晚就让自己轻一点。'
+        ],
+        turns: [
+          '今天已经付出足够多了，剩下的就交给明天。',
+          '今晚是休息，而不是加压。'
+        ]
+      },
+      relation: {
+        greetings: [
+          '一句伤人的话，或者一段让人困惑的关系，让你今晚心里很沉。',
+          '孤独和冲突让人难以轻松入睡。',
+          '你之所以难受，是因为你真的在乎。'
+        ],
+        comforts: [
+          '你不用为了每个人都变得讨喜。你的价值不是别人的评价决定的。',
+          'Dreamy会在今晚陪你安静地坐着。',
+          '即使有些孤独，你依然值得被温柔对待。'
+        ],
+        turns: [
+          '今晚不用为别人的情绪背着沉重的包袱。',
+          '让这份温柔足够陪你过一夜。'
+        ]
+      },
+      health: {
+        greetings: [
+          '身体疲惫，心也跟着疲惫，今晚很难安静下来。',
+          '疼痛或疲劳让你很难放松。',
+          '你已经很久没有真正休息过了。'
+        ],
+        comforts: [
+          '身体累的时候，休息不是偷懒，而是疗愈。',
+          '今晚不用强撑着，先让身体软下来。',
+          'Dreamy会替你守住安静的睡眠。'
+        ],
+        turns: [
+          '今天你已经撑过来了，接下来就让身体恢复吧。',
+          '今晚就让睡眠和舒适陪你。'
+        ]
+      },
+      money: {
+        greetings: [
+          '金钱上的焦虑让今晚格外沉重。',
+          '脑子一遍遍回想花费和不确定性。',
+          '现实压力让你很难把心放轻。'
+        ],
+        comforts: [
+          '一个难熬的夜晚不会决定明天。',
+          '你可以一步一步慢慢处理，今晚先安静。',
+          '你的努力没有白费。'
+        ],
+        turns: [
+          '今晚先把数字放一边，你的心也值得安静。',
+          '睡眠会让你明天更清楚地找到方向。'
+        ]
+      },
+      default: {
+        greetings: [
+          '今晚你的心思太多，难以安静下来。',
+          '你的心有些乱，身体也需要更柔软的夜晚。',
+          '今天你已经很努力了，现在需要停下来。'
+        ],
+        comforts: [
+          '暂时把那些想法放一放，今晚不用把每个担心都抱住。',
+          '慢慢吸一口气，让身体和心都放松下来。',
+          '今天已经做得足够好了，休息是值得的。'
+        ],
+        goodnight: [
+          '让Dreamy陪你进入安稳的梦。',
+          '闭上眼睛，让这个夜晚变得温柔。'
+        ],
+        turns: [
+          '夜晚未必比你的想法更难熬。把这份重量交给Dreamy吧。',
+          '今晚就先安安静静地睡吧。'
+        ]
+      }
+    },
+    ja: {
+      future: {
+        greetings: [
+          '今夜は将来に不安を感じて、心が重くなっているようですね。',
+          '何が来るのか見えずに、夜が長く感じる夜です。',
+          '仕事や将来への思いが、胸をざわつかせています。'
+        ],
+        comforts: [
+          '今夜は全てを解決しなくて大丈夫です。小さな一歩で十分です。',
+          '今の不確かさは成長の一部であり、あなたの価値を奪うものではありません。',
+          'Dreamyはあなたの努力を信じています。'
+        ],
+        turns: [
+          'この不安があるからこそ、あなたはちゃんと前に進もうとしているのです。',
+          '今夜はその重さを眠りに預けてください。'
+        ]
+      },
+      study: {
+        greetings: [
+          '試験や勉強のプレッシャーで、頭の中がごちゃごちゃしている夜ですね。',
+          '今日もたくさん考えて頑張ってきたので、心身が疲れています。',
+          '学業のことが何度も頭をよぎっています。'
+        ],
+        comforts: [
+          '睡眠中にも脳は学んだことを整理するので、しっかり休むことも勉強です。',
+          '一日の頑張りが全部を決めるわけではありません。',
+          '今夜は少しだけ心をゆるめてください。'
+        ],
+        turns: [
+          '今日のあなたは十分に頑張りました。今は回復の時間です。',
+          '今夜は休むことに集中してください。'
+        ]
+      },
+      relation: {
+        greetings: [
+          '誰かの言葉や関係のすれ違いで、胸がざわつく夜ですね。',
+          '孤独や conflict が心に重くのしかかっています。',
+          'あなたが深く大切にしているからこそ、痛みも大きいのです。'
+        ],
+        comforts: [
+          '誰にでも愛される必要はありません。あなたの価値は他人の評価では決まりません。',
+          'Dreamyは今夜、静かにそばにいます。',
+          'ひとりに感じても、あなたはやさしさに値する存在です。'
+        ],
+        turns: [
+          '今夜は他人の気持ちを背負わなくて大丈夫です。',
+          'このやさしさだけで十分に過ごせます。'
+        ]
+      },
+      health: {
+        greetings: [
+          '体が疲れていて、心まで重くなっている夜ですね。',
+          '痛みや疲労で、なかなか落ち着けません。',
+          '今までずっと頑張ってきたからこそ、今は休みたい夜です。'
+        ],
+        comforts: [
+          '体が疲れている時は、無理に力を出すより休む方が治癒につながります。',
+          '今夜は力を抜いて、身体をほどいてください。',
+          'Dreamyが静かな眠りを守ります。'
+        ],
+        turns: [
+          '今日もよく頑張りました。今は体を回復させる時間です。',
+          '今夜は安らぎと眠りに身をゆだねてください。'
+        ]
+      },
+      money: {
+        greetings: [
+          'お金の心配が夜を重くしているようですね。',
+          '費用や不安が頭の中をぐるぐる回っています。',
+          '現実的なプレッシャーが、なかなか手放せません。'
+        ],
+        comforts: [
+          '一晩のつらさが明日を決めるわけではありません。',
+          '少しずつ進めば大丈夫です。今夜は静かに休みましょう。',
+          'あなたの努力は、きっと何かの形で届きます。'
+        ],
+        turns: [
+          '今夜は数字を一度脇に置いて、心を休めてください。',
+          '眠ることで、明日は少し見えやすくなるでしょう。'
+        ]
+      },
+      default: {
+        greetings: [
+          '今夜はたくさんのことが頭をよぎって、なかなか落ち着かないようですね。',
+          '心がざわざわしていて、身体にもやさしい夜が必要です。',
+          '今日もたくさん頑張ってきたので、今は休みたい夜です。'
+        ],
+        comforts: [
+          '今夜は考えごとを少しだけ流しても大丈夫です。',
+          'ゆっくり息を吸って、体をほどいてください。',
+          '今日のあなたは十分にがんばりました。休むのはちゃんとした選択です。'
+        ],
+        goodnight: [
+          'Dreamyがそばで安らかな眠りへ導きます。',
+          '目を閉じて、今夜はやさしい時間にしてください。'
+        ],
+        turns: [
+          '夜は思うよりもやわらかいものです。重さをDreamyに預けてください。',
+          '今夜は静かに眠りましょう。'
+        ]
+      }
+    }
+  };
+
+  return datasets[normalizedLang]?.[normalizedCategory] || datasets.ko[normalizedCategory] || PRESETS.default;
+}
 
 function findKeywordResponse(text, lang) {
   if (!text) return null;
