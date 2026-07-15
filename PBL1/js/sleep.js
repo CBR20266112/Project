@@ -292,10 +292,11 @@ export function drawSleepChart(canvas, mode = 'weekly') {
   const padR    = 4;
   const padT    = 8;
   const padB    = mode === 'weekly' ? 20 : 12;
-  const chartW  = W - padL - padR;
-  const chartH  = H - padT - padB;
+  const chartW  = Math.max(1, W - padL - padR);
+  const chartH  = Math.max(1, H - padT - padB);
   const barGap  = mode === 'weekly' ? 4 : 2;
-  const barW    = chartW / days - barGap;
+  const usableWidth = Math.max(1, chartW - barGap * Math.max(0, days - 1));
+  const barW    = Math.max(2, usableWidth / days);
 
   // 목표선
   const goalY = padT + chartH * (1 - goalMin / maxVal);

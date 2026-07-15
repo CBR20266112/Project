@@ -870,44 +870,24 @@ export function playShearPeelPop(intensity = 0.6) {
 // --- ASMR ---
 
 export const ASMR_LIST = [
-  { id: 'preset_rainy', category: 'preset', emoji: '🌧️', name: '비 오는 밤', desc: '빗소리와 부드러운 바람 믹스' },
-  { id: 'preset_ocean', category: 'preset', emoji: '🌊', name: '해변의 밤', desc: '파도와 먼 풀벌레가 섞인 밤바다' },
-  { id: 'preset_cottage', category: 'preset', emoji: '🏕️', name: '밤의 산장', desc: '장작불, 바람, 밤벌레가 있는 산장' },
-  { id: 'preset_zen', category: 'preset', emoji: '🪷', name: '젠 가든', desc: '물소리, 바람종, 작은 종소리' },
-  { id: 'preset_study', category: 'preset', emoji: '✏️', name: '조용한 필기방', desc: '연필, 책장, 잔잔한 실내 공기' },
-  { id: 'preset_traditional', category: 'preset', emoji: '🎐', name: '전통 악기 명상', desc: '동아시아 현악기와 부드러운 공간감' },
-  { id: 'preset_cozy', category: 'preset', emoji: '🔥', name: '포근한 난로', desc: '장작불과 잔잔한 바람' },
-  { id: 'preset_deep', category: 'preset', emoji: '😴', name: '깊은 잠', desc: '브라운 노이즈와 느린 심장 박동' },
-  { id: 'preset_starry', category: 'preset', emoji: '✨', name: '별빛 목장', desc: '밤 목장, 풀벌레, 먼 양 울음' },
-  { id: 'rain', category: 'nature', emoji: '🌧️', name: '빗소리', desc: '창문에 부딪히는 촉촉한 비' },
-  { id: 'ocean', category: 'nature', emoji: '🌊', name: '바다소리', desc: '멀리서 밀려오는 낮은 파도' },
-  { id: 'river', category: 'nature', emoji: '💧', name: '시냇물', desc: '작게 흐르는 맑은 물소리' },
-  { id: 'water', category: 'nature', emoji: '🚿', name: '잔잔한 물소리', desc: '작은 물방울과 흐르는 물' },
-  { id: 'forest', category: 'nature', emoji: '🌲', name: '숲속 새벽', desc: '새소리와 나뭇잎이 섞인 숲' },
-  { id: 'birds', category: 'nature', emoji: '🐦', name: '시골 새소리', desc: '멀리 들리는 아침 새소리' },
-  { id: 'bugs', category: 'nature', emoji: '🦗', name: '풀벌레', desc: '여름밤 귀뚜라미와 풀벌레' },
-  { id: 'wind', category: 'nature', emoji: '🍃', name: '바람소리', desc: '커튼을 스치는 부드러운 바람' },
-  { id: 'snow', category: 'nature', emoji: '❄️', name: '눈 내리는 밤', desc: '고요한 겨울밤의 공기' },
-  { id: 'fire', category: 'cozy', emoji: '🔥', name: '장작불', desc: '작게 타닥이는 벽난로' },
-  { id: 'cottage', category: 'cozy', emoji: '🏕️', name: '밤의 산장', desc: '산장 안팎의 밤 공기' },
-  { id: 'sheep', category: 'cozy', emoji: '🐑', name: '양 울음소리', desc: '멀리서 들리는 부드러운 양 울음' },
-  { id: 'ranch', category: 'cozy', emoji: '🌙', name: '밤 목장', desc: '목장 바람과 풀벌레' },
-  { id: 'fan', category: 'focus', emoji: '🌀', name: '선풍기', desc: '규칙적인 실내 바람' },
-  { id: 'pencil', category: 'texture', emoji: '✏️', name: '연필 필기', desc: '종이 위를 사각이는 연필' },
-  { id: 'brush', category: 'texture', emoji: '🖌️', name: '붓질', desc: '붓이 종이를 스치는 부드러운 소리' },
-  { id: 'chalk', category: 'texture', emoji: '🧑‍🏫', name: '분필', desc: '칠판에 작게 쓰는 분필 소리' },
-  { id: 'pages', category: 'texture', emoji: '📖', name: '책장 넘김', desc: '책장을 사락사락 넘기는 소리' },
-  { id: 'white', category: 'focus', emoji: '▫️', name: '화이트 노이즈', desc: '집중과 수면을 돕는 밝은 노이즈' },
-  { id: 'brown', category: 'focus', emoji: '🟫', name: '브라운 노이즈', desc: '낮고 포근한 깊은 노이즈' },
-  { id: 'heartbeat', category: 'focus', emoji: '💗', name: '심장 박동', desc: '느린 리듬의 안정감' },
-  { id: 'piano', category: 'music', emoji: '🎹', name: '잔잔한 피아노', desc: '느린 수면용 피아노 음색' },
-  { id: 'musicbox', category: 'music', emoji: '🎠', name: '오르골', desc: '자장가 같은 작은 오르골' },
-  { id: 'kalimba', category: 'music', emoji: '🎶', name: '칼림바', desc: '맑고 짧게 울리는 엄지 피아노' },
-  { id: 'koto', category: 'music', emoji: '🎐', name: '고토풍 현악기', desc: '일본 정원 느낌의 뜯는 현악기' },
-  { id: 'gayageum', category: 'music', emoji: '🪕', name: '가야금풍 현악기', desc: '한국 전통 현악기 느낌의 평온한 선율' },
-  { id: 'zen_garden', category: 'music', emoji: '🪷', name: '젠 가든', desc: '물, 바람종, 종소리의 명상 테마' },
-  { id: 'tingle_soft', category: 'texture', emoji: '✨', name: '부드러운 팅글', desc: '작은 고주파 펄스가 간질이는 느낌' },
-  { id: 'tingle_bell', category: 'texture', emoji: '🔔', name: '종소리 팅글', desc: '짧고 반짝이는 벨 텍스처' },
+  { id: 'dreamy_meadow', category: 'signature', emoji: '🌾', name: 'Dreamy Meadow', desc: 'Soft meadow air with distant sheep and a night hush' },
+  { id: 'moonlight_ranch', category: 'signature', emoji: '🌙', name: 'Moonlight Ranch', desc: 'Wide-open pasture calm with cool breeze and sleepy night textures' },
+  { id: 'cozy_hearth', category: 'signature', emoji: '🔥', name: 'Cozy Hearth', desc: 'Warm fireplace comfort with gentle room tone and soft wind' },
+  { id: 'dreamlike_atmosphere', category: 'signature', emoji: '☁️', name: 'Dreamlike Atmosphere', desc: 'Low, floating ambience made for slow drifting and deep rest' },
+  { id: 'tea_house', category: 'cozy', emoji: '🍵', name: 'Tea House', desc: 'A quiet tea house with warm room presence and soft preparation sounds' },
+  { id: 'library_evening', category: 'cozy', emoji: '📚', name: 'Library Evening', desc: 'Late-night studying with page turns, paper rustling, and gentle study sounds' },
+  { id: 'cozy_cafe', category: 'cozy', emoji: '☕', name: 'Cozy Cafe', desc: 'A mellow cafe glow with distant chatter, cups, and easy movement' },
+  { id: 'rainy_cottage', category: 'cozy', emoji: '🏡', name: 'Rainy Cottage', desc: 'Rainy evening indoors with hearth warmth and sleepy crickets' },
+  { id: 'zen_garden', category: 'nature', emoji: '🪷', name: 'Zen Garden', desc: 'Soft water drops, wind chimes, and a balanced garden hush' },
+  { id: 'forest_camp', category: 'nature', emoji: '🏕️', name: 'Forest Camp', desc: 'Quiet forest air with a gentle fire and distant night birds' },
+  { id: 'rainy_window', category: 'nature', emoji: '🌧️', name: 'Rainy Window', desc: 'Soft rain against the glass with a close, intimate hush' },
+  { id: 'ocean_shore', category: 'nature', emoji: '🌊', name: 'Ocean Shore', desc: 'A calm shoreline at night with steady waves and quiet air' },
+  { id: 'korean_traditional_night', category: 'signature', emoji: '🎋', name: 'Korean Traditional Night', desc: 'Very soft gayageum and a quiet courtyard night' },
+  { id: 'japanese_traditional_night', category: 'signature', emoji: '🌿', name: 'Japanese Traditional Night', desc: 'Soft koto tones with subtle garden ambience and wind chimes' },
+  { id: 'chinese_traditional_night', category: 'signature', emoji: '🏮', name: 'Chinese Traditional Night', desc: 'Soft guzheng tones with flowing water and reflective stillness' },
+  { id: 'tingle_therapy', category: 'cozy', emoji: '✨', name: 'Tingle Therapy', desc: 'Gentle tapping and brushing for soft relaxation' },
+  { id: 'summer_insect_night', category: 'nature', emoji: '🦗', name: 'Summer Insect Night', desc: 'Crickets, distant insects, and a quiet breeze after sunset' },
+  { id: 'cozy_plaza', category: 'cozy', emoji: '🪑', name: 'Cozy Plaza', desc: 'A peaceful town square with faraway chatter and fountain air' },
 ];
 export function getAsmrItem(id) {
   return getAsmrList().find(i => i.id === id) ?? null;
@@ -1026,44 +1006,58 @@ function _fadeInAsmrGain(sec) {
 
 function _startAsmrById(id) {
   switch (id) {
-    case 'sheep':  _asmrSheep();  break;
-    case 'ranch':  _asmrRanch();  break;
-    case 'bugs':   _asmrBugs();   break;
-    case 'wind':   _asmrWind();   break;
-    case 'rain':   _asmrRain();   break;
-    case 'snow':   _asmrSnow();   break;
-    case 'ocean':  _asmrOcean();  break;
-    case 'water':  _asmrWater();  break;
-    case 'birds':  _asmrBirds();  break;
-    case 'fire':   _asmrFire();   break;
-    case 'cottage': _asmrCottage(); break;
-    case 'fan':    _asmrFan();    break;
-    case 'forest': _asmrForest(); break;
-    case 'river':  _asmrRiver();  break;
-    case 'pencil': _asmrPencil(); break;
-    case 'brush':  _asmrBrush();  break;
-    case 'chalk':  _asmrChalk();  break;
-    case 'pages':  _asmrPages();  break;
-    case 'white':  _asmrWhite();  break;
-    case 'brown':  _asmrBrown();  break;
-    case 'heartbeat': _asmrHeartbeat(); break;
-    case 'piano':  _asmrPiano();  break;
-    case 'musicbox': _asmrMusicbox(); break;
-    case 'kalimba': _asmrKalimba(); break;
-    case 'koto': _asmrKoto(); break;
-    case 'gayageum': _asmrGayageum(); break;
+    case 'dreamy_meadow': _asmrDreamyMeadow(); break;
+    case 'moonlight_ranch': _asmrMoonlightRanch(); break;
+    case 'cozy_hearth': _asmrCozyHearth(); break;
+    case 'dreamlike_atmosphere': _asmrDreamlikeAtmosphere(); break;
+    case 'tea_house': _asmrTeaHouse(); break;
+    case 'library_evening': _asmrLibraryEvening(); break;
+    case 'cozy_cafe': _asmrCozyCafe(); break;
+    case 'rainy_cottage': _asmrRainyCottage(); break;
     case 'zen_garden': _asmrZenGarden(); break;
-    case 'preset_rainy':  _asmrPresetRainy();  break;
-    case 'preset_cozy':   _asmrPresetCozy();   break;
-    case 'preset_deep':   _asmrPresetDeep();   break;
-    case 'preset_starry': _asmrPresetStarry(); break;
-    case 'preset_ocean':  _asmrPresetOcean();  break;
-    case 'preset_cottage': _asmrPresetCottage(); break;
-    case 'preset_zen': _asmrPresetZen(); break;
-    case 'preset_study': _asmrPresetStudy(); break;
-    case 'preset_traditional': _asmrPresetTraditional(); break;
-    case 'tingle_soft': _asmrTingleSoft(); break;
-    case 'tingle_bell': _asmrTingleBell(); break;
+    case 'forest_camp': _asmrForestCamp(); break;
+    case 'rainy_window': _asmrRainyWindow(); break;
+    case 'ocean_shore': _asmrOceanShore(); break;
+    case 'korean_traditional_night': _asmrKoreanTraditionalNight(); break;
+    case 'japanese_traditional_night': _asmrJapaneseTraditionalNight(); break;
+    case 'chinese_traditional_night': _asmrChineseTraditionalNight(); break;
+    case 'tingle_therapy': _asmrTingleTherapy(); break;
+    case 'summer_insect_night': _asmrSummerInsectNight(); break;
+    case 'cozy_plaza': _asmrCozyPlaza(); break;
+    case 'sheep': _asmrDreamyMeadow(); break;
+    case 'ranch': _asmrMoonlightRanch(); break;
+    case 'bugs': _asmrForestCamp(); break;
+    case 'wind': _asmrDreamyMeadow(); break;
+    case 'rain': _asmrRainyWindow(); break;
+    case 'snow': _asmrRainyCottage(); break;
+    case 'ocean': _asmrOceanShore(); break;
+    case 'water':
+    case 'river': _asmrZenGarden(); break;
+    case 'birds': _asmrDreamyMeadow(); break;
+    case 'fire': _asmrCozyHearth(); break;
+    case 'cottage': _asmrRainyCottage(); break;
+    case 'forest': _asmrForestCamp(); break;
+    case 'pencil': _asmrLibraryEvening(); break;
+    case 'pages': _asmrLibraryEvening(); break;
+    case 'white': _asmrDreamlikeAtmosphere(); break;
+    case 'brown': _asmrDreamlikeAtmosphere(); break;
+    case 'heartbeat': _asmrDreamlikeAtmosphere(); break;
+    case 'piano': _asmrCozyCafe(); break;
+    case 'musicbox': _asmrCozyCafe(); break;
+    case 'kalimba': _asmrCozyCafe(); break;
+    case 'koto': _asmrTeaHouse(); break;
+    case 'gayageum': _asmrTeaHouse(); break;
+    case 'preset_rainy': _asmrRainyWindow(); break;
+    case 'preset_cozy': _asmrCozyHearth(); break;
+    case 'preset_deep': _asmrDreamlikeAtmosphere(); break;
+    case 'preset_starry': _asmrMoonlightRanch(); break;
+    case 'preset_ocean': _asmrOceanShore(); break;
+    case 'preset_cottage': _asmrRainyCottage(); break;
+    case 'preset_zen': _asmrZenGarden(); break;
+    case 'preset_study': _asmrLibraryEvening(); break;
+    case 'preset_traditional': _asmrTeaHouse(); break;
+    case 'tingle_soft': _asmrDreamlikeAtmosphere(); break;
+    case 'tingle_bell': _asmrTeaHouse(); break;
   }
 }
 
@@ -1257,6 +1251,499 @@ function _asmrTingleBell() {
 
   _addSoftWind(now, dur, 0.03);
   _scheduleLoop('tingle_bell', dur * 1000);
+}
+
+function _addTeaCupSounds(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.4, dur - 0.4);
+    const noise = createNoise(rand(0.03, 0.08));
+    const bpf = createFilter('bandpass', rand(1400, 2600), rand(1.2, 2.2));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.6, 1.0), t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.05, 0.12));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.16);
+  }
+}
+
+function _addKettleSounds(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.4, dur - 0.4);
+    const osc = getCtx().createOscillator();
+    const g = createGain(0);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(rand(180, 260), t);
+    osc.frequency.exponentialRampToValueAtTime(rand(120, 170), t + rand(0.18, 0.28));
+    osc.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.2, 0.33));
+    _registerNode(osc); osc.start(t); osc.stop(t + 0.4);
+  }
+}
+
+function _addRoomPresence(now, dur, vol) {
+  const noise = createBrownNoise(dur);
+  const lpf = createFilter('lowpass', 650);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(vol, now + 1.2);
+  g.gain.setValueAtTime(vol, now + dur - 1.5);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+}
+
+function _addPaperRustling(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.2, dur - 0.2);
+    const noise = createNoise(rand(0.08, 0.16));
+    const bpf = createFilter('bandpass', rand(1000, 1800), rand(1.5, 3));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.7, 1.0), t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.12, 0.22));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.25);
+  }
+}
+
+function _addCafeChatter(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.4, dur - 0.4);
+    const noise = createNoise(rand(0.12, 0.24));
+    const bpf = createFilter('bandpass', rand(900, 1500), rand(1.2, 2.4));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.18, 0.3));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.35);
+  }
+}
+
+function _addCupClinks(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.4, dur - 0.4);
+    const osc = getCtx().createOscillator();
+    const g = createGain(0);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(rand(700, 1100), t);
+    osc.frequency.exponentialRampToValueAtTime(rand(500, 800), t + rand(0.05, 0.12));
+    osc.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.09, 0.16));
+    _registerNode(osc); osc.start(t); osc.stop(t + 0.2);
+  }
+}
+
+function _addSoftFootsteps(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.5, dur - 0.5);
+    const noise = createNoise(rand(0.05, 0.1));
+    const bpf = createFilter('bandpass', rand(1200, 2200), rand(1.2, 2.2));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.07, 0.12));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.15);
+  }
+}
+
+function _addPencilSkritch(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.2, dur - 0.2);
+    const noise = createNoise(rand(0.04, 0.1));
+    const bpf = createFilter('bandpass', rand(1800, 3200), rand(2, 4));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.7, 1.0), t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.06, 0.12));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.15);
+  }
+}
+
+function _addTableTaps(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.5, dur - 0.5);
+    const noise = createNoise(rand(0.02, 0.05));
+    const bpf = createFilter('bandpass', rand(1200, 2400), rand(1.2, 2.4));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.8, 1.0), t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.05, 0.09));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.12);
+  }
+}
+
+function _addFountainAmbience(now, dur, vol) {
+  const noise = createNoise(dur);
+  const lpf = createFilter('lowpass', 1400);
+  const hpf = createFilter('highpass', 160);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(vol, now + 1.2);
+  g.gain.setValueAtTime(vol, now + dur - 1.5);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+}
+
+function _addWindChimes(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.6, dur - 0.8);
+    const osc = getCtx().createOscillator();
+    const g = createGain(0);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(rand(1400, 2400), t);
+    osc.frequency.exponentialRampToValueAtTime(rand(1800, 3200), t + 0.08);
+    osc.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.18, 0.32));
+    _registerNode(osc); osc.start(t); osc.stop(t + 0.35);
+  }
+}
+
+function _addDistantInsects(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.3, dur - 0.3);
+    const osc = getCtx().createOscillator();
+    const g = createGain(0);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(rand(3200, 5200), t);
+    osc.frequency.exponentialRampToValueAtTime(rand(2800, 4500), t + rand(0.06, 0.12));
+    osc.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.08, 0.16));
+    _registerNode(osc); osc.start(t); osc.stop(t + 0.2);
+  }
+}
+
+function _addTingleTap(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.2, dur - 0.2);
+    const noise = createNoise(rand(0.02, 0.05));
+    const bpf = createFilter('bandpass', rand(3600, 7200), rand(1.2, 2.6));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.05, 0.1));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.12);
+  }
+}
+
+function _addSoftBrush(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.25, dur - 0.25);
+    const noise = createNoise(rand(0.03, 0.08));
+    const bpf = createFilter('bandpass', rand(1400, 2600), rand(1.4, 2.8));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.7, 1.0), t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.08, 0.15));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.18);
+  }
+}
+
+function _addSparseInstrumentPhrase(now, dur, notes, vol, type = 'triangle', gap = 3.2) {
+  const ctx = getCtx();
+  notes.forEach((freq, idx) => {
+    const start = now + 0.8 + idx * gap + rand(-0.12, 0.12);
+    if (start >= now + dur - 0.4) return;
+    const osc = ctx.createOscillator();
+    const g = createGain(0);
+    osc.type = type;
+    osc.frequency.value = freq;
+    osc.detune.setValueAtTime(rand(-8, 8), start);
+    osc.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, start);
+    g.gain.linearRampToValueAtTime(vol, start + 0.018);
+    g.gain.exponentialRampToValueAtTime(0.001, start + rand(1.1, 1.7));
+    _registerNode(osc); osc.start(start); osc.stop(start + 1.9);
+  });
+}
+
+function _addCourtyardAmbience(now, dur, vol) {
+  const noise = createBrownNoise(dur);
+  const lpf = createFilter('lowpass', 900);
+  const hpf = createFilter('highpass', 100);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(vol, now + 1.5);
+  g.gain.setValueAtTime(vol, now + dur - 1.5);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+}
+
+function _addHanokCourtyard(now, dur, vol) {
+  const noise = createBrownNoise(dur);
+  const lpf = createFilter('lowpass', 720);
+  const hpf = createFilter('highpass', 130);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(vol, now + 1.2);
+  g.gain.setValueAtTime(vol, now + dur - 1.4);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+}
+
+function _addShishiOdoshi(now, dur, count, vol) {
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.6, dur - 0.8);
+    const noise = createNoise(rand(0.05, 0.1));
+    const bpf = createFilter('bandpass', rand(900, 1400), rand(0.8, 1.6));
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.12, 0.22));
+    _registerNode(noise); noise.start(t); noise.stop(t + 0.25);
+  }
+}
+
+function _addPavilionAmbience(now, dur, vol) {
+  const noise = createBrownNoise(dur);
+  const lpf = createFilter('lowpass', 1100);
+  const hpf = createFilter('highpass', 80);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(vol, now + 1.4);
+  g.gain.setValueAtTime(vol, now + dur - 1.3);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+}
+
+function _addGayageumPhrase(now, dur, vol) {
+  const ctx = getCtx();
+  const phrase = [196, 220, 246.94];
+  phrase.forEach((freq, idx) => {
+    const start = now + 1.0 + idx * 5.0;
+    if (start >= now + dur - 0.6) return;
+    const osc = ctx.createOscillator();
+    const g = createGain(0);
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    osc.detune.setValueAtTime(rand(-2, 2), start);
+    osc.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, start);
+    g.gain.linearRampToValueAtTime(vol * 0.7, start + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.001, start + rand(1.7, 2.4));
+    _registerNode(osc); osc.start(start); osc.stop(start + 2.6);
+  });
+}
+
+function _addKotoPhrase(now, dur, vol) {
+  const ctx = getCtx();
+  const phrase = [392, 493.88, 587.33];
+  phrase.forEach((freq, idx) => {
+    const start = now + 0.9 + idx * 4.8;
+    if (start >= now + dur - 0.6) return;
+    const osc = ctx.createOscillator();
+    const g = createGain(0);
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    osc.detune.setValueAtTime(rand(-1.5, 1.5), start);
+    osc.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, start);
+    g.gain.linearRampToValueAtTime(vol * 0.68, start + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.001, start + rand(1.4, 2.0));
+    _registerNode(osc); osc.start(start); osc.stop(start + 2.2);
+  });
+}
+
+function _asmrDreamyMeadow() {
+  const dur = 24;
+  const now = getCtx().currentTime;
+  _addSoftWind(now, dur, 0.16);
+  _addBirdChirps(now, dur, 8, 0.05);
+  _addCrickets(now, dur, 0.08);
+  _asmrSheepLayer(now, dur, 0.05);
+  _scheduleLoop('dreamy_meadow', dur * 1000);
+}
+
+function _asmrMoonlightRanch() {
+  const dur = 26;
+  const now = getCtx().currentTime;
+  _addSoftWind(now, dur, 0.2);
+  _addCrickets(now, dur, 0.24);
+  _asmrSheepLayer(now, dur, 0.06);
+  _scheduleLoop('moonlight_ranch', dur * 1000);
+}
+
+function _asmrCozyHearth() {
+  const dur = 22;
+  const now = getCtx().currentTime;
+  _asmrFireLayer(now, dur, 0.2);
+  _addSoftWind(now, dur, 0.08);
+  _scheduleLoop('cozy_hearth', dur * 1000);
+}
+
+function _asmrDreamlikeAtmosphere() {
+  const dur = 28;
+  const now = getCtx().currentTime;
+  _asmrBrownLayer(now, dur, 0.16);
+  _addSoftWind(now, dur, 0.04);
+  _asmrHeartbeatLayer(now, dur, 0.04);
+  _scheduleLoop('dreamlike_atmosphere', dur * 1000);
+}
+
+function _asmrTeaHouse() {
+  const dur = 24;
+  const now = getCtx().currentTime;
+  _asmrBrownLayer(now, dur, 0.09);
+  _addTeaCupSounds(now, dur, 14, 0.058);
+  _addKettleSounds(now, dur, 9, 0.05);
+  _addRoomPresence(now, dur, 0.055);
+  _addSoftWind(now, dur, 0.008);
+  _addPluckedMelody(now, dur, [523.25, 659.25, 783.99], 0.02, 'triangle');
+  _scheduleLoop('tea_house', dur * 1000);
+}
+
+function _asmrLibraryEvening() {
+  const dur = 22;
+  const now = getCtx().currentTime;
+  _addPageTurns(now, dur, 14, 0.14);
+  _addWritingScratches(now, dur, 54, 0.12, 2400);
+  _addPaperRustling(now, dur, 14, 0.07);
+  _addSoftWind(now, dur, 0.01);
+  _addPencilSkritch(now, dur, 22, 0.06);
+  _scheduleLoop('library_evening', dur * 1000);
+}
+
+function _asmrCozyCafe() {
+  const dur = 24;
+  const now = getCtx().currentTime;
+  _addPluckedMelody(now, dur, [440, 523.25, 587.33, 659.25], 0.05, 'triangle');
+  _addCafeChatter(now, dur, 8, 0.042);
+  _addCupClinks(now, dur, 6, 0.045);
+  _addSoftFootsteps(now, dur, 6, 0.03);
+  _addTableTaps(now, dur, 5, 0.03);
+  _addSoftWind(now, dur, 0.025);
+  _asmrBrownLayer(now, dur, 0.04);
+  _scheduleLoop('cozy_cafe', dur * 1000);
+}
+
+function _asmrRainyCottage() {
+  const dur = 24;
+  const now = getCtx().currentTime;
+  _asmrRainLayer(now, dur, 0.16);
+  _asmrFireLayer(now, dur, 0.16);
+  _addSoftWind(now, dur, 0.08);
+  _addCrickets(now, dur, 0.16);
+  _scheduleLoop('rainy_cottage', dur * 1000);
+}
+
+function _asmrForestCamp() {
+  const dur = 24;
+  const now = getCtx().currentTime;
+  _asmrFireLayer(now, dur, 0.09);
+  _addSoftWind(now, dur, 0.12);
+  _addBirdChirps(now, dur, 6, 0.04);
+  _scheduleLoop('forest_camp', dur * 1000);
+}
+
+function _asmrRainyWindow() {
+  const dur = 20;
+  const now = getCtx().currentTime;
+  const noise = createNoise(dur);
+  const lpf = createFilter('lowpass', 1800);
+  const hpf = createFilter('highpass', 220);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.26, now + 1.2);
+  for (let i = 0; i < 24; i++) {
+    const tapTime = now + rand(0.1, dur - 0.4);
+    const tap = createNoise(0.04);
+    const bpf = createFilter('bandpass', rand(4200, 9000), rand(0.6, 1.8));
+    const tg = createGain(0);
+    tap.connect(bpf); bpf.connect(tg); tg.connect(_asmrtGain);
+    tg.gain.setValueAtTime(rand(0.04, 0.1), tapTime);
+    tg.gain.exponentialRampToValueAtTime(0.001, tapTime + 0.04);
+    _registerNode(tap); tap.start(tapTime); tap.stop(tapTime + 0.06);
+  }
+  g.gain.setValueAtTime(0.26, now + dur - 2);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+  _scheduleLoop('rainy_window', dur * 1000);
+}
+
+function _asmrOceanShore() {
+  const dur = 24;
+  const now = getCtx().currentTime;
+  _asmrOceanLayer(now, dur, 0.3, 8);
+  _addSoftWind(now, dur, 0.05);
+  _addBirdChirps(now, dur, 4, 0.02);
+  _scheduleLoop('ocean_shore', dur * 1000);
+}
+
+function _asmrKoreanTraditionalNight() {
+  const dur = 22;
+  const now = getCtx().currentTime;
+  _addHanokCourtyard(now, dur, 0.056);
+  _addDistantInsects(now, dur, 12, 0.04);
+  _addWindChimes(now, dur, 3, 0.014);
+  _addSoftWind(now, dur, 0.008);
+  _scheduleLoop('korean_traditional_night', dur * 1000);
+}
+
+function _asmrJapaneseTraditionalNight() {
+  const dur = 22;
+  const now = getCtx().currentTime;
+  _addShishiOdoshi(now, dur, 8, 0.036);
+  _addWindChimes(now, dur, 8, 0.028);
+  _addSoftWind(now, dur, 0.006);
+  _scheduleLoop('japanese_traditional_night', dur * 1000);
+}
+
+function _asmrChineseTraditionalNight() {
+  const dur = 22;
+  const now = getCtx().currentTime;
+  _addWaterDrops(now, dur, 16, 0.042);
+  _addPavilionAmbience(now, dur, 0.052);
+  _addSoftWind(now, dur, 0.006);
+  _scheduleLoop('chinese_traditional_night', dur * 1000);
+}
+
+function _asmrTingleTherapy() {
+  const dur = 16;
+  const now = getCtx().currentTime;
+  _addTingleTap(now, dur, 12, 0.038);
+  _addSoftBrush(now, dur, 9, 0.028);
+  _addPaperRustling(now, dur, 6, 0.024);
+  _addSoftWind(now, dur, 0.012);
+  _scheduleLoop('tingle_therapy', dur * 1000);
+}
+
+function _asmrSummerInsectNight() {
+  const dur = 20;
+  const now = getCtx().currentTime;
+  _addCrickets(now, dur, 0.16);
+  _addDistantInsects(now, dur, 6, 0.04);
+  _addSoftWind(now, dur, 0.025);
+  _scheduleLoop('summer_insect_night', dur * 1000);
+}
+
+function _asmrCozyPlaza() {
+  const dur = 22;
+  const now = getCtx().currentTime;
+  _addCafeChatter(now, dur, 14, 0.038);
+  _addSoftFootsteps(now, dur, 12, 0.035);
+  _addFountainAmbience(now, dur, 0.076);
+  _addSoftWind(now, dur, 0.012);
+  _scheduleLoop('cozy_plaza', dur * 1000);
 }
 
 function _asmrForest() {
@@ -1607,9 +2094,10 @@ function _asmrGayageum() {
 function _asmrZenGarden() {
   const dur = 20;
   const now = getCtx().currentTime;
-  _asmrRiverLayer(now, dur, 0.12);
-  _addSoftWind(now, dur, 0.08);
-  _addZenBells(now, dur, 5, 0.08);
+  _asmrRiverLayer(now, dur, 0.11);
+  _addWaterDrops(now, dur, 10, 0.032);
+  _addSoftWind(now, dur, 0.05);
+  _addZenBells(now, dur, 5, 0.07);
   _scheduleLoop('zen_garden', dur * 1000);
 }
 
@@ -1721,16 +2209,16 @@ function _asmrSheepLayer(now, dur, vol) {
   });
 }
 
-function _asmrOceanLayer(now, dur) {
-  for (let w = 0; w < 5; w++) {
-    const t = now + w * 4.5;
-    const waveDur = 4;
+function _asmrOceanLayer(now, dur, vol = 0.26, waves = 5) {
+  for (let w = 0; w < waves; w++) {
+    const t = now + w * (dur / Math.max(3, waves));
+    const waveDur = Math.max(2.8, dur / Math.max(4, waves));
     const noise = createNoise(waveDur);
     const lpf = createFilter('lowpass', 380);
     const g = createGain(0);
     noise.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.26, t + 2);
+    g.gain.linearRampToValueAtTime(vol, t + 2);
     g.gain.linearRampToValueAtTime(0, t + waveDur);
     _registerNode(noise); noise.start(t); noise.stop(t + waveDur + 0.1);
   }

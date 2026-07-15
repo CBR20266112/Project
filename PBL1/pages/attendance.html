@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="page.title">Attendance | SleepySheep</title>
+  <title data-i18n="page.title">출석체크 | SleepySheep</title>
   <link rel="stylesheet" href="../css/variables.css">
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/layout.css">
@@ -22,8 +22,8 @@
       <div class="header-left">
         <button class="btn-back" onclick="location.href='../index.html'" title="뒤로가기" data-i18n-title="common.back">‹</button>
         <div>
-          <h1 data-i18n="page.heading">📅 Attendance</h1>
-          <p class="subtitle" data-i18n="page.subtitle">Check in daily and collect stories</p>
+          <h1 data-i18n="page.heading">📅 출석체크</h1>
+          <p class="subtitle" data-i18n="page.subtitle">매일 출석하고 스토리를 모아요</p>
         </div>
       </div>
       <div class="header-right">
@@ -39,13 +39,13 @@
         <div class="streak-banner">
           <span class="streak-number" id="att-streak">0</span>
           <div class="streak-text">
-            <div class="font-bold" style="color:#fff;" data-i18n="attendance.streak.current">days in a row</div>
-            <div id="att-next-milestone" data-i18n="attendance.milestone.loading">Calculating next story…</div>
+            <div class="font-bold" style="color:#fff;" data-i18n="attendance.streak.current">연속 출석</div>
+            <div id="att-next-milestone" data-i18n="attendance.milestone.loading">다음 스토리를 계산 중…</div>
           </div>
         </div>
         <div style="margin-top: var(--space-3);">
           <div class="flex justify-between" style="font-size: var(--font-size-xs); color: var(--text-muted); margin-bottom: 6px;">
-            <span data-i18n="attendance.weeklyTitle">This cycle</span>
+            <span data-i18n="attendance.weeklyTitle">이번 주기</span>
             <span id="att-week-label">0 / 7</span>
           </div>
           <div class="flex gap-2" id="att-week-dots" style="justify-content:center;"></div>
@@ -54,20 +54,20 @@
 
       <section class="glass card" style="padding: var(--space-4); text-align:center;">
         <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); line-height: 1.6;" data-i18n-html="attendance.description">
-          Check in daily to earn wool, illustrations, and 4-panel comics.<br>
-          A 7-, 14-, and 21-day streak unlocks stories.
+          매일 출석해 양털, 일러스트, 4컷 만화를 모을 수 있어요.<br>
+          7일·14일·21일 연속 출석하면 스토리가 열립니다.
         </p>
-        <button class="btn btn-primary w-full" id="btn-check-in" data-i18n="attendance.checkIn">Check in today</button>
+        <button class="btn btn-primary w-full" id="btn-check-in" data-i18n="attendance.checkIn">오늘 출석하기</button>
         <p id="att-status-msg" class="text-muted" style="font-size: var(--font-size-xs); margin-top: var(--space-2);"></p>
       </section>
 
       <section class="glass card" style="padding: var(--space-4);">
-        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);" data-i18n="attendance.storySectionTitle">📖 Attendance stories</h3>
+        <h3 class="font-bold" style="font-size: var(--font-size-sm); margin-bottom: var(--space-3); color: var(--text-secondary);" data-i18n="attendance.storySectionTitle">📖 출석 스토리</h3>
         <div id="story-list" class="flex flex-col gap-2"></div>
       </section>
 
       <section style="margin-top: var(--space-2);">
-        <a href="gallery.html" class="btn btn-secondary btn-block-link" data-i18n="attendance.galleryLink">View in gallery</a>
+        <a href="gallery.html" class="btn btn-secondary btn-block-link" data-i18n="attendance.galleryLink">갤러리에서 보기</a>
       </section>
     </div>
 

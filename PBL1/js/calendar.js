@@ -7,15 +7,17 @@ import { formatDuration } from './sleep.js';
 import { t } from './i18n.js';
 
 const MOOD_EMOJIS = ['😢', '🥱', '😐', '😊', '🥰'];
-const WEEKDAY_LABELS = [
-  t('weekday.sun'),
-  t('weekday.mon'),
-  t('weekday.tue'),
-  t('weekday.wed'),
-  t('weekday.thu'),
-  t('weekday.fri'),
-  t('weekday.sat'),
-];
+function getWeekdayLabels(lang = getSettings().language || 'en') {
+  return [
+    t('weekday.sun', {}, lang),
+    t('weekday.mon', {}, lang),
+    t('weekday.tue', {}, lang),
+    t('weekday.wed', {}, lang),
+    t('weekday.thu', {}, lang),
+    t('weekday.fri', {}, lang),
+    t('weekday.sat', {}, lang),
+  ];
+}
 
 /** 로컬 기준 YYYY-MM-DD */
 export function toDateKey(year, month, day) {
@@ -164,8 +166,9 @@ export function formatMonthTitle(year, month) {
 /** 날짜 라벨 */
 export function formatDateLabel(dateStr) {
   const [y, m, d] = dateStr.split('-');
-  const dow = WEEKDAY_LABELS[new Date(Number(y), Number(m) - 1, Number(d)).getDay()];
-  return t('calendar.dateLabel', { year: y, month: parseInt(m, 10), day: parseInt(d, 10), dow });
+  const lang = getSettings().language || 'en';
+  const dow = getWeekdayLabels(lang)[new Date(Number(y), Number(m) - 1, Number(d)).getDay()];
+  return t('calendar.dateLabel', { year: y, month: parseInt(m, 10), day: parseInt(d, 10), dow }, lang);
 }
 
-export { WEEKDAY_LABELS, MOOD_EMOJIS, formatDuration };
+export { MOOD_EMOJIS, formatDuration };
