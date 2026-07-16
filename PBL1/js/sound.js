@@ -1,4 +1,4 @@
-﻿/**
+/**
  * sound.js - Sleepy Sheep ?ъ슫???쒖뒪?? * Web Audio API瑜??ъ슜???꾨줈?쒖????ъ슫???⑹꽦
  */
 
@@ -1457,18 +1457,36 @@ function _addFountainAmbience(now, dur, vol) {
 }
 
 function _addWindChimes(now, dur, count, vol) {
+  const ctx = getCtx();
   for (let i = 0; i < count; i++) {
     const t = now + rand(0.6, dur - 0.8);
-    const osc = getCtx().createOscillator();
-    const g = createGain(0);
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.setValueAtTime(2000, t);
+    lpf.Q.setValueAtTime(0.5, t);
+    
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(rand(1400, 2400), t);
-    osc.frequency.exponentialRampToValueAtTime(rand(1800, 3200), t + 0.08);
-    osc.connect(g); g.connect(_asmrtGain);
+    const baseFreq = rand(1100, 1600);
+    osc.frequency.setValueAtTime(baseFreq, t);
+    osc.frequency.linearRampToValueAtTime(baseFreq * 1.015, t + 0.15); // 완만한 피치 스윕
+    
+    osc.connect(lpf);
+    lpf.connect(g);
+    g.connect(_asmrtGain);
+    
+    const attack = 0.05; // 50ms 어택으로 클릭음 완전 제거
+    const release = rand(0.7, 1.3);
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol, t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.18, 0.32));
-    _registerNode(osc); osc.start(t); osc.stop(t + 0.35);
+    g.gain.linearRampToValueAtTime(vol * 0.9, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.001, t + release);
+    
+    _registerNode(osc);
+    _registerNode(lpf);
+    _registerNode(g);
+    osc.start(t);
+    osc.stop(t + release + 0.1);
   }
 }
 
@@ -1936,7 +1954,7 @@ function _asmrKoreanTraditionalNight() {
   _addHanokCourtyard(now, dur, 0.056);
   _addDistantInsects(now, dur, 12, 0.04);
   _addWindChimes(now, dur, 3, 0.014);
-  _addSoftWind(now, dur, 0.008);
+  _addSoftWind(now, dur, 0.003); // 바람 소리 감쇠 (기존 0.008)
   _scheduleLoop('korean_traditional_night', dur * 1000);
 }
 
@@ -1945,7 +1963,7 @@ function _asmrJapaneseTraditionalNight() {
   const now = getCtx().currentTime;
   _addShishiOdoshi(now, dur, 8, 0.036);
   _addWindChimes(now, dur, 8, 0.028);
-  _addSoftWind(now, dur, 0.006);
+  _addSoftWind(now, dur, 0.002); // 바람 소리 감쇠 (기존 0.006)
   _scheduleLoop('japanese_traditional_night', dur * 1000);
 }
 
@@ -1954,7 +1972,7 @@ function _asmrChineseTraditionalNight() {
   const now = getCtx().currentTime;
   _addWaterDrops(now, dur, 16, 0.042);
   _addPavilionAmbience(now, dur, 0.052);
-  _addSoftWind(now, dur, 0.006);
+  _addSoftWind(now, dur, 0.002); // 바람 소리 감쇠 (기존 0.006)
   _scheduleLoop('chinese_traditional_night', dur * 1000);
 }
 
@@ -2493,15 +2511,32 @@ function _addWaterDrops(now, dur, count, vol) {
   for (let i = 0; i < count; i++) {
     const t = now + rand(0.2, dur - 0.2);
     const osc = ctx.createOscillator();
-    const g = createGain(0);
+    const g = ctx.createGain();
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.setValueAtTime(750, t);
+    lpf.Q.setValueAtTime(0.4, t);
+    
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(rand(700, 1200), t);
-    osc.frequency.exponentialRampToValueAtTime(rand(280, 460), t + 0.12);
-    osc.connect(g); g.connect(_asmrtGain);
+    const startFreq = rand(450, 750); // 고음을 낮추어 한결 부드럽게
+    osc.frequency.setValueAtTime(startFreq, t);
+    osc.frequency.exponentialRampToValueAtTime(startFreq * 0.68, t + 0.16); // 부드럽고 완만한 피치 스윕
+    
+    osc.connect(lpf);
+    lpf.connect(g);
+    g.connect(_asmrtGain);
+    
+    const attack = 0.04; // 40ms 어택으로 클릭 노이즈(뿅/뾱) 방지
+    const release = rand(0.3, 0.65);
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol * rand(0.4, 1), t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.12, 0.24));
-    _registerNode(osc); osc.start(t); osc.stop(t + 0.28);
+    g.gain.linearRampToValueAtTime(vol * rand(0.5, 0.95), t + attack);
+    g.gain.exponentialRampToValueAtTime(0.001, t + release);
+    
+    _registerNode(osc);
+    _registerNode(lpf);
+    _registerNode(g);
+    osc.start(t);
+    osc.stop(t + release + 0.1);
   }
 }
 

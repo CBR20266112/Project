@@ -154,6 +154,16 @@ export function initCommon() {
   initNav();
   initPageAnimation();
   initPwaServicesLazy();
+
+  // 멀티페이지 이동 시 사운드 끊김을 보완하는 Handoff 자동 실행 처리
+  const handleInteraction = () => {
+    import('./sound.js').then(({ resumeAudio, recoverAudioState }) => {
+      resumeAudio();
+      recoverAudioState();
+    }).catch(() => {});
+  };
+  document.addEventListener('click', handleInteraction, { passive: true });
+  document.addEventListener('touchstart', handleInteraction, { passive: true });
 }
 
 /** PWA 알람·설치 유도 */
