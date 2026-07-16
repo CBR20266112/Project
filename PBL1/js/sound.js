@@ -888,6 +888,8 @@ export const ASMR_LIST = [
   { id: 'tingle_therapy', category: 'cozy', emoji: '✨', name: 'Tingle Therapy', desc: 'Gentle tapping and brushing for soft relaxation' },
   { id: 'summer_insect_night', category: 'nature', emoji: '🦗', name: 'Summer Insect Night', desc: 'Crickets, distant insects, and a quiet breeze after sunset' },
   { id: 'cozy_plaza', category: 'cozy', emoji: '🪑', name: 'Cozy Plaza', desc: 'A peaceful town square with faraway chatter and fountain air' },
+  { id: 'laundry_room', category: 'cozy', emoji: '🧺', name: 'Laundry Room', desc: 'A late-night laundry room with gentle hums and soft water textures' },
+  { id: 'space_station_night', category: 'nature', emoji: '🚀', name: 'Space Station Night', desc: 'Deep background fan hums and soft system clicks from orbit' },
 ];
 export function getAsmrItem(id) {
   return getAsmrList().find(i => i.id === id) ?? null;
@@ -922,13 +924,22 @@ let _asmrTimerId     = null;
 let _asmrTimerEnd    = null;
 
 export function playAsmr(id, opts = {}) {
+  if (_bgmRunning) {
+    fadeOutBgm(1.5);
+  }
+
   stopAsmr({ keepTimer: true });
   if (!isAsmrEnabled()) return;
   _currentAsmrId = id;
   _prefs.lastAsmrId = id;
   savePrefs();
-  if (opts.fadeIn) _fadeInAsmrGain(2.5);
+  if (opts.fadeIn) _fadeInAsmrGain(opts.fadeInSec ?? 2.5);
   _startAsmrById(id);
+  // 재생 상태 sessionStorage 저장
+  try {
+    sessionStorage.setItem('ss_asmr_id', id);
+    sessionStorage.setItem('ss_asmr_running', 'true');
+  } catch(e) {}
 }
 
 export function stopAsmr(opts = {}) {
@@ -942,6 +953,16 @@ export function stopAsmr(opts = {}) {
   _asmrNodes = [];
   if (_asmrtGain) _asmrtGain.gain.value = getAsmrVolume();
   if (!opts.keepTimer) clearAsmrSleepTimer();
+  // sessionStorage 업데이트
+  try {
+    sessionStorage.setItem('ss_asmr_id', '');
+    sessionStorage.setItem('ss_asmr_running', 'false');
+  } catch(e) {}
+
+  // ASMR 종료 시, 현재 페이지가 기본 BGM 가능 페이지라면 기본 BGM을 서서히 켬
+  if (_isBgmAllowedPage()) {
+    fadeInBgm(1.5);
+  }
 }
 
 export function fadeOutAndStopAsmr(sec = 4) {
@@ -964,13 +985,17 @@ export function fadeOutAndStopAsmr(sec = 4) {
 export function setAsmrSleepTimer(minutes) {
   clearAsmrSleepTimer();
   if (!minutes || minutes <= 0) return;
-  _asmrTimerEnd = Date.now() + minutes * 60 * 1000;
+  const endTime = Date.now() + minutes * 60 * 1000;
+  _asmrTimerEnd = endTime;
   _asmrTimerId = setTimeout(() => {
     fadeOutAndStopAsmr(5);
     fadeOutAndStopBinaural(5);
+    try { sessionStorage.removeItem('ss_timer_end'); } catch(e) {}
   }, minutes * 60 * 1000);
   _prefs.asmrTimerMin = minutes;
   savePrefs();
+  // 타이머 종료 시간 sessionStorage 저장
+  try { sessionStorage.setItem('ss_timer_end', String(endTime)); } catch(e) {}
 }
 
 export function clearAsmrSleepTimer() {
@@ -1024,6 +1049,8 @@ function _startAsmrById(id) {
     case 'tingle_therapy': _asmrTingleTherapy(); break;
     case 'summer_insect_night': _asmrSummerInsectNight(); break;
     case 'cozy_plaza': _asmrCozyPlaza(); break;
+    case 'laundry_room': _asmrLaundryRoom(); break;
+    case 'space_station_night': _asmrSpaceStationNight(); break;
     case 'sheep': _asmrDreamyMeadow(); break;
     case 'ranch': _asmrMoonlightRanch(); break;
     case 'bugs': _asmrForestCamp(); break;
@@ -1114,10 +1141,49 @@ function _asmrRanch() {
     o.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
     g.gain.setValueAtTime(0, t);
     g.gain.linearRampToValueAtTime(0.06, t + 0.1);
-    g.gain.linearRampToValueAtTime(0, t + 0.6);
+    g.gain.linearRampToValueAtTime(0, t + 0.7);
     _registerNode(o); o.start(t); o.stop(t + 0.7);
   });
   _scheduleLoop('ranch', dur * 1000);
+}
+
+function _asmrForestCamp() {
+  const dur = 24;
+  const now = getCtx().currentTime;
+  // 자연음 65% - 바람 + 새소리
+  _addSoftWind(now, dur, 0.12);
+  _addBirdChirps(now, dur, 5, 0.038);
+  _addCrickets(now, dur, 0.06);
+  // 특색음 35% - 모닥불 + 장작 튀는 소리 강화
+  _asmrFireLayer(now, dur, 0.10);
+  _addFirewoodCrackle(now, dur, 30, 0.055);
+  _scheduleLoop('forest_camp', dur * 1000);
+}
+
+function _asmrRainyWindow() {
+  const dur = 20;
+  const now = getCtx().currentTime;
+  const noise = createNoise(dur);
+  const lpf = createFilter('lowpass', 1800);
+  const hpf = createFilter('highpass', 220);
+  const g = createGain(0);
+  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.26, now + 1.2);
+  for (let i = 0; i < 24; i++) {
+    const tapTime = now + rand(0.1, dur - 0.4);
+    const tap = createNoise(0.04);
+    const bpf = createFilter('bandpass', rand(4200, 9000), rand(0.6, 1.8));
+    const tg = createGain(0);
+    tap.connect(bpf); bpf.connect(tg); tg.connect(_asmrtGain);
+    tg.gain.setValueAtTime(rand(0.04, 0.1), tapTime);
+    tg.gain.exponentialRampToValueAtTime(0.001, tapTime + 0.04);
+    _registerNode(tap); tap.start(tapTime); tap.stop(tapTime + 0.06);
+  }
+  g.gain.setValueAtTime(0.26, now + dur - 2);
+  g.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
+  _scheduleLoop('rainy_window', dur * 1000);
 }
 
 function _asmrBugs() {
@@ -1395,18 +1461,36 @@ function _addFountainAmbience(now, dur, vol) {
 }
 
 function _addWindChimes(now, dur, count, vol) {
+  const ctx = getCtx();
   for (let i = 0; i < count; i++) {
     const t = now + rand(0.6, dur - 0.8);
-    const osc = getCtx().createOscillator();
-    const g = createGain(0);
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.setValueAtTime(2000, t);
+    lpf.Q.setValueAtTime(0.5, t);
+    
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(rand(1400, 2400), t);
-    osc.frequency.exponentialRampToValueAtTime(rand(1800, 3200), t + 0.08);
-    osc.connect(g); g.connect(_asmrtGain);
+    const baseFreq = rand(1100, 1600);
+    osc.frequency.setValueAtTime(baseFreq, t);
+    osc.frequency.linearRampToValueAtTime(baseFreq * 1.015, t + 0.15); // 완만한 피치 스윕
+    
+    osc.connect(lpf);
+    lpf.connect(g);
+    g.connect(_asmrtGain);
+    
+    const attack = 0.05; // 50ms 어택으로 클릭음 완전 제거
+    const release = rand(0.7, 1.3);
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol, t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.18, 0.32));
-    _registerNode(osc); osc.start(t); osc.stop(t + 0.35);
+    g.gain.linearRampToValueAtTime(vol * 0.9, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.001, t + release);
+    
+    _registerNode(osc);
+    _registerNode(lpf);
+    _registerNode(g);
+    osc.start(t);
+    osc.stop(t + release + 0.1);
   }
 }
 
@@ -1563,22 +1647,231 @@ function _addKotoPhrase(now, dur, vol) {
   });
 }
 
+/**
+ * 해금풍: 삼각파 + 지연 비브라토 LFO.
+ * click 방지: attack 0.8s, hold 유지 후 release 1.2s
+ */
+function _addKoreanHaegeum(now, dur, vol) {
+  const ctx = getCtx();
+  const notes = [
+    { freq: 293.66, t: 1.0,  hold: 5.0 },
+    { freq: 246.94, t: 8.5,  hold: 5.5 },
+    { freq: 329.63, t: 17.0, hold: 5.0 },
+    { freq: 220.00, t: 25.0, hold: 4.5 },
+  ];
+  notes.forEach(({ freq, t, hold }) => {
+    const start = now + t;
+    if (start >= now + dur - 1.0) return;
+    const attack  = 0.8;
+    const release = 1.2;
+    const osc     = ctx.createOscillator();
+    const vibLfo  = ctx.createOscillator();
+    const vibGain = ctx.createGain();
+    const env     = ctx.createGain();
+    const lpf     = ctx.createBiquadFilter();
+    lpf.type  = 'lowpass';
+    lpf.frequency.value = 900;
+    lpf.Q.value = 0.8;
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, start);
+    // LFO: 처음 2초는 0, 이후 서서히 깊어짐 → 클릭 방지
+    vibGain.gain.setValueAtTime(0, start);
+    vibGain.gain.linearRampToValueAtTime(3.5, start + 2.5);
+    vibLfo.type = 'sine';
+    vibLfo.frequency.value = 5.2;
+    vibLfo.connect(vibGain);
+    vibGain.connect(osc.frequency);
+    osc.connect(lpf); lpf.connect(env); env.connect(_asmrtGain);
+    env.gain.setValueAtTime(0, start);
+    env.gain.linearRampToValueAtTime(vol, start + attack);
+    env.gain.setValueAtTime(vol, start + hold - release);
+    env.gain.linearRampToValueAtTime(0, start + hold);
+    _registerNode(osc); _registerNode(vibLfo);
+    vibLfo.start(start); vibLfo.stop(start + hold + 0.2);
+    osc.start(start);    osc.stop(start + hold + 0.2);
+  });
+}
+
+/**
+ * 대금풍: 저역 밴드패스 노이즈(숨결) + 느린 사인파 멜로디.
+ * click 방지: noise gain은 linearRamp, osc attack 1.0s
+ */
+function _addKoreanDaegeum(now, dur, vol) {
+  const ctx = getCtx();
+  const notes = [
+    { freq: 196.00, t: 3.5,  hold: 6.0 },
+    { freq: 174.61, t: 12.5, hold: 6.5 },
+    { freq: 196.00, t: 22.0, hold: 5.5 },
+  ];
+  notes.forEach(({ freq, t, hold }) => {
+    const start   = now + t;
+    if (start >= now + dur - 1.0) return;
+    const attack  = 1.0;
+    const release = 1.5;
+    // 숨결 노이즈
+    const breath = createNoise(hold + 0.3);
+    const bpf    = createFilter('bandpass', freq * 1.3, 6);
+    const ng     = ctx.createGain();
+    breath.connect(bpf); bpf.connect(ng); ng.connect(_asmrtGain);
+    ng.gain.setValueAtTime(0, start);
+    ng.gain.linearRampToValueAtTime(vol * 0.28, start + attack);
+    ng.gain.setValueAtTime(vol * 0.28, start + hold - release);
+    ng.gain.linearRampToValueAtTime(0, start + hold);
+    _registerNode(breath); breath.start(start); breath.stop(start + hold + 0.3);
+    // 피치
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass'; lpf.frequency.value = 700; lpf.Q.value = 0.7;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, start);
+    osc.connect(lpf); lpf.connect(env); env.connect(_asmrtGain);
+    env.gain.setValueAtTime(0, start);
+    env.gain.linearRampToValueAtTime(vol, start + attack);
+    env.gain.setValueAtTime(vol * 0.85, start + hold - release);
+    env.gain.linearRampToValueAtTime(0, start + hold);
+    _registerNode(osc); osc.start(start); osc.stop(start + hold + 0.2);
+  });
+}
+
+/**
+ * 샤쿠하치풍: 저역 노이즈(숨결) + 사인파. 긴 어택으로 부드러운 진입.
+ * click 방지: attack 1.2s, release 1.5s
+ */
+function _addJapaneseShakunoflute(now, dur, vol) {
+  const ctx = getCtx();
+  const notes = [
+    { freq: 207.65, t: 1.5,  hold: 7.0 },
+    { freq: 184.99, t: 11.5, hold: 6.5 },
+    { freq: 207.65, t: 20.5, hold: 7.0 },
+  ];
+  notes.forEach(({ freq, t, hold }) => {
+    const start   = now + t;
+    if (start >= now + dur - 1.0) return;
+    const attack  = 1.2;
+    const release = 1.5;
+    // 숨결
+    const breath = createNoise(hold + 0.3);
+    const lpfN   = createFilter('lowpass', freq * 2.2, 1.5);
+    const ng     = ctx.createGain();
+    breath.connect(lpfN); lpfN.connect(ng); ng.connect(_asmrtGain);
+    ng.gain.setValueAtTime(0, start);
+    ng.gain.linearRampToValueAtTime(vol * 0.38, start + attack);
+    ng.gain.setValueAtTime(vol * 0.38, start + hold - release);
+    ng.gain.linearRampToValueAtTime(0, start + hold);
+    _registerNode(breath); breath.start(start); breath.stop(start + hold + 0.3);
+    // 피치
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass'; lpf.frequency.value = 650; lpf.Q.value = 0.7;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, start);
+    osc.connect(lpf); lpf.connect(env); env.connect(_asmrtGain);
+    env.gain.setValueAtTime(0, start);
+    env.gain.linearRampToValueAtTime(vol * 0.85, start + attack);
+    env.gain.setValueAtTime(vol * 0.85, start + hold - release);
+    env.gain.linearRampToValueAtTime(0, start + hold);
+    _registerNode(osc); osc.start(start); osc.stop(start + hold + 0.2);
+  });
+}
+
+/**
+ * 고쟁 프레이즈: 플럭드 사인파. attack 0.06s(자연스러운 튕김), decay 긺.
+ * click 방지: setValueAtTime(0) 후 linearRamp, 절대 직접점프 없음
+ */
+function _addGuzhengPhrase(now, dur, vol) {
+  const ctx = getCtx();
+  const phrase = [
+    { freq: 293.66, t: 1.5  },
+    { freq: 329.63, t: 6.5  },
+    { freq: 261.63, t: 12.5 },
+    { freq: 293.66, t: 18.0 },
+    { freq: 246.94, t: 23.5 },
+  ];
+  phrase.forEach(({ freq, t }) => {
+    const start   = now + t;
+    if (start >= now + dur - 1.0) return;
+    const decay   = rand(3.5, 5.0);
+    const osc     = ctx.createOscillator();
+    const env     = ctx.createGain();
+    const lpf     = ctx.createBiquadFilter();
+    lpf.type = 'lowpass'; lpf.frequency.value = 1200; lpf.Q.value = 0.8;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, start);
+    osc.connect(lpf); lpf.connect(env); env.connect(_asmrtGain);
+    env.gain.setValueAtTime(0, start);
+    env.gain.linearRampToValueAtTime(vol, start + 0.06);
+    env.gain.exponentialRampToValueAtTime(0.001, start + decay);
+    _registerNode(osc); osc.start(start); osc.stop(start + decay + 0.2);
+  });
+}
+
+/**
+ * 얼후풍: 삼각파 + 지연 비브라토. 긴 어택으로 전자음 완전 제거.
+ * click 방지: attack 0.9s, release 1.3s, LFO 딜레이 2s
+ */
+function _addChineseErhu(now, dur, vol) {
+  const ctx = getCtx();
+  const notes = [
+    { freq: 293.66, t: 2.5,  hold: 6.0 },
+    { freq: 329.63, t: 11.5, hold: 5.5 },
+    { freq: 261.63, t: 20.0, hold: 6.0 },
+  ];
+  notes.forEach(({ freq, t, hold }) => {
+    const start   = now + t;
+    if (start >= now + dur - 1.0) return;
+    const attack  = 0.9;
+    const release = 1.3;
+    const osc     = ctx.createOscillator();
+    const vibLfo  = ctx.createOscillator();
+    const vibGain = ctx.createGain();
+    const env     = ctx.createGain();
+    const lpf     = ctx.createBiquadFilter();
+    lpf.type = 'lowpass'; lpf.frequency.value = 1000; lpf.Q.value = 0.8;
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, start);
+    vibGain.gain.setValueAtTime(0, start);
+    vibGain.gain.linearRampToValueAtTime(4.5, start + 2.0);
+    vibLfo.type = 'sine';
+    vibLfo.frequency.value = 5.8;
+    vibLfo.connect(vibGain); vibGain.connect(osc.frequency);
+    osc.connect(lpf); lpf.connect(env); env.connect(_asmrtGain);
+    env.gain.setValueAtTime(0, start);
+    env.gain.linearRampToValueAtTime(vol, start + attack);
+    env.gain.setValueAtTime(vol, start + hold - release);
+    env.gain.linearRampToValueAtTime(0, start + hold);
+    _registerNode(osc); _registerNode(vibLfo);
+    vibLfo.start(start); vibLfo.stop(start + hold + 0.2);
+    osc.start(start);    osc.stop(start + hold + 0.2);
+  });
+}
 function _asmrDreamyMeadow() {
   const dur = 24;
   const now = getCtx().currentTime;
-  _addSoftWind(now, dur, 0.16);
-  _addBirdChirps(now, dur, 8, 0.05);
-  _addCrickets(now, dur, 0.08);
-  _asmrSheepLayer(now, dur, 0.05);
+  // 자연음 65%
+  _addSoftWind(now, dur, 0.14);
+  _addBirdChirps(now, dur, 7, 0.045);
+  _addCrickets(now, dur, 0.07);
+  // 특색음 35% - 양 방울 + 양 울음
+  _asmrSheepLayer(now, dur, 0.06);
+  _addSheepBell(now, dur, 4, 0.065);
+  _addDistantSheepBaa(now, dur, 2, 0.055);
   _scheduleLoop('dreamy_meadow', dur * 1000);
 }
 
 function _asmrMoonlightRanch() {
   const dur = 26;
   const now = getCtx().currentTime;
-  _addSoftWind(now, dur, 0.2);
-  _addCrickets(now, dur, 0.24);
-  _asmrSheepLayer(now, dur, 0.06);
+  // 자연음 65% - 깊은 밤 공간감
+  _addSoftWind(now, dur, 0.16);
+  _addCrickets(now, dur, 0.18);
+  _addGrasshopperLayer(now, dur, 0.08);
+  // 특색음 35% - 양 소리 + 멀리 개구리
+  _asmrSheepLayer(now, dur, 0.07);
+  _addSheepBell(now, dur, 3, 0.06);
+  _addFrogChoruses(now, dur, 2, 0.035);
+  _addDistantOwl(now, dur, 1, 0.04);
   _scheduleLoop('moonlight_ranch', dur * 1000);
 }
 
@@ -1614,24 +1907,29 @@ function _asmrTeaHouse() {
 function _asmrLibraryEvening() {
   const dur = 22;
   const now = getCtx().currentTime;
-  _addPageTurns(now, dur, 14, 0.14);
-  _addWritingScratches(now, dur, 54, 0.12, 2400);
-  _addPaperRustling(now, dur, 14, 0.07);
-  _addSoftWind(now, dur, 0.01);
-  _addPencilSkritch(now, dur, 22, 0.06);
+  // 자연음 65% - 도서관 공조음 + 기본 사운드
+  _asmrBrownLayer(now, dur, 0.06);  // 공조기/환풍기 저음
+  _addPageTurns(now, dur, 12, 0.12);
+  _addWritingScratches(now, dur, 44, 0.10, 2400);
+  _addPaperRustling(now, dur, 10, 0.06);
+  // 특색음 35% - 연필, 키보드, 타자
+  _addPencilSkritch(now, dur, 20, 0.065);
+  _addKeyboardTaps(now, dur, 18, 0.045);
   _scheduleLoop('library_evening', dur * 1000);
 }
 
 function _asmrCozyCafe() {
   const dur = 24;
   const now = getCtx().currentTime;
-  _addPluckedMelody(now, dur, [440, 523.25, 587.33, 659.25], 0.05, 'triangle');
-  _addCafeChatter(now, dur, 8, 0.042);
-  _addCupClinks(now, dur, 6, 0.045);
-  _addSoftFootsteps(now, dur, 6, 0.03);
-  _addTableTaps(now, dur, 5, 0.03);
-  _addSoftWind(now, dur, 0.025);
+  // 자연음 65% - 카페 배경음
+  _addCafeChatter(now, dur, 7, 0.038);
+  _addCupClinks(now, dur, 5, 0.04);
+  _addSoftFootsteps(now, dur, 5, 0.028);
+  _addTableTaps(now, dur, 4, 0.028);
   _asmrBrownLayer(now, dur, 0.04);
+  // 특색음 35% - 로파이 재즈 + 커피머신
+  _addLofiJazzMelody(now, dur, 0.055);
+  _addCoffeeMachineBuzz(now, dur, 0.045);
   _scheduleLoop('cozy_cafe', dur * 1000);
 }
 
@@ -1645,41 +1943,6 @@ function _asmrRainyCottage() {
   _scheduleLoop('rainy_cottage', dur * 1000);
 }
 
-function _asmrForestCamp() {
-  const dur = 24;
-  const now = getCtx().currentTime;
-  _asmrFireLayer(now, dur, 0.09);
-  _addSoftWind(now, dur, 0.12);
-  _addBirdChirps(now, dur, 6, 0.04);
-  _scheduleLoop('forest_camp', dur * 1000);
-}
-
-function _asmrRainyWindow() {
-  const dur = 20;
-  const now = getCtx().currentTime;
-  const noise = createNoise(dur);
-  const lpf = createFilter('lowpass', 1800);
-  const hpf = createFilter('highpass', 220);
-  const g = createGain(0);
-  noise.connect(lpf); lpf.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
-  g.gain.setValueAtTime(0, now);
-  g.gain.linearRampToValueAtTime(0.26, now + 1.2);
-  for (let i = 0; i < 24; i++) {
-    const tapTime = now + rand(0.1, dur - 0.4);
-    const tap = createNoise(0.04);
-    const bpf = createFilter('bandpass', rand(4200, 9000), rand(0.6, 1.8));
-    const tg = createGain(0);
-    tap.connect(bpf); bpf.connect(tg); tg.connect(_asmrtGain);
-    tg.gain.setValueAtTime(rand(0.04, 0.1), tapTime);
-    tg.gain.exponentialRampToValueAtTime(0.001, tapTime + 0.04);
-    _registerNode(tap); tap.start(tapTime); tap.stop(tapTime + 0.06);
-  }
-  g.gain.setValueAtTime(0.26, now + dur - 2);
-  g.gain.linearRampToValueAtTime(0, now + dur);
-  _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
-  _scheduleLoop('rainy_window', dur * 1000);
-}
-
 function _asmrOceanShore() {
   const dur = 24;
   const now = getCtx().currentTime;
@@ -1690,49 +1953,85 @@ function _asmrOceanShore() {
 }
 
 function _asmrKoreanTraditionalNight() {
-  const dur = 22;
+  const dur = 28; // 가야금, 대금, 해금 선율이 완전히 연주되도록 28초로 연장
   const now = getCtx().currentTime;
-  _addHanokCourtyard(now, dur, 0.056);
-  _addDistantInsects(now, dur, 12, 0.04);
-  _addWindChimes(now, dur, 3, 0.014);
-  _addSoftWind(now, dur, 0.008);
+  
+  // 자연 배경음 (바람 소리 극소화 및 한옥 마당, 밤벌레 최소화)
+  _addSoftWind(now, dur, 0.002);
+  _addHanokCourtyard(now, dur, 0.045);
+  _addDistantInsects(now, dur, 4, 0.015);
+  
+  // 풍경 소리 합성음은 1회로 극소화하고 볼륨도 대폭 감쇠시켜 단순한 배경 요소로만 처리 (삑/삐링 소리 제거)
+  _addWindChimes(now, dur, 1, 0.004);
+  
+  // 한국 전통 악기 메인 배치
+  _addGayageumPhrase(now, dur, 0.20);  // 가야금 (메인 선율)
+  _addKoreanDaegeum(now, dur, 0.12);   // 대금 (긴 숨결 관악)
+  _addKoreanHaegeum(now, dur, 0.14);   // 해금 (은은한 여운 현악)
+  
   _scheduleLoop('korean_traditional_night', dur * 1000);
 }
 
 function _asmrJapaneseTraditionalNight() {
-  const dur = 22;
+  const dur = 28; // 고토와 샤쿠하치 선율이 완전히 연주되도록 28초로 연장
   const now = getCtx().currentTime;
-  _addShishiOdoshi(now, dur, 8, 0.036);
-  _addWindChimes(now, dur, 8, 0.028);
-  _addSoftWind(now, dur, 0.006);
+  
+  // 자연 배경음 (바람 소리 극소화 및 시시오도시 최소화)
+  _addSoftWind(now, dur, 0.002);
+  _addShishiOdoshi(now, dur, 2, 0.015);
+  
+  // 풍경 소리 합성음은 2회로 극소화하고 볼륨도 대폭 감쇠시켜 배경으로 처리 (삑/삐링 소리 제거)
+  _addWindChimes(now, dur, 2, 0.005);
+  
+  // 일본 전통 악기 메인 배치
+  _addKotoPhrase(now, dur, 0.20);             // 고토 (메인 현악)
+  _addJapaneseShakunoflute(now, dur, 0.15);   // 샤쿠하치 (천천히 흐르는 관악)
+  
   _scheduleLoop('japanese_traditional_night', dur * 1000);
 }
 
 function _asmrChineseTraditionalNight() {
-  const dur = 22;
+  const dur = 28; // 고쟁과 얼후 선율이 완전히 연주되도록 28초로 유지
   const now = getCtx().currentTime;
-  _addWaterDrops(now, dur, 16, 0.042);
-  _addPavilionAmbience(now, dur, 0.052);
-  _addSoftWind(now, dur, 0.006);
+  
+  // 자연 배경음 (바람 소리 극소화 및 정자 앰비언스)
+  _addSoftWind(now, dur, 0.002);
+  _addPavilionAmbience(now, dur, 0.045);
+  
+  // 물방울 합성음은 횟수를 3회로 극소화하고 볼륨도 대폭 감쇠시켜 단순한 배경 요소로만 격하 (뿅/삑 소리 제거)
+  _addWaterDrops(now, dur, 3, 0.006);
+  
+  // 중국 전통 악기 메인 배치 (누가 들어도 선명하게 구별되는 고쟁과 얼후)
+  _addGuzhengPhrase(now, dur, 0.22); // 고쟁 프레이즈 (메인 뜯는 악기)
+  _addChineseErhu(now, dur, 0.15);   // 얼후 프레이즈 (서브 활현 악기)
+  
   _scheduleLoop('chinese_traditional_night', dur * 1000);
 }
 
 function _asmrTingleTherapy() {
   const dur = 16;
   const now = getCtx().currentTime;
-  _addTingleTap(now, dur, 12, 0.038);
-  _addSoftBrush(now, dur, 9, 0.028);
-  _addPaperRustling(now, dur, 6, 0.024);
-  _addSoftWind(now, dur, 0.012);
+  // 자연음 65% - 기본 ASMR 트리거
+  _addTingleTap(now, dur, 10, 0.036);
+  _addSoftBrush(now, dur, 8, 0.026);
+  _addPaperRustling(now, dur, 5, 0.022);
+  // 특색음 35% - 마사지 오일 + 속삭임 호흡
+  _addMassageOilSound(now, dur, 5, 0.055);
+  _addWhisperBreath(now, dur, 4, 0.048);
   _scheduleLoop('tingle_therapy', dur * 1000);
 }
 
 function _asmrSummerInsectNight() {
   const dur = 20;
   const now = getCtx().currentTime;
-  _addCrickets(now, dur, 0.16);
-  _addDistantInsects(now, dur, 6, 0.04);
-  _addSoftWind(now, dur, 0.025);
+  // 자연음 65% - 귀뚜라미 + 풀벌레 밸런스 조정
+  _addCrickets(now, dur, 0.13);
+  _addDistantInsects(now, dur, 5, 0.038);
+  _addGrasshopperLayer(now, dur, 0.07);
+  _addSoftWind(now, dur, 0.022);
+  // 특색음 35% - 개구리 + 부엉이로 여름 밤 풍성함
+  _addFrogChoruses(now, dur, 4, 0.05);
+  _addDistantOwl(now, dur, 1, 0.04);
   _scheduleLoop('summer_insect_night', dur * 1000);
 }
 
@@ -1744,6 +2043,281 @@ function _asmrCozyPlaza() {
   _addFountainAmbience(now, dur, 0.076);
   _addSoftWind(now, dur, 0.012);
   _scheduleLoop('cozy_plaza', dur * 1000);
+}
+
+function _asmrLaundryRoom() {
+  const ctx = getCtx();
+  const dur = 16;
+  const now = ctx.currentTime;
+
+  // 1. 낮은 기계 진동음 (Low hum - 55Hz 대역 sine파)
+  const humOsc = ctx.createOscillator();
+  const humGain = createGain(0.045);
+  const humFilter = createFilter('lowpass', 80);
+  humOsc.type = 'sine';
+  humOsc.frequency.setValueAtTime(55, now);
+  humOsc.connect(humFilter); humFilter.connect(humGain); humGain.connect(_asmrtGain);
+  
+  humGain.gain.setValueAtTime(0, now);
+  humGain.gain.linearRampToValueAtTime(0.045, now + 1.5);
+  humGain.gain.setValueAtTime(0.045, now + dur - 1.5);
+  humGain.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(humOsc);
+  humOsc.start(now);
+  humOsc.stop(now + dur + 0.1);
+
+  // 1-b. 세탁기 드럼 모터 웅웅 보강 (120Hz 사인파 — 조용하고 두꺼운 배음 레이어)
+  const drumHumOsc = ctx.createOscillator();
+  const drumHumGain = createGain(0);
+  const drumHumFilter = createFilter('lowpass', 160, 1.2);
+  drumHumOsc.type = 'sine';
+  drumHumOsc.frequency.setValueAtTime(120, now);
+  drumHumOsc.connect(drumHumFilter); drumHumFilter.connect(drumHumGain); drumHumGain.connect(_asmrtGain);
+
+  drumHumGain.gain.setValueAtTime(0, now);
+  drumHumGain.gain.linearRampToValueAtTime(0.028, now + 2.0);
+  // 6초 주기로 아주 살짝 흔들림 — 드럼 회전 질감
+  for (let t = 2; t < dur - 1; t += 0.2) {
+    const v = 0.028 + 0.007 * Math.sin(2 * Math.PI * (t / 6));
+    drumHumGain.gain.setValueAtTime(v, now + t);
+  }
+  drumHumGain.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(drumHumOsc);
+  drumHumOsc.start(now);
+  drumHumOsc.stop(now + dur + 0.1);
+
+  // 2. 세탁기 회전음 (80Hz 삼각파 변조)
+  const motorOsc = ctx.createOscillator();
+  const motorGain = createGain(0);
+  const motorFilter = createFilter('lowpass', 110);
+  motorOsc.type = 'triangle';
+  motorOsc.frequency.setValueAtTime(80, now);
+  motorOsc.connect(motorFilter); motorFilter.connect(motorGain); motorGain.connect(_asmrtGain);
+  
+  // LFO: 4초 주기로 부드럽게 세탁기 회전음 세기 변조
+  motorGain.gain.setValueAtTime(0.012, now);
+  for (let t = 0; t < dur; t += 0.1) {
+    const lfoVal = 0.012 + 0.009 * Math.sin(2 * Math.PI * (t / 4));
+    motorGain.gain.setValueAtTime(lfoVal, now + t);
+  }
+  motorGain.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(motorOsc);
+  motorOsc.start(now);
+  motorOsc.stop(now + dur + 0.1);
+
+  // 3. 물이 천천히 출렁이는 소리 (노이즈 소스를 스위핑 밴드패스 필터로 가공)
+  const waterNoise = createNoise(dur);
+  const waterFilter = createFilter('bandpass', 350, 1.5);
+  const waterGain = createGain(0);
+  waterNoise.connect(waterFilter); waterFilter.connect(waterGain); waterGain.connect(_asmrtGain);
+
+  waterGain.gain.setValueAtTime(0.016, now);
+  for (let t = 0; t < dur; t += 0.1) {
+    // 4초 주기로 물소리 볼륨 및 필터 주파수가 휩쓸며 변동 (회전음과 위상 다르게 조화)
+    const lfoVal = 0.016 + 0.011 * Math.sin(2 * Math.PI * (t / 4) + Math.PI / 2);
+    waterGain.gain.setValueAtTime(lfoVal, now + t);
+    
+    const freqVal = 420 + 180 * Math.sin(2 * Math.PI * (t / 4));
+    waterFilter.frequency.setValueAtTime(freqVal, now + t);
+  }
+  waterGain.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(waterNoise);
+  waterNoise.start(now);
+  waterNoise.stop(now + dur + 0.1);
+
+  // 3-b. 드럼 내부 잔잔한 물 출렁임 (150~280Hz 로우 밴드패스 — 아주 부드럽게)
+  const sloshNoise = createNoise(dur);
+  const sloshFilter = createFilter('bandpass', 200, 2.0);
+  const sloshGain = createGain(0);
+  sloshNoise.connect(sloshFilter); sloshFilter.connect(sloshGain); sloshGain.connect(_asmrtGain);
+
+  sloshGain.gain.setValueAtTime(0, now);
+  sloshGain.gain.linearRampToValueAtTime(0.014, now + 2.0);
+  // 7초 주기 — 드럼 안 물이 아주 느리게 출렁이는 느낌
+  for (let t = 2; t < dur - 1; t += 0.15) {
+    const sv = 0.014 + 0.008 * Math.sin(2 * Math.PI * (t / 7));
+    sloshGain.gain.setValueAtTime(sv, now + t);
+    const sf = 190 + 70 * Math.sin(2 * Math.PI * (t / 7) + 1.2);
+    sloshFilter.frequency.setValueAtTime(sf, now + t);
+  }
+  sloshGain.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(sloshNoise);
+  sloshNoise.start(now);
+  sloshNoise.stop(now + dur + 0.1);
+
+  // 4. 건조기 회전음 (65Hz 톱니파 + 로우패스 필터링 및 5초 주기 LFO)
+  const dryerOsc = ctx.createOscillator();
+  const dryerGain = createGain(0);
+  const dryerFilter = createFilter('lowpass', 85);
+  dryerOsc.type = 'sawtooth';
+  dryerOsc.frequency.setValueAtTime(65, now);
+  dryerOsc.connect(dryerFilter); dryerFilter.connect(dryerGain); dryerGain.connect(_asmrtGain);
+
+  dryerGain.gain.setValueAtTime(0.008, now);
+  for (let t = 0; t < dur; t += 0.1) {
+    const lfoVal = 0.008 + 0.006 * Math.sin(2 * Math.PI * (t / 5));
+    dryerGain.gain.setValueAtTime(lfoVal, now + t);
+  }
+  dryerGain.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(dryerOsc);
+  dryerOsc.start(now);
+  dryerOsc.stop(now + dur + 0.1);
+
+  // 건조기 옷감의 쿵쿵대는 둔탁한 Thump 소리 (25~45Hz 대역의 스위프)
+  const thumpCount = Math.floor(rand(2, 4));
+  for (let i = 0; i < thumpCount; i++) {
+    const thumpTime = now + rand(1.5, dur - 1.5);
+    const thumpOsc = ctx.createOscillator();
+    const thumpG = createGain(0);
+    const thumpFilter = createFilter('lowpass', 45);
+    thumpOsc.type = 'sine';
+    thumpOsc.frequency.setValueAtTime(40, thumpTime);
+    thumpOsc.frequency.exponentialRampToValueAtTime(20, thumpTime + 0.35);
+    thumpOsc.connect(thumpFilter); thumpFilter.connect(thumpG); thumpG.connect(_asmrtGain);
+
+    thumpG.gain.setValueAtTime(0, thumpTime);
+    thumpG.gain.linearRampToValueAtTime(0.035, thumpTime + 0.03);
+    thumpG.gain.exponentialRampToValueAtTime(0.001, thumpTime + 0.45);
+
+    _registerNode(thumpOsc);
+    thumpOsc.start(thumpTime);
+    thumpOsc.stop(thumpTime + 0.5);
+  }
+
+  // 5. 옷감이 부드럽게 스치는 소리 (Fabric rustling)
+  const rustleCount = Math.floor(rand(3, 5));
+  for (let i = 0; i < rustleCount; i++) {
+    const rTime = now + rand(1, dur - 2);
+    const rDur = rand(0.6, 1.3);
+    const rNoise = createNoise(rDur);
+    const rFilter = createFilter('bandpass', rand(900, 1800), 2.5);
+    const rGain = createGain(0);
+    rNoise.connect(rFilter); rFilter.connect(rGain); rGain.connect(_asmrtGain);
+
+    rGain.gain.setValueAtTime(0, rTime);
+    rGain.gain.linearRampToValueAtTime(rand(0.006, 0.012), rTime + rDur * 0.25);
+    rGain.gain.linearRampToValueAtTime(rand(0.004, 0.009), rTime + rDur * 0.65);
+    rGain.gain.exponentialRampToValueAtTime(0.001, rTime + rDur);
+
+    _registerNode(rNoise);
+    rNoise.start(rTime);
+    rNoise.stop(rTime + rDur + 0.1);
+  }
+
+  _scheduleLoop('laundry_room', dur * 1000);
+}
+
+function _asmrSpaceStationNight() {
+  const ctx = getCtx();
+  const dur = 20;
+  const now = ctx.currentTime;
+
+  // 1. 공조기(HVAC) 소리 - 잔잔히 깔리는 기류음 (Low-passed noise)
+  const airNoise = createNoise(dur);
+  const airLpf = createFilter('lowpass', 110, 1.2);
+  const airHpf = createFilter('highpass', 35, 1.0);
+  const airGain = createGain(0);
+  
+  airNoise.connect(airLpf); airLpf.connect(airHpf); airHpf.connect(airGain); airGain.connect(_asmrtGain);
+  
+  airGain.gain.setValueAtTime(0, now);
+  airGain.gain.linearRampToValueAtTime(0.065, now + 2.0);
+  airGain.gain.setValueAtTime(0.065, now + dur - 2.0);
+  airGain.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(airNoise);
+  airNoise.start(now);
+  airNoise.stop(now + dur + 0.1);
+
+  // 2. 환풍기 모터 회전음 (90Hz, 135Hz 화음의 사인파 중첩)
+  const f1 = ctx.createOscillator();
+  const f2 = ctx.createOscillator();
+  const fg1 = createGain(0);
+  const fanFilter = createFilter('lowpass', 140);
+
+  f1.type = 'sine';
+  f1.frequency.setValueAtTime(90, now);
+  f2.type = 'sine';
+  f2.frequency.setValueAtTime(135, now);
+
+  f1.connect(fanFilter);
+  f2.connect(fanFilter);
+  fanFilter.connect(fg1);
+  fg1.connect(_asmrtGain);
+
+  fg1.gain.setValueAtTime(0, now);
+  fg1.gain.linearRampToValueAtTime(0.012, now + 2.5);
+  fg1.gain.setValueAtTime(0.012, now + dur - 2.5);
+  fg1.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(f1); _registerNode(f2);
+  f1.start(now); f1.stop(now + dur + 0.1);
+  f2.start(now); f2.stop(now + dur + 0.1);
+
+  // 3. 아주 작은 기계 동작음 (Deep background vibration - 48Hz triangle)
+  const deepOsc = ctx.createOscillator();
+  const deepGain = createGain(0);
+  deepOsc.type = 'triangle';
+  deepOsc.frequency.setValueAtTime(48, now);
+  deepOsc.connect(deepGain); deepGain.connect(_asmrtGain);
+
+  deepGain.gain.setValueAtTime(0, now);
+  deepGain.gain.linearRampToValueAtTime(0.024, now + 2.0);
+  deepGain.gain.setValueAtTime(0.024, now + dur - 2.0);
+  deepGain.gain.linearRampToValueAtTime(0, now + dur);
+
+  _registerNode(deepOsc);
+  deepOsc.start(now);
+  deepOsc.stop(now + dur + 0.1);
+
+  // 4. 드물게 들리는 시스템 릴레이 클릭 (Relay clicks)
+  const clickCount = Math.floor(rand(2, 4));
+  for (let i = 0; i < clickCount; i++) {
+    const cTime = now + rand(2, dur - 2);
+    const clickLen = rand(0.005, 0.01);
+    const cNoise = createNoise(clickLen);
+    const cFilter = createFilter('bandpass', rand(3500, 5000), 3.5);
+    const cGain = createGain(0);
+    cNoise.connect(cFilter); cFilter.connect(cGain); cGain.connect(_asmrtGain);
+
+    cGain.gain.setValueAtTime(0, cTime);
+    cGain.gain.linearRampToValueAtTime(rand(0.003, 0.006), cTime);
+    cGain.gain.exponentialRampToValueAtTime(0.0001, cTime + clickLen);
+
+    _registerNode(cNoise);
+    cNoise.start(cTime);
+    cNoise.stop(cTime + clickLen + 0.02);
+  }
+
+  // 5. 아주 드물고 작은 시스템 비프음 (Rare system beep)
+  if (Math.random() < 0.6) {
+    const bTime = now + rand(3, dur - 4);
+    const bFreq = rand(1600, 1850);
+    const bDur = rand(0.07, 0.12);
+    const beepOsc = ctx.createOscillator();
+    const beepGain = createGain(0);
+    
+    beepOsc.type = 'sine';
+    beepOsc.frequency.setValueAtTime(bFreq, bTime);
+    beepOsc.connect(beepGain); beepGain.connect(_asmrtGain);
+    
+    beepGain.gain.setValueAtTime(0, bTime);
+    beepGain.gain.linearRampToValueAtTime(0.002, bTime + 0.005);
+    beepGain.gain.setValueAtTime(0.002, bTime + bDur - 0.01);
+    beepGain.gain.exponentialRampToValueAtTime(0.0001, bTime + bDur);
+
+    _registerNode(beepOsc);
+    beepOsc.start(bTime);
+    beepOsc.stop(bTime + bDur + 0.05);
+  }
+
+  _scheduleLoop('space_station_night', dur * 1000);
 }
 
 function _asmrForest() {
@@ -2244,15 +2818,32 @@ function _addWaterDrops(now, dur, count, vol) {
   for (let i = 0; i < count; i++) {
     const t = now + rand(0.2, dur - 0.2);
     const osc = ctx.createOscillator();
-    const g = createGain(0);
+    const g = ctx.createGain();
+    const lpf = ctx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.setValueAtTime(750, t);
+    lpf.Q.setValueAtTime(0.4, t);
+    
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(rand(700, 1200), t);
-    osc.frequency.exponentialRampToValueAtTime(rand(280, 460), t + 0.12);
-    osc.connect(g); g.connect(_asmrtGain);
+    const startFreq = rand(450, 750); // 고음을 낮추어 한결 부드럽게
+    osc.frequency.setValueAtTime(startFreq, t);
+    osc.frequency.exponentialRampToValueAtTime(startFreq * 0.68, t + 0.16); // 부드럽고 완만한 피치 스윕
+    
+    osc.connect(lpf);
+    lpf.connect(g);
+    g.connect(_asmrtGain);
+    
+    const attack = 0.04; // 40ms 어택으로 클릭 노이즈(뿅/뾱) 방지
+    const release = rand(0.3, 0.65);
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol * rand(0.4, 1), t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.12, 0.24));
-    _registerNode(osc); osc.start(t); osc.stop(t + 0.28);
+    g.gain.linearRampToValueAtTime(vol * rand(0.5, 0.95), t + attack);
+    g.gain.exponentialRampToValueAtTime(0.001, t + release);
+    
+    _registerNode(osc);
+    _registerNode(lpf);
+    _registerNode(g);
+    osc.start(t);
+    osc.stop(t + release + 0.1);
   }
 }
 
@@ -2526,27 +3117,269 @@ function _addCrickets(now, dur, vol) {
   _registerNode(noise); noise.start(now); noise.stop(now + dur + 0.1);
 }
 
-// ??? BGM (?ㅻⅤ怨?諛곌꼍?뚯븙) ???
+// --- ASMR 2차 개선 헬퍼 함수들 ---
+
+/** 양 방울 소리: 금속 배음 조합 */
+function _addSheepBell(now, dur, count, vol) {
+  const ctx = getCtx();
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.5, dur - 0.5);
+    const freqs = [rand(680, 820), rand(1380, 1620), rand(2180, 2420)];
+    freqs.forEach((f, idx) => {
+      const o = ctx.createOscillator();
+      const g = createGain(0);
+      o.type = idx === 0 ? 'sine' : 'triangle';
+      o.frequency.setValueAtTime(f, t);
+      o.connect(g); g.connect(_asmrtGain);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(vol * (1 - idx * 0.28), t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.001, t + rand(0.4, 0.9) - idx * 0.1);
+      _registerNode(o); o.start(t); o.stop(t + 1.1);
+    });
+  }
+}
+
+/** 원거리 양 울음: LFO 비브라토 적용 */
+function _addDistantSheepBaa(now, dur, count, vol) {
+  const ctx = getCtx();
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(1, dur - 2);
+    const baseFreq = rand(260, 340);
+    const baaLen   = rand(0.5, 1.0);
+    const o = ctx.createOscillator();
+    const lfo = ctx.createOscillator();
+    const lfoGain = createGain(rand(6, 14));
+    const lpf = createFilter('lowpass', 700, 2);
+    const g = createGain(0);
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(baseFreq, t);
+    o.frequency.linearRampToValueAtTime(baseFreq * 1.15, t + baaLen * 0.2);
+    o.frequency.exponentialRampToValueAtTime(baseFreq * 0.82, t + baaLen);
+    lfo.frequency.value = rand(5, 8);
+    lfo.connect(lfoGain); lfoGain.connect(o.frequency);
+    o.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.5, 0.9), t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.001, t + baaLen + 0.1);
+    _registerNode(o); _registerNode(lfo);
+    lfo.start(t); lfo.stop(t + baaLen + 0.15);
+    o.start(t); o.stop(t + baaLen + 0.15);
+  }
+}
+
+/** 개구리 소리: 펄스 노이즈 변조 */
+function _addFrogChoruses(now, dur, count, vol) {
+  const ctx = getCtx();
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.3, dur - 0.5);
+    const ribbitLen = rand(0.06, 0.12);
+    const reps = Math.floor(rand(2, 4));
+    for (let r = 0; r < reps; r++) {
+      const rt = t + r * (ribbitLen + 0.04);
+      const noise = createNoise(ribbitLen);
+      const bpf = createFilter('bandpass', rand(380, 520), 12);
+      const g = createGain(0);
+      noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+      g.gain.setValueAtTime(0, rt);
+      g.gain.linearRampToValueAtTime(vol * rand(0.6, 1), rt + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, rt + ribbitLen);
+      _registerNode(noise); noise.start(rt); noise.stop(rt + ribbitLen + 0.05);
+    }
+  }
+}
+
+/** 밤 부엉이 소리: 2단계 피치 벤딩 */
+function _addDistantOwl(now, dur, count, vol) {
+  const ctx = getCtx();
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(1.5, dur - 3);
+    const baseF = rand(220, 300);
+    const o = ctx.createOscillator();
+    const lpf = createFilter('lowpass', 600, 2);
+    const g = createGain(0);
+    o.type = 'sine';
+    o.frequency.setValueAtTime(baseF * 1.08, t);
+    o.frequency.linearRampToValueAtTime(baseF, t + 0.18);
+    o.frequency.setValueAtTime(baseF, t + 0.5);
+    o.frequency.linearRampToValueAtTime(baseF * 0.88, t + 0.72);
+    o.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.5, 0.85), t + 0.06);
+    g.gain.setValueAtTime(vol * rand(0.5, 0.85), t + 0.45);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
+    _registerNode(o); o.start(t); o.stop(t + 1.0);
+  }
+}
+
+/** 커피머신 스팀 + 모터음 */
+function _addCoffeeMachineBuzz(now, dur, vol) {
+  const ctx = getCtx();
+  // 스팀 노이즈
+  const steam = createNoise(dur);
+  const bpf = createFilter('bandpass', rand(3200, 4800), 3);
+  const sg = createGain(0);
+  steam.connect(bpf); bpf.connect(sg); sg.connect(_asmrtGain);
+  sg.gain.setValueAtTime(0, now);
+  sg.gain.linearRampToValueAtTime(vol * 0.4, now + 0.3);
+  sg.gain.setValueAtTime(vol * 0.4, now + dur - 0.5);
+  sg.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(steam); steam.start(now); steam.stop(now + dur + 0.1);
+  // 모터 저음
+  const motor = ctx.createOscillator();
+  const mg = createGain(0);
+  motor.type = 'sawtooth';
+  motor.frequency.setValueAtTime(rand(48, 60), now);
+  motor.connect(createFilter('lowpass', 140, 2)).connect(mg); mg.connect(_asmrtGain);
+  mg.gain.setValueAtTime(0, now);
+  mg.gain.linearRampToValueAtTime(vol * 0.2, now + 0.5);
+  mg.gain.setValueAtTime(vol * 0.2, now + dur - 0.5);
+  mg.gain.linearRampToValueAtTime(0, now + dur);
+  _registerNode(motor); motor.start(now); motor.stop(now + dur + 0.1);
+}
+
+/** 로파이 재즈 멜로디: 따뜻한 삼각파 */
+function _addLofiJazzMelody(now, dur, vol) {
+  const ctx = getCtx();
+  const jazzChords = [
+    [261.63, 329.63, 392.00],  // C maj
+    [220.00, 277.18, 329.63],  // A min
+    [174.61, 220.00, 261.63],  // F maj
+    [196.00, 246.94, 293.66],  // G maj
+  ];
+  const stepLen = 3.2;
+  let t = now + 0.5;
+  while (t < now + dur - stepLen) {
+    const chord = jazzChords[Math.floor(rand(0, jazzChords.length))];
+    const noteFreq = chord[Math.floor(rand(0, chord.length))];
+    const noteDur = rand(0.5, 1.2);
+    const o = ctx.createOscillator();
+    const lpf = createFilter('lowpass', rand(900, 1400), 1.5);
+    const g = createGain(0);
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(noteFreq, t);
+    o.connect(lpf); lpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.6, 1.0), t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.001, t + noteDur);
+    _registerNode(o); o.start(t); o.stop(t + noteDur + 0.05);
+    t += rand(stepLen * 0.6, stepLen * 1.2);
+  }
+}
+
+/** 장작 튀는 소리: 하이패스 극단적 쇼트 노이즈 */
+function _addFirewoodCrackle(now, dur, count, vol) {
+  const ctx = getCtx();
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.1, dur - 0.1);
+    const clickLen = rand(0.008, 0.025);
+    const noise = createNoise(clickLen);
+    const hpf = createFilter('highpass', rand(2000, 5000), 1.5);
+    const g = createGain(0);
+    noise.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(vol * rand(0.4, 1.0), t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + clickLen);
+    _registerNode(noise); noise.start(t); noise.stop(t + clickLen + 0.01);
+  }
+}
+
+/** 마사지 오일 문지름음: 사인 곡선 엔벨로프 필터 */
+function _addMassageOilSound(now, dur, count, vol) {
+  const ctx = getCtx();
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.3, dur - 1.5);
+    const strokeLen = rand(0.8, 1.8);
+    const noise = createNoise(strokeLen);
+    const bpf = createFilter('bandpass', rand(1800, 3200), 4);
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.5, 1.0), t + strokeLen * 0.2);
+    g.gain.linearRampToValueAtTime(vol * rand(0.3, 0.7), t + strokeLen * 0.7);
+    g.gain.exponentialRampToValueAtTime(0.001, t + strokeLen);
+    _registerNode(noise); noise.start(t); noise.stop(t + strokeLen + 0.05);
+  }
+}
+
+/** 속삭임 호흡음: 스위핑 밴드패스 */
+function _addWhisperBreath(now, dur, count, vol) {
+  const ctx = getCtx();
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.5, dur - 2.0);
+    const breathLen = rand(1.0, 2.2);
+    const noise = createNoise(breathLen);
+    const bpf = createFilter('bandpass', rand(800, 1800), 3);
+    const g = createGain(0);
+    noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol * rand(0.4, 0.8), t + breathLen * 0.3);
+    g.gain.exponentialRampToValueAtTime(0.001, t + breathLen);
+    bpf.frequency.setValueAtTime(rand(600, 1000), t);
+    bpf.frequency.linearRampToValueAtTime(rand(1600, 2400), t + breathLen * 0.5);
+    bpf.frequency.linearRampToValueAtTime(rand(400, 800), t + breathLen);
+    _registerNode(noise); noise.start(t); noise.stop(t + breathLen + 0.05);
+  }
+}
+
+/** 풀벌레(메뚜기) 소리: 고주파 진폭 변조 노이즈 */
+function _addGrasshopperLayer(now, dur, vol) {
+  const ctx = getCtx();
+  const noise = createNoise(dur);
+  const bpf = createFilter('bandpass', rand(5500, 7500), 6);
+  const g = createGain(0);
+  noise.connect(bpf); bpf.connect(g); g.connect(_asmrtGain);
+  // 진폭 변조 LFO
+  const lfo = ctx.createOscillator();
+  const lfoG = createGain(vol * 0.5);
+  lfo.frequency.value = rand(14, 22);
+  lfo.connect(lfoG); lfoG.connect(g.gain);
+  g.gain.setValueAtTime(vol * 0.5, now);
+  _registerNode(noise); _registerNode(lfo);
+  noise.start(now); noise.stop(now + dur + 0.1);
+  lfo.start(now); lfo.stop(now + dur + 0.1);
+}
+
+/** 도서관 키보드 도각거림: 삼각파 + 노이즈 믹스 */
+function _addKeyboardTaps(now, dur, count, vol) {
+  const ctx = getCtx();
+  for (let i = 0; i < count; i++) {
+    const t = now + rand(0.2, dur - 0.2);
+    // 노이즈 클릭
+    const clickLen = rand(0.015, 0.04);
+    const noise = createNoise(clickLen);
+    const hpf = createFilter('highpass', rand(1800, 3500), 1.2);
+    const g = createGain(0);
+    noise.connect(hpf); hpf.connect(g); g.connect(_asmrtGain);
+    g.gain.setValueAtTime(vol * rand(0.4, 1.0), t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + clickLen);
+    _registerNode(noise); noise.start(t); noise.stop(t + clickLen + 0.01);
+  }
+}
+
+// ?€?€?€ BGM (?ㅻⅤ怨?諛곌꼍?뚯븙) ?€?€?€
 
 // ?좎옄湲?醫뗭? ?ㅻⅤ怨?硫쒕줈???명듃 諛곗뿴 (二쇳뙆?? 諛뺤옄湲몄씠)
+// 오르골 멜로디: BPM 52, 저음(C4~A4) 위주, 긴 음 + 충분한 쉼표
+// 잠들기 직전 들을 법한 단순하고 여유로운 흐름
 const BGM_MELODY = [
-  // 1?? ?먯옣媛 ?먮굦??C?μ“ ?좎쑉
-  [523.25, 0.5], [659.25, 0.5], [783.99, 0.5], [659.25, 0.5],
-  [783.99, 0.5], [880.00, 0.5], [1046.5, 1.0],
-  [880.00, 0.5], [783.99, 0.5], [659.25, 0.5], [523.25, 0.5],
-  [392.00, 0.5], [440.00, 0.5], [523.25, 1.5],
-  // 2?? 議곌툑 ???믨쾶
-  [659.25, 0.5], [783.99, 0.5], [880.00, 0.5], [783.99, 0.5],
-  [659.25, 0.5], [587.33, 0.5], [523.25, 1.0],
-  [440.00, 0.5], [523.25, 0.5], [587.33, 0.5], [523.25, 0.5],
-  [493.88, 0.5], [440.00, 0.5], [392.00, 1.5],
-  // 3?? 留덈Т由?  [523.25, 0.5], [587.33, 0.5], [659.25, 0.5], [587.33, 0.5],
-  [523.25, 0.5], [493.88, 0.5], [440.00, 1.0],
-  [392.00, 0.5], [440.00, 0.5], [493.88, 0.5], [523.25, 0.5],
-  [659.25, 0.5], [783.99, 0.5], [523.25, 2.0],
+  // ── 1 절 ─────────────────────────────────────────────────
+  [261.63, 2.0], [0, 1.5],   // C4 길게 → 쉼
+  [329.63, 2.5], [0, 1.5],   // E4 길게 → 쉼
+  [392.00, 3.0], [0, 2.0],   // G4 더 길게 → 긴 쉼
+
+  [329.63, 2.0], [0, 1.5],   // E4 → 쉼
+  [261.63, 3.5], [0, 3.0],   // C4 충분히 → 긴 쉼
+
+  // ── 2 절 (변주) ──────────────────────────────────────────
+  [293.66, 2.0], [0, 1.5],   // D4 → 쉼
+  [329.63, 2.5], [0, 1.5],   // E4 → 쉼
+  [392.00, 2.0], [0, 1.5],   // G4 → 쉼
+  [329.63, 3.5], [0, 2.5],   // E4 길게 → 긴 쉼
+
+  [261.63, 2.0], [0, 1.5],   // C4 → 쉼
+  [246.94, 4.0], [0, 4.0],   // B3 아주 길게 → 아주 긴 쉼
 ];
 
-const BGM_BPM = 72; // ?먮━怨??붿옍?섍쾶
+const BGM_BPM = 52; // 잠들기 직전 오르골 — BPM 52로 더 느리게
 const BGM_BEAT_SEC = 60 / BGM_BPM;
 
 let _bgmRunning = false;
@@ -2554,58 +3387,61 @@ let _bgmTimeout = null;
 let _bgmNodes = [];
 
 /**
- * ?ㅻⅤ怨??⑥씪 ?명듃 ?⑹꽦
- * ?ㅻⅤ怨??뱀꽦: 利됯컖?곸씤 ?댄깮, ?ъ씤???쎄컙??諛곗쓬, 鍮좊Ⅸ 媛먯뇿
+ * 오르골 단일 노트 합성
+ * 오르골 특성: 어택은 40ms로 소프트하게 조정하여 쨍한 디지털 톤 억제, 로우패스 필터로 따뜻함 유지
+ */
+/**
+ * 오르골 단일 노트 합성 — 따뜻하고 포근한 음색
+ *
+ * 목표: 장난감·전자음 완전 제거, 잠들기 직전 듣는 뮤직박스
+ * 방법:
+ *   · attack 60ms (너무 급격한 시작 → click 방지)
+ *   · 2배음 비중 4% 이하 (밝은 고음 억제)
+ *   · LPF 컷오프 = freq × 1.6 (고음대 잘라내기)
+ *   · decay = min(duration × 1.4, 4.0)s (충분히 울리다가 자연소멸)
  */
 function _playMusicBoxNote(ctx, freq, startTime, duration) {
   if (!_bgmGain) return;
+  if (freq <= 0) return; // 쉼표
 
-  // 湲곕낯 ?ъ씤??(?ㅻⅤ怨⑥쓽 留묒? ?뚯깋)
-  const osc = ctx.createOscillator();
-  const env = ctx.createGain();
-  osc.type = 'sine';
-  osc.frequency.value = freq;
-
-  // 2諛곗쓬 (?쏀븯寃? ?ㅻⅤ怨??뱀쑀???곕벏??諛곗쓬)
+  const osc  = ctx.createOscillator();
+  const env  = ctx.createGain();
+  // 2배음 (극히 약하게 — 따뜻함만 추가)
   const osc2 = ctx.createOscillator();
   const env2 = ctx.createGain();
+  // 따뜻한 로우패스: 고음 대역 강하게 차단
+  const lpf  = ctx.createBiquadFilter();
+  lpf.type = 'lowpass';
+  lpf.frequency.setValueAtTime(freq * 1.6, startTime);
+  lpf.Q.setValueAtTime(0.5, startTime);
+
+  osc.type  = 'sine';
   osc2.type = 'sine';
-  osc2.frequency.value = freq * 2;
+  osc.frequency.setValueAtTime(freq,       startTime);
+  osc2.frequency.setValueAtTime(freq * 2,  startTime);
 
-  // 3諛곗쓬 (留ㅼ슦 ?쏀븯寃?
-  const osc3 = ctx.createOscillator();
-  const env3 = ctx.createGain();
-  osc3.type = 'sine';
-  osc3.frequency.value = freq * 3;
+  osc.connect(env);    env.connect(lpf);
+  osc2.connect(env2);  env2.connect(lpf);
+  lpf.connect(_bgmGain);
 
-  osc.connect(env);   env.connect(_bgmGain);
-  osc2.connect(env2); env2.connect(_bgmGain);
-  osc3.connect(env3); env3.connect(_bgmGain);
+  const attackTime = 0.06;                            // 60ms — 클릭 방지
+  const decayTime  = Math.min(duration * 1.4, 4.0);  // 충분히 울리다가 소멸
 
-  const attackTime = 0.005; // ?ㅻⅤ怨⑥쓽 利됯컖?곸씤 ?댄깮
-  const decayTime  = Math.min(duration * 0.85, 1.8); // ?ㅻⅤ怨??뱀쑀??湲??ъ슫
-
-  // 湲곕낯???붾꺼濡쒗봽
+  // 기본음: attack → 부드러운 소멸
   env.gain.setValueAtTime(0, startTime);
-  env.gain.linearRampToValueAtTime(0.7, startTime + attackTime);
+  env.gain.linearRampToValueAtTime(0.48, startTime + attackTime);
   env.gain.exponentialRampToValueAtTime(0.001, startTime + decayTime);
 
-  // 2諛곗쓬 ?붾꺼濡쒗봽 (??鍮⑤━ 媛먯뇿)
+  // 2배음: 훨씬 작게, 더 빨리 소멸
   env2.gain.setValueAtTime(0, startTime);
-  env2.gain.linearRampToValueAtTime(0.2, startTime + attackTime);
-  env2.gain.exponentialRampToValueAtTime(0.001, startTime + decayTime * 0.5);
+  env2.gain.linearRampToValueAtTime(0.04, startTime + attackTime);
+  env2.gain.exponentialRampToValueAtTime(0.001, startTime + decayTime * 0.35);
 
-  // 3諛곗쓬 ?붾꺼濡쒗봽 (媛??鍮⑤━ 媛먯뇿)
-  env3.gain.setValueAtTime(0, startTime);
-  env3.gain.linearRampToValueAtTime(0.06, startTime + attackTime);
-  env3.gain.exponentialRampToValueAtTime(0.001, startTime + decayTime * 0.25);
+  const stopAt = startTime + decayTime + 0.15;
+  osc.start(startTime);   osc.stop(stopAt);
+  osc2.start(startTime);  osc2.stop(stopAt);
 
-  const stopAt = startTime + decayTime + 0.05;
-  osc.start(startTime);  osc.stop(stopAt);
-  osc2.start(startTime); osc2.stop(stopAt * 0.6);
-  osc3.start(startTime); osc3.stop(stopAt * 0.3);
-
-  _bgmNodes.push(osc, env, osc2, env2, osc3, env3);
+  _bgmNodes.push(osc, env, osc2, env2, lpf);
 }
 
 /**
@@ -2635,15 +3471,54 @@ function _playBgmCycle() {
   }, loopAfter);
 }
 
-/** ?ㅻⅤ怨?諛곌꼍?뚯븙 ?쒖옉 */
+function _getCurrentPageType() {
+  const path = window.location.pathname;
+  const filename = path.split('/').pop() || 'index.html';
+  if (filename === 'index.html' || filename === 'home.html' || filename === '') {
+    return 'home';
+  } else if (filename === 'friends.html') {
+    return 'friends';
+  } else if (filename === 'workshop.html') {
+    return 'workshop';
+  } else if (filename === 'gallery.html') {
+    return 'gallery';
+  } else if (filename === 'sleep.html') {
+    return 'sleep';
+  }
+  return 'other';
+}
+
+function _isBgmAllowedPage() {
+  const page = _getCurrentPageType();
+  return ['home', 'friends', 'workshop', 'gallery'].includes(page);
+}
+
+/** 기본 BGM 재생 및 상태 관리 */
+let _bgmFirstStart = true;
+
 export function startBgm() {
   if (_bgmRunning) return;
   if (!isBgmEnabled()) return;
+  if (_currentAsmrId) return; // ASMR이 켜져 있으면 재생 안 함
+  if (!_isBgmAllowedPage()) return; // 허용된 페이지가 아니면 자동 재생 안 함
+
   _bgmRunning = true;
-  _playBgmCycle();
+  if (_bgmGain) {
+    _bgmGain.gain.setValueAtTime(getBgmVolume(), getCtx().currentTime);
+  }
+
+  if (_bgmFirstStart) {
+    _bgmFirstStart = false;
+    _playWindUpSound();
+    setTimeout(() => {
+      if (_bgmRunning) _playBgmCycle();
+    }, 950);
+  } else {
+    _playBgmCycle();
+  }
+  try { sessionStorage.setItem('ss_bgm_running', 'true'); } catch(e) {}
 }
 
-/** ?ㅻⅤ怨?諛곌꼍?뚯븙 ?뺤? */
 export function stopBgm() {
   _bgmRunning = false;
   clearTimeout(_bgmTimeout);
@@ -2651,8 +3526,36 @@ export function stopBgm() {
   _bgmNodes = [];
 }
 
-/** ?꾩옱 BGM ?ъ깮 以??щ? */
 export function isBgmPlaying() { return _bgmRunning; }
+
+/** BGM 서서히 줄여서 끄기 */
+export function fadeOutBgm(sec = 1.5) {
+  if (!_bgmGain || !_bgmRunning) return;
+  const ctx = getCtx();
+  const g = _bgmGain.gain;
+  g.cancelScheduledValues(ctx.currentTime);
+  g.setValueAtTime(g.value, ctx.currentTime);
+  g.linearRampToValueAtTime(0.001, ctx.currentTime + sec);
+  setTimeout(() => {
+    // 램프 완료 후 실제로 정지
+    if (_bgmRunning) {
+      stopBgm();
+    }
+  }, sec * 1000 + 50);
+}
+
+/** BGM 서서히 켜기 */
+export function fadeInBgm(sec = 1.5) {
+  if (!isBgmEnabled() || _currentAsmrId) return;
+  if (!_isBgmAllowedPage()) return;
+  const ctx = getCtx();
+  _bgmRunning = true;
+  _bgmGain.gain.cancelScheduledValues(ctx.currentTime);
+  _bgmGain.gain.setValueAtTime(0.001, ctx.currentTime);
+  _playBgmCycle();
+  _bgmGain.gain.linearRampToValueAtTime(getBgmVolume(), ctx.currentTime + sec);
+  try { sessionStorage.setItem('ss_bgm_running', 'true'); } catch(e) {}
+}
 
 let _morningAlarmRunning = false;
 let _morningAlarmTimeout = null;
@@ -2739,3 +3642,93 @@ export function resumeAudio() {
     _ctx.resume();
   }
 }
+
+/**
+ * 페이지 이동 후 이전 재생 상태(BGM/ASMR)를 sessionStorage에서 복원
+ * 반드시 사용자 인터랙션 이후(click/touchstart 등) 호출되어야 함
+ */
+export function recoverAudioState() {
+  try {
+    const bgmRunningSession = sessionStorage.getItem('ss_bgm_running') === 'true';
+    const asmrId = sessionStorage.getItem('ss_asmr_id');
+    const asmrRunning = sessionStorage.getItem('ss_asmr_running') === 'true';
+
+    const currentPage = _getCurrentPageType();
+    const isBgmPage = _isBgmAllowedPage();
+
+    // 1. ASMR 복구 여부 결정
+    if (asmrId && asmrRunning && isAsmrEnabled()) {
+      if (!_currentAsmrId) {
+        playAsmr(asmrId, { fadeIn: true, fadeInSec: 1.5 });
+      }
+      // ASMR이 켜져 있는 동안에는 기본 BGM은 절대로 재생되지 않아야 함
+      if (_bgmRunning) {
+        stopBgm();
+      }
+    } else {
+      // 2. ASMR이 없는 경우 BGM 복구 처리
+      if (isBgmPage) {
+        if (bgmRunningSession && !_bgmRunning && isBgmEnabled()) {
+          startBgm();
+        }
+      } else if (currentPage === 'sleep') {
+        // 수면 페이지인 경우 기본 BGM 재생 금지 및 Fade Out
+        if (_bgmRunning) {
+          fadeOutBgm(1.5);
+        }
+      }
+    }
+
+    // 수면 타이머 복원
+    const timerEnd = parseInt(sessionStorage.getItem('ss_timer_end') || '0', 10);
+    if (timerEnd > 0) {
+      const remaining = timerEnd - Date.now();
+      if (remaining > 5000) {
+        const remainingMin = Math.ceil(remaining / 60000);
+        setAsmrSleepTimer(remainingMin);
+      } else {
+        sessionStorage.removeItem('ss_timer_end');
+      }
+    }
+  } catch (e) {
+    // sessionStorage 접근 실패 시 무시
+  }
+}
+
+/** 페이지 이동 전 현재 재생 상태를 sessionStorage에 저장 */
+export function saveAudioState() {
+  try {
+    sessionStorage.setItem('ss_bgm_running', _bgmRunning ? 'true' : 'false');
+    sessionStorage.setItem('ss_asmr_id', _currentAsmrId || '');
+    sessionStorage.setItem('ss_asmr_running', _currentAsmrId ? 'true' : 'false');
+  } catch (e) {}
+}
+
+/** 오르골 태엽 감기 소리: 페이지 첫 로드 시 선행 재생 */
+function _playWindUpSound() {
+  const ctx = getCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime + 0.05;
+  const dur = 0.8;
+  // 태엽이 감기는 마찰음 (고주파 노이즈 스위핑)
+  for (let i = 0; i < 5; i++) {
+    const t = now + i * 0.13;
+    const noise = createNoise(0.09);
+    const hpf = createFilter('highpass', rand(4000, 7000), 2.5);
+    const g = createGain(0);
+    noise.connect(hpf); hpf.connect(g); g.connect(_bgmGain);
+    g.gain.setValueAtTime(0.18, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    _bgmNodes.push(noise);
+    noise.start(t); noise.stop(t + 0.12);
+  }
+  // 마지막 "딸깍" 클릭음
+  const clickNoise = createNoise(0.02);
+  const bpf = createFilter('bandpass', rand(2000, 3500), 4);
+  const cg = createGain(0.22);
+  clickNoise.connect(bpf); bpf.connect(cg); cg.connect(_bgmGain);
+  _bgmNodes.push(clickNoise);
+  clickNoise.start(now + dur - 0.08);
+  clickNoise.stop(now + dur);
+}
+

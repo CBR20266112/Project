@@ -187,7 +187,9 @@ export function saveRoom(room) {
 
 /** 초기화: 데이터 없을 때 기본값 세팅 */
 export function initStorage() {
-  if (!getItem(STORAGE_KEYS.SHEEP)) saveSheep({ ...DEFAULT_SHEEP });
+  if (!getItem(STORAGE_KEYS.SHEEP)) {
+    saveSheep({ ...DEFAULT_SHEEP, woolGrowth: 3, canShear: true });
+  }
   if (!getItem(STORAGE_KEYS.SLEEP)) saveSleepRecords([]);
   if (!getItem(STORAGE_KEYS.ITEMS)) saveItems({ ...DEFAULT_ITEMS, owned: [], equipped: { ...DEFAULT_ITEMS.equipped } });
   if (!getItem(STORAGE_KEYS.SETTINGS)) saveSettings({ ...DEFAULT_SETTINGS });
@@ -196,7 +198,7 @@ export function initStorage() {
 
 /** 양 데이터만 초기화 */
 export function resetSheep() {
-  saveSheep({ ...DEFAULT_SHEEP });
+  saveSheep({ ...DEFAULT_SHEEP, woolGrowth: 3, canShear: true });
 }
 
 /** 고민 기록 배열 읽기 */

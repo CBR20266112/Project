@@ -2,7 +2,7 @@
  * opening.js - opening story and gallery slideshow helpers
  */
 
-import { getItem, setItem } from './storage.js';
+import { getItem, setItem, getSheep, saveSheep } from './storage.js';
 import { t } from './i18n.js';
 
 const currentHref = typeof window !== 'undefined' ? window.location.href.toLowerCase() : '';
@@ -120,7 +120,20 @@ export function startOpening(parentContainer, isReplay = false, onComplete = nul
   startImageSlideshow(parentContainer, OPENING_IMAGES, {
     onComplete,
     onClose: () => {
-      if (!isReplay) setItem(STORAGE_KEY_VIEWED, true);
+      if (!isReplay) {
+        setItem(STORAGE_KEY_VIEWED, true);
+        // 최초 실행 보상 지급 (양털 성장 게이지만 3칸 채우기, 행복도/포만감 유지)
+        const rewardKey = 'ss_first_wool_reward_given';
+        if (!getItem(rewardKey)) {
+          setItem(rewardKey, true);
+          const sheep = getSheep();
+          if (sheep) {
+            sheep.woolGrowth = 3;
+            sheep.canShear = true;
+            saveSheep(sheep);
+          }
+        }
+      }
     },
   });
 }

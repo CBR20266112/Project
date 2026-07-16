@@ -67,19 +67,19 @@ function buildInstallUI() {
         style="border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); object-fit: contain;">
     </div>
     <h3 class="text-center font-bold" style="font-size: var(--font-size-lg); margin-bottom: var(--space-2);">
-      ${t('pwaInstall.title')}
+      ${t('pwaInstall.title') ?? '앱 설치'}
     </h3>
     <p id="pwa-install-desc" class="text-center text-muted"
       style="font-size: var(--font-size-sm); line-height: 1.65; margin-bottom: var(--space-4);"></p>
     <div id="pwa-install-ios-steps" class="hidden" style="font-size: var(--font-size-sm); line-height: 1.7;
       background: rgba(167,139,250,0.12); border-radius: var(--radius-md); padding: var(--space-3);
       margin-bottom: var(--space-4); text-align: left;">
-      <div style="margin-bottom: 6px;">${t('pwaInstall.iosSteps.step1')}</div>
-      <div>${t('pwaInstall.iosSteps.step2')}</div>
+      <div style="margin-bottom: 6px;">${t('pwaInstall.iosSteps.step1') ?? '① 하단의 공유 버튼을 누릅니다.'}</div>
+      <div>${t('pwaInstall.iosSteps.step2') ?? '② "홈 화면에 추가"를 선택합니다.'}</div>
     </div>
     <div class="flex flex-col gap-2">
-      <button class="btn btn-primary" id="btn-pwa-install-confirm">${t('pwaInstall.button.add')}</button>
-      <button class="btn btn-secondary" id="btn-pwa-install-later">${t('pwaInstall.button.later')}</button>
+      <button class="btn btn-primary" id="btn-pwa-install-confirm">${t('pwaInstall.button.add') ?? '설치하기'}</button>
+      <button class="btn btn-secondary" id="btn-pwa-install-later">${t('pwaInstall.button.later') ?? '나중에'}</button>
     </div>
   `;
 
@@ -106,19 +106,19 @@ function setInstallMode({ ios = false, manual = false } = {}) {
   const btnConfirm = modalEl.querySelector('#btn-pwa-install-confirm');
 
   if (ios) {
-    desc.textContent = t('pwaInstall.description.ios');
+    desc.textContent = t('pwaInstall.description.ios') ?? '홈 화면에 추가하면 앱처럼 더 쉽고 편리하게 접근할 수 있습니다.';
     iosSteps?.classList.remove('hidden');
-    btnConfirm.textContent = t('pwaInstall.button.ok');
+    btnConfirm.textContent = t('pwaInstall.button.ok') ?? '확인';
   } else if (deferredPrompt) {
-    desc.textContent = t('pwaInstall.description.deferred');
+    desc.textContent = t('pwaInstall.description.deferred') ?? '홈 화면에 추가하여 빠르게 앱에 접속하고 오프라인 기능을 즐겨보세요.';
     iosSteps?.classList.add('hidden');
-    btnConfirm.textContent = t('pwaInstall.button.add');
+    btnConfirm.textContent = t('pwaInstall.button.add') ?? '설치하기';
   } else {
     desc.textContent = manual
-      ? t('pwaInstall.description.manual')
-      : t('pwaInstall.description.manualUnsupported');
+      ? (t('pwaInstall.description.manual') ?? '브라우저 메뉴에서 "앱 설치" 또는 "홈 화면에 추가"를 선택해 주세요.')
+      : (t('pwaInstall.description.manualUnsupported') ?? '이 브라우저는 자동 설치를 지원하지 않습니다. 브라우저 메뉴를 통해 홈 화면에 추가할 수 있습니다.');
     iosSteps?.classList.add('hidden');
-    btnConfirm.textContent = t('pwaInstall.button.ok');
+    btnConfirm.textContent = t('pwaInstall.button.ok') ?? '확인';
   }
 }
 
