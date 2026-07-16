@@ -888,6 +888,8 @@ export const ASMR_LIST = [
   { id: 'tingle_therapy', category: 'cozy', emoji: '✨', name: 'Tingle Therapy', desc: 'Gentle tapping and brushing for soft relaxation' },
   { id: 'summer_insect_night', category: 'nature', emoji: '🦗', name: 'Summer Insect Night', desc: 'Crickets, distant insects, and a quiet breeze after sunset' },
   { id: 'cozy_plaza', category: 'cozy', emoji: '🪑', name: 'Cozy Plaza', desc: 'A peaceful town square with faraway chatter and fountain air' },
+  { id: 'laundry_room', category: 'cozy', emoji: '🧺', name: 'Laundry Room', desc: 'A late-night laundry room with gentle hums and soft water textures' },
+  { id: 'space_station_night', category: 'nature', emoji: '🚀', name: 'Space Station Night', desc: 'Deep background fan hums and soft system clicks from orbit' },
 ];
 export function getAsmrItem(id) {
   return getAsmrList().find(i => i.id === id) ?? null;
@@ -1047,6 +1049,8 @@ function _startAsmrById(id) {
     case 'tingle_therapy': _asmrTingleTherapy(); break;
     case 'summer_insect_night': _asmrSummerInsectNight(); break;
     case 'cozy_plaza': _asmrCozyPlaza(); break;
+    case 'laundry_room': _asmrLaundryRoom(); break;
+    case 'space_station_night': _asmrSpaceStationNight(); break;
     case 'sheep': _asmrDreamyMeadow(); break;
     case 'ranch': _asmrMoonlightRanch(); break;
     case 'bugs': _asmrForestCamp(); break;
