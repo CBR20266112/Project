@@ -922,6 +922,10 @@ let _asmrTimerId     = null;
 let _asmrTimerEnd    = null;
 
 export function playAsmr(id, opts = {}) {
+  if (_bgmRunning) {
+    fadeOutBgm(1.5);
+  }
+
   stopAsmr({ keepTimer: true });
   if (!isAsmrEnabled()) return;
   _currentAsmrId = id;
@@ -952,6 +956,11 @@ export function stopAsmr(opts = {}) {
     sessionStorage.setItem('ss_asmr_id', '');
     sessionStorage.setItem('ss_asmr_running', 'false');
   } catch(e) {}
+
+  // ASMR 종료 시, 현재 페이지가 기본 BGM 가능 페이지라면 기본 BGM을 서서히 켬
+  if (_isBgmAllowedPage()) {
+    fadeInBgm(1.5);
+  }
 }
 
 export function fadeOutAndStopAsmr(sec = 4) {
@@ -2914,26 +2923,54 @@ function _playBgmCycle() {
   }, loopAfter);
 }
 
-/** ?ㅻⅤ怨?諛곌꼍?뚯븙 ?쒖옉 */
+function _getCurrentPageType() {
+  const path = window.location.pathname;
+  const filename = path.split('/').pop() || 'index.html';
+  if (filename === 'index.html' || filename === 'home.html' || filename === '') {
+    return 'home';
+  } else if (filename === 'friends.html') {
+    return 'friends';
+  } else if (filename === 'workshop.html') {
+    return 'workshop';
+  } else if (filename === 'gallery.html') {
+    return 'gallery';
+  } else if (filename === 'sleep.html') {
+    return 'sleep';
+  }
+  return 'other';
+}
+
+function _isBgmAllowedPage() {
+  const page = _getCurrentPageType();
+  return ['home', 'friends', 'workshop', 'gallery'].includes(page);
+}
+
+/** 기본 BGM 재생 및 상태 관리 */
 let _bgmFirstStart = true;
 
 export function startBgm() {
   if (_bgmRunning) return;
   if (!isBgmEnabled()) return;
+  if (_currentAsmrId) return; // ASMR이 켜져 있으면 재생 안 함
+  if (!_isBgmAllowedPage()) return; // 허용된 페이지가 아니면 자동 재생 안 함
+
   _bgmRunning = true;
-  // 최초 실행 시에만 태엽 감기 소리 선행 재생
+  if (_bgmGain) {
+    _bgmGain.gain.setValueAtTime(getBgmVolume(), getCtx().currentTime);
+  }
+
   if (_bgmFirstStart) {
     _bgmFirstStart = false;
     _playWindUpSound();
-    setTimeout(() => _playBgmCycle(), 950);
+    setTimeout(() => {
+      if (_bgmRunning) _playBgmCycle();
+    }, 950);
   } else {
     _playBgmCycle();
   }
-  // 재생 상태 저장
   try { sessionStorage.setItem('ss_bgm_running', 'true'); } catch(e) {}
 }
 
-/** ?ㅻⅤ怨?諛곌꼍?뚯븙 ?뺤? */
 export function stopBgm() {
   _bgmRunning = false;
   clearTimeout(_bgmTimeout);
@@ -2941,8 +2978,36 @@ export function stopBgm() {
   _bgmNodes = [];
 }
 
-/** ?꾩옱 BGM ?ъ깮 以??щ? */
 export function isBgmPlaying() { return _bgmRunning; }
+
+/** BGM 서서히 줄여서 끄기 */
+export function fadeOutBgm(sec = 1.5) {
+  if (!_bgmGain || !_bgmRunning) return;
+  const ctx = getCtx();
+  const g = _bgmGain.gain;
+  g.cancelScheduledValues(ctx.currentTime);
+  g.setValueAtTime(g.value, ctx.currentTime);
+  g.linearRampToValueAtTime(0.001, ctx.currentTime + sec);
+  setTimeout(() => {
+    // 램프 완료 후 실제로 정지
+    if (_bgmRunning) {
+      stopBgm();
+    }
+  }, sec * 1000 + 50);
+}
+
+/** BGM 서서히 켜기 */
+export function fadeInBgm(sec = 1.5) {
+  if (!isBgmEnabled() || _currentAsmrId) return;
+  if (!_isBgmAllowedPage()) return;
+  const ctx = getCtx();
+  _bgmRunning = true;
+  _bgmGain.gain.cancelScheduledValues(ctx.currentTime);
+  _bgmGain.gain.setValueAtTime(0.001, ctx.currentTime);
+  _playBgmCycle();
+  _bgmGain.gain.linearRampToValueAtTime(getBgmVolume(), ctx.currentTime + sec);
+  try { sessionStorage.setItem('ss_bgm_running', 'true'); } catch(e) {}
+}
 
 let _morningAlarmRunning = false;
 let _morningAlarmTimeout = null;
@@ -3036,18 +3101,34 @@ export function resumeAudio() {
  */
 export function recoverAudioState() {
   try {
-    const bgmRunning = sessionStorage.getItem('ss_bgm_running') === 'true';
+    const bgmRunningSession = sessionStorage.getItem('ss_bgm_running') === 'true';
     const asmrId = sessionStorage.getItem('ss_asmr_id');
     const asmrRunning = sessionStorage.getItem('ss_asmr_running') === 'true';
 
-    // BGM 복원
-    if (bgmRunning && !_bgmRunning && isBgmEnabled()) {
-      startBgm();
-    }
+    const currentPage = _getCurrentPageType();
+    const isBgmPage = _isBgmAllowedPage();
 
-    // ASMR 복원
-    if (asmrId && asmrRunning && !_currentAsmrId && isAsmrEnabled()) {
-      playAsmr(asmrId, { fadeIn: true, fadeInSec: 1.5 });
+    // 1. ASMR 복구 여부 결정
+    if (asmrId && asmrRunning && isAsmrEnabled()) {
+      if (!_currentAsmrId) {
+        playAsmr(asmrId, { fadeIn: true, fadeInSec: 1.5 });
+      }
+      // ASMR이 켜져 있는 동안에는 기본 BGM은 절대로 재생되지 않아야 함
+      if (_bgmRunning) {
+        stopBgm();
+      }
+    } else {
+      // 2. ASMR이 없는 경우 BGM 복구 처리
+      if (isBgmPage) {
+        if (bgmRunningSession && !_bgmRunning && isBgmEnabled()) {
+          startBgm();
+        }
+      } else if (currentPage === 'sleep') {
+        // 수면 페이지인 경우 기본 BGM 재생 금지 및 Fade Out
+        if (_bgmRunning) {
+          fadeOutBgm(1.5);
+        }
+      }
     }
 
     // 수면 타이머 복원
